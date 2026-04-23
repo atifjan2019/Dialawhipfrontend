@@ -40,7 +40,7 @@ export default function ServiceAreaPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
+    <div className="mx-auto max-w-[1280px] px-6 py-16">
       <div className="grid gap-14 md:grid-cols-[1fr_1fr] md:items-start">
         <div>
           <Eyebrow>Delivery</Eyebrow>

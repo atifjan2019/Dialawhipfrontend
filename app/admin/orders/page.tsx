@@ -25,7 +25,7 @@ export default async function AdminOrdersList({ searchParams }: { searchParams: 
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-10 py-10">
+    <div className="mx-auto max-w-[1280px] px-10 py-10">
       <Eyebrow>Orders</Eyebrow>
       <h1 className="mt-5 font-display text-[44px] leading-[1] text-ink">All orders</h1>
 

@@ -27,7 +27,7 @@ export default async function ReportsPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-10 py-10">
+    <div className="mx-auto max-w-[1280px] px-10 py-10">
       <div className="flex items-end justify-between">
         <div>
           <Eyebrow>Insights</Eyebrow>

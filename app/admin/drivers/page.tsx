@@ -7,7 +7,7 @@ export default async function DriversPage() {
   const res = await apiServer<{ data: User[] }>("/api/v1/admin/drivers").catch(() => ({ data: [] }));
 
   return (
-    <div className="mx-auto max-w-6xl px-10 py-10">
+    <div className="mx-auto max-w-[1280px] px-10 py-10">
       <Eyebrow>Fleet</Eyebrow>
       <h1 className="mt-5 font-display text-[44px] leading-[1] text-ink">Drivers</h1>
 

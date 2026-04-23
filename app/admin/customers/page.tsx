@@ -12,7 +12,7 @@ export default async function CustomersList({ searchParams }: { searchParams: SP
   }).catch(() => ({ data: [], meta: { next_cursor: null, prev_cursor: null } }));
 
   return (
-    <div className="mx-auto max-w-6xl px-10 py-10">
+    <div className="mx-auto max-w-[1280px] px-10 py-10">
       <Eyebrow>People</Eyebrow>
       <h1 className="mt-5 font-display text-[44px] leading-[1] text-ink">Customers</h1>
 

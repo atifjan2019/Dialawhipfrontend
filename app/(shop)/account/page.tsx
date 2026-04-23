@@ -10,7 +10,7 @@ export default async function AccountPage() {
   const firstName = user.name.split(" ")[0];
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-14">
+    <div className="mx-auto max-w-[1280px] px-6 py-14">
       <Eyebrow>Your account</Eyebrow>
       <h1 className="mt-5 font-display text-[48px] leading-[1] text-ink md:text-[64px]">
         Welcome back, <span className="italic font-light text-forest">{firstName}</span>.

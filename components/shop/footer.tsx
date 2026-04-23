@@ -49,11 +49,10 @@ export function ShopFooter() {
           </FooterCol>
         </div>
 
-        <div className="mt-14 rounded-xl border border-cream/10 bg-forest-deep/50 p-5 text-[12px] leading-relaxed text-cream/60">
-          <strong className="text-butter">18+ only.</strong> Nitrous oxide is a Class C
-          substance under the Misuse of Drugs Act 2023. Dialawhip supplies N₂O
-          exclusively for food preparation and catering use. ID verification is
-          mandatory. Misuse is a criminal offence and will be reported.
+        <div className="mt-14 space-y-3 rounded-xl border border-cream/10 bg-forest-deep/50 p-5 text-[12px] leading-relaxed text-cream/70">
+          <p><strong className="text-butter">You must be at least 18 years of age to use this website.</strong></p>
+          <p>Products for sale on this website are for use in the preparation of food and beverages only.</p>
+          <p>We retain the right to refuse to sell to anyone we suspect may have the intention of misusing our products.</p>
         </div>
 
         <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-cream/10 pt-8 text-[12px] text-cream/50 md:flex-row md:items-center">

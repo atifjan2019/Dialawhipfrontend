@@ -1,6 +1,6 @@
 export function AuthFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1fr_1fr] md:gap-20 md:py-24">
+    <div className="mx-auto grid max-w-[1280px] gap-12 px-6 py-16 md:grid-cols-[1fr_1fr] md:gap-20 md:py-24">
       <div className="flex items-center">
         <div className="w-full max-w-md">{children}</div>
       </div>

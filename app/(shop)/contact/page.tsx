@@ -2,7 +2,7 @@ import { Eyebrow } from "@/components/shop/eyebrow";
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-5xl px-6 py-20">
+    <div className="mx-auto max-w-[1280px] px-6 py-20">
       <div className="max-w-2xl">
         <Eyebrow>Say hello</Eyebrow>
         <h1 className="mt-5 font-display text-[56px] leading-[1] text-ink md:text-[80px]">

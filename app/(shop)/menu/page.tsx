@@ -22,7 +22,7 @@ export default async function MenuPage({ searchParams }: { searchParams: SP }) {
   return (
     <>
       <section className="border-b hairline">
-        <div className="mx-auto max-w-6xl px-6 pt-16 pb-12">
+        <div className="mx-auto max-w-[1280px] px-6 pt-16 pb-12">
           <Eyebrow>The full menu</Eyebrow>
           <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <h1 className="font-display text-[56px] leading-[0.95] text-ink md:text-[80px]">
@@ -45,7 +45,7 @@ export default async function MenuPage({ searchParams }: { searchParams: SP }) {
       </section>
 
       <section className="sticky top-18 z-30 border-b hairline bg-cream/85 backdrop-blur-md">
-        <div className="mx-auto max-w-6xl px-6 py-4">
+        <div className="mx-auto max-w-[1280px] px-6 py-4">
           <div className="flex flex-wrap items-center gap-2 overflow-x-auto">
             <FilterPill href="/menu" active={!category}>All dishes</FilterPill>
             {cats.data.map((c) => (
@@ -57,7 +57,7 @@ export default async function MenuPage({ searchParams }: { searchParams: SP }) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-[1280px] px-6 py-16">
         {prods.data.length === 0 ? (
           <div className="py-24 text-center">
             <p className="font-display text-[28px] italic text-ink-muted">Nothing to show here yet.</p>

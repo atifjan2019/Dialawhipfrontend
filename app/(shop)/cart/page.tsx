@@ -65,7 +65,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14">
+    <div className="mx-auto max-w-[1280px] px-6 py-14">
       <Eyebrow>Your bag</Eyebrow>
       <h1 className="mt-5 font-display text-[48px] leading-[1] text-ink md:text-[64px]">
         Let's <span className="italic font-light text-forest">go over</span> your order

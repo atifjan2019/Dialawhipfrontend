@@ -45,7 +45,7 @@ export default function AddressesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-14">
+    <div className="mx-auto max-w-[1280px] px-6 py-14">
       <Link href="/account" className="text-[12px] font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-forest">
         ← Account
       </Link>

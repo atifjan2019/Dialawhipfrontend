@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
-import { LayoutDashboard, ClipboardList, Users, Package, Truck, BarChart3, LogOut } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Users, Package, Truck, BarChart3, LogOut, ShieldCheck } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/orders", label: "Orders", icon: ClipboardList },
+  { href: "/admin/verifications", label: "ID verifications", icon: ShieldCheck },
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/drivers", label: "Drivers", icon: Truck },
@@ -27,7 +28,7 @@ export function AdminSidebar({ name }: { name: string }) {
       <div className="px-6 py-7">
         <div className="font-display leading-tight">
           <span className="block text-[24px] text-cream">Dialawhip</span>
-          <span className="block text-[13px] italic font-light text-butter">Newcastle catering</span>
+          <span className="block text-[13px] italic font-light text-butter">Newcastle · supplies</span>
         </div>
         <div className="mt-5 text-[10px] font-medium uppercase tracking-[0.22em] text-butter/80">Admin</div>
         <div className="mt-1 font-display text-[15px] text-cream">{name}</div>

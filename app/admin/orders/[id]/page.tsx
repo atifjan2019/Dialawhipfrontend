@@ -21,7 +21,7 @@ export default async function AdminOrderDetail({ params }: { params: Params }) {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-10 py-10">
+    <div className="mx-auto max-w-[1280px] px-10 py-10">
       <Link href="/admin/orders" className="text-[12px] font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-forest">
         ← All orders
       </Link>

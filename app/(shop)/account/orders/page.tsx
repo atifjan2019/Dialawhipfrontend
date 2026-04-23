@@ -10,7 +10,7 @@ export default async function OrdersPage() {
   const res = await apiServer<Paginated<Order>>("/api/v1/me/orders").catch((): Paginated<Order> => ({ data: [], meta: { next_cursor: null, prev_cursor: null } }));
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-14">
+    <div className="mx-auto max-w-[1280px] px-6 py-14">
       <Link href="/account" className="text-[12px] font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-forest">
         ← Account
       </Link>
