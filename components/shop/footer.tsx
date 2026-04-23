@@ -3,49 +3,64 @@ import Link from "next/link";
 export function ShopFooter() {
   return (
     <footer className="mt-24 bg-forest text-cream/90">
-      <div className="mx-auto max-w-6xl px-6 pt-16 pb-10">
+      <div className="mx-auto max-w-[1280px] px-6 pt-16 pb-10">
         <div className="grid gap-12 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div>
             <div className="font-display leading-tight">
               <span className="block text-[32px]">Dialawhip</span>
-              <span className="block text-[18px] italic font-light text-butter">Newcastle catering</span>
+              <span className="block text-[18px] italic font-light text-butter">Newcastle · 20-min delivery</span>
             </div>
             <p className="mt-5 max-w-sm text-[14px] leading-relaxed text-cream/70">
-              Hand-prepared catering from the heart of Tyneside — office lunches,
-              family gatherings and events, delivered the same day.
+              Rapid catering supplies across Tyneside — chargers, whippers, syrups,
+              coffee and disposables, at your door in minutes. Strictly trade &amp; 18+.
             </p>
+            <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-cream/60">
+              <span className="rounded-full border border-cream/15 px-3 py-1.5">Visa</span>
+              <span className="rounded-full border border-cream/15 px-3 py-1.5">Amex</span>
+              <span className="rounded-full border border-cream/15 px-3 py-1.5">Klarna</span>
+              <span className="rounded-full border border-cream/15 px-3 py-1.5">Apple Pay</span>
+              <span className="rounded-full border border-cream/15 px-3 py-1.5">Cash</span>
+            </div>
           </div>
 
           <FooterCol title="Shop">
-            <FooterLink href="/menu">Full menu</FooterLink>
-            <FooterLink href="/service-area">Delivery zones</FooterLink>
-            <FooterLink href="/account/orders">Your orders</FooterLink>
+            <FooterLink href="/shop/cream-chargers">Cream chargers</FooterLink>
+            <FooterLink href="/shop/smartwhip-tanks">Smartwhip tanks</FooterLink>
+            <FooterLink href="/shop/maxxi-tanks">MAXXI tanks</FooterLink>
+            <FooterLink href="/shop/whippers">Whippers</FooterLink>
+            <FooterLink href="/shop/monin-syrups">Monin syrups</FooterLink>
+            <FooterLink href="/shop">Full catalogue →</FooterLink>
           </FooterCol>
 
-          <FooterCol title="Company">
+          <FooterCol title="Service">
+            <FooterLink href="/delivery">Delivery &amp; coverage</FooterLink>
+            <FooterLink href="/trade">Trade accounts</FooterLink>
+            <FooterLink href="/account/orders">Track an order</FooterLink>
             <FooterLink href="/contact">Contact us</FooterLink>
-            <FooterLink href="/contact">Corporate</FooterLink>
-            <FooterLink href="/contact">Careers</FooterLink>
+            <FooterLink href="/about">About Dialawhip</FooterLink>
           </FooterCol>
 
-          <FooterCol title="Visit">
-            <p className="text-[14px] leading-relaxed text-cream/70">
-              Grainger Market<br />
-              Newcastle upon Tyne<br />
-              NE1 5QQ
-            </p>
-            <p className="mt-3 text-[14px] text-cream/70">
-              <a href="tel:01910000000" className="hover:text-butter">0191 000 0000</a><br />
-              <a href="mailto:hello@dialawhip.test" className="hover:text-butter">hello@dialawhip.test</a>
-            </p>
+          <FooterCol title="Legal">
+            <FooterLink href="/legal/terms">Terms &amp; conditions</FooterLink>
+            <FooterLink href="/legal/privacy">Privacy policy</FooterLink>
+            <FooterLink href="/legal/shipping">Shipping &amp; payment</FooterLink>
+            <FooterLink href="/legal/n2o-agreement">N₂O chargers agreement</FooterLink>
+            <FooterLink href="/legal/report-abuse">Report abuse</FooterLink>
           </FooterCol>
         </div>
 
-        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-cream/10 pt-8 text-[12px] text-cream/50 md:flex-row md:items-center">
-          <p>© {new Date().getFullYear()} Dialawhip — Made on Tyneside.</p>
-          <p className="flex gap-5">
-            <span>Mon–Fri 08:00–17:00</span>
-            <span>Sat 09:00–14:00</span>
+        <div className="mt-14 rounded-xl border border-cream/10 bg-forest-deep/50 p-5 text-[12px] leading-relaxed text-cream/60">
+          <strong className="text-butter">18+ only.</strong> Nitrous oxide is a Class C
+          substance under the Misuse of Drugs Act 2023. Dialawhip supplies N₂O
+          exclusively for food preparation and catering use. ID verification is
+          mandatory. Misuse is a criminal offence and will be reported.
+        </div>
+
+        <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-cream/10 pt-8 text-[12px] text-cream/50 md:flex-row md:items-center">
+          <p>© {new Date().getFullYear()} Dialawhip Ltd — Newcastle upon Tyne.</p>
+          <p className="flex flex-wrap gap-5">
+            <span>Tue–Sun · 10:00–03:00</span>
+            <span>Closed Mondays</span>
           </p>
         </div>
       </div>

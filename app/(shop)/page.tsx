@@ -1,107 +1,67 @@
 import Link from "next/link";
-import { apiServer } from "@/lib/api-server";
-import type { Category, Product } from "@/lib/types";
-import { ProductCard } from "@/components/shop/product-card";
 import { Eyebrow } from "@/components/shop/eyebrow";
+import { PostcodeChecker } from "@/components/shop/postcode-checker";
 
-export default async function HomePage() {
-  const [cats, prods] = await Promise.all([
-    apiServer<{ data: Category[] }>("/api/v1/categories", { auth: false, cache: "no-store" }).catch(() => ({ data: [] })),
-    apiServer<{ data: Product[] }>("/api/v1/products", { auth: false, query: { limit: 6 }, cache: "no-store" }).catch(() => ({ data: [] })),
-  ]);
-
+export default function HomePage() {
   return (
     <>
-      <Hero featured={prods.data[0]} />
-      <Ethos />
-      <Categories categories={cats.data} />
-      <Popular products={prods.data} />
-      <Process />
+      <Hero />
+      <TrustRow />
+      <Shelves />
+      <HowItWorks />
+      <Compliance />
       <ClosingCta />
     </>
   );
 }
 
-function Hero({ featured }: { featured?: Product }) {
+function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-full bg-gradient-to-b from-cream-deep/40 via-cream to-cream" aria-hidden />
-      <div className="relative mx-auto grid max-w-6xl gap-14 px-6 pt-16 pb-24 md:grid-cols-[1.2fr_1fr] md:gap-8 md:pt-24 md:pb-32">
+      <div className="relative mx-auto grid max-w-[1280px] gap-14 px-6 pt-16 pb-24 md:grid-cols-[1.15fr_1fr] md:gap-10 md:pt-24 md:pb-32">
         <div className="flex flex-col justify-center">
-          <Eyebrow>Tyneside · Est. 2019</Eyebrow>
-          <h1 className="mt-6 font-display text-[56px] leading-[0.95] tracking-[-0.02em] text-ink md:text-[84px]">
-            Catering,
+          <Eyebrow>Newcastle · 20-minute delivery</Eyebrow>
+          <h1 className="mt-6 font-display text-[56px] leading-[0.95] tracking-[-0.02em] text-ink md:text-[88px]">
+            Catering supplies,
             <br />
-            <span className="italic font-light text-forest">made with care</span>
+            <span className="italic font-light text-forest">in minutes</span>
             <span className="text-clay">.</span>
           </h1>
           <p className="mt-8 max-w-md text-[17px] leading-relaxed text-ink-soft">
-            Hand-prepared platters, warm family spreads, and corporate lunches —
-            cooked fresh each morning in our Newcastle kitchen and delivered across Tyneside.
+            Cream chargers, whippers, syrups, coffee, and disposables — delivered to
+            your kitchen, bar, or event across Tyneside. Average arrival: 18 minutes.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
-              href="/menu"
+              href="/shop"
               className="inline-flex h-13 items-center rounded-full bg-forest px-7 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep"
             >
-              Browse the menu
+              Shop now
               <span className="ml-2">→</span>
             </Link>
-            <Link
-              href="/service-area"
+            <a
+              href="tel:01910000000"
               className="inline-flex h-13 items-center rounded-full border hairline bg-paper px-7 text-[14px] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-cream-deep"
             >
-              Check delivery
-            </Link>
+              Call 0191 000 0000
+            </a>
           </div>
 
           <div className="mt-14 grid grid-cols-3 gap-6 border-t hairline pt-8 text-[13px]">
-            <Stat k="24h" v="Order lead time" />
-            <Stat k="NE1–NE8" v="Delivery zones" />
-            <Stat k="£20" v="Minimum order" />
+            <Stat k="18 min" v="Avg delivery" />
+            <Stat k="20 mi" v="Radius, NE" />
+            <Stat k="24/7" v="Support line" />
           </div>
         </div>
 
-        <div className="relative">
-          <HeroCard featured={featured} />
+        <div className="relative flex items-center">
+          <div className="w-full">
+            <PostcodeChecker />
+          </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function HeroCard({ featured }: { featured?: Product }) {
-  return (
-    <div className="relative mx-auto w-full max-w-sm md:ml-auto">
-      <div className="absolute -top-5 -left-5 h-full w-full rotate-[-3deg] rounded-[22px] bg-clay/15" aria-hidden />
-      <div className="relative overflow-hidden rounded-[22px] border hairline bg-paper shadow-[0_30px_60px_-30px_rgba(27,20,14,0.25)]">
-        <div className="relative h-80 overflow-hidden bg-forest paper-grain">
-          <div className="absolute inset-0 bg-gradient-to-br from-forest via-forest-deep to-[#0C1811]" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
-            <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-butter/80">Today's special</span>
-            <p className="mt-4 font-display text-[40px] italic font-light leading-tight text-cream">
-              {featured?.name ?? "Stottie & Pease"}
-            </p>
-            <div className="mt-6 h-px w-12 bg-butter/50" />
-            <p className="mt-4 max-w-[220px] text-[13px] leading-relaxed text-cream/70">
-              A plate of the North East, served with warmth.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center justify-between bg-cream-deep px-6 py-5">
-          <div>
-            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-ink-muted">From</div>
-            <div className="font-display text-[24px] leading-none text-ink">£14.50</div>
-          </div>
-          <Link
-            href={featured ? `/products/${featured.slug}` : "/menu"}
-            className="inline-flex h-10 items-center rounded-full bg-ink px-5 text-[12px] font-medium tracking-wide text-cream transition-colors hover:bg-ink-soft"
-          >
-            Order today
-          </Link>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -114,75 +74,22 @@ function Stat({ k, v }: { k: string; v: string }) {
   );
 }
 
-function Ethos() {
+function TrustRow() {
   const items = [
-    {
-      n: "01",
-      title: "Sourced locally",
-      body: "From Northumbrian farms, coastal fisheries and Tyneside bakers — we pay for quality, and it shows.",
-    },
-    {
-      n: "02",
-      title: "Cooked same day",
-      body: "Nothing reheated, nothing shortcut. Our kitchen opens before sunrise so your lunch doesn't taste like yesterday.",
-    },
-    {
-      n: "03",
-      title: "Delivered with care",
-      body: "Temperature-controlled vans, timed windows, and drivers who place the tray where it belongs.",
-    },
+    { k: "20-min", v: "Delivery window" },
+    { k: "Live GPS", v: "Driver on the map" },
+    { k: "Cash · Card", v: "Klarna · Apple Pay" },
+    { k: "18+", v: "ID verified · secure" },
   ];
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
-      <div className="grid gap-10 md:grid-cols-3">
-        {items.map((i) => (
-          <div key={i.n} className="relative pt-8">
-            <div className="absolute top-0 left-0 font-display text-[14px] italic text-clay">№ {i.n}</div>
-            <h3 className="font-display text-[26px] leading-tight text-ink">{i.title}</h3>
-            <p className="mt-3 text-[14px] leading-relaxed text-ink-muted">{i.body}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Categories({ categories }: { categories: Category[] }) {
-  if (categories.length === 0) return null;
-  return (
-    <section className="border-y hairline bg-cream-deep/50">
-      <div className="mx-auto max-w-6xl px-6 py-20">
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <Eyebrow>The menu</Eyebrow>
-            <h2 className="mt-5 font-display text-[40px] leading-[1] text-ink md:text-[52px]">
-              Something for <span className="italic text-forest">every table</span>
-            </h2>
-          </div>
-          <Link href="/menu" className="hidden text-[13px] font-medium text-ink-muted transition-colors hover:text-forest sm:inline-flex">
-            Full menu →
-          </Link>
-        </div>
-
-        <div className="mt-12 grid gap-px overflow-hidden rounded-lg border hairline bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {categories.slice(0, 4).map((c, i) => (
-            <Link
-              key={c.id}
-              href={`/menu?category=${c.slug}`}
-              className="group relative block bg-paper p-8 transition-colors hover:bg-cream-deep"
-            >
-              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-clay">№ {String(i + 1).padStart(2, "0")}</div>
-              <h3 className="mt-6 font-display text-[26px] leading-tight text-ink transition-colors group-hover:text-forest">
-                {c.name}
-              </h3>
-              {c.description ? (
-                <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-muted">{c.description}</p>
-              ) : null}
-              <div className="mt-8 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-forest">
-                <span>Browse</span>
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </div>
-            </Link>
+    <section className="border-y hairline bg-forest text-cream">
+      <div className="mx-auto max-w-[1280px] px-6 py-8">
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
+          {items.map((i) => (
+            <div key={i.k} className="flex items-baseline gap-3">
+              <div className="font-display text-[22px] leading-none text-butter">{i.k}</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-cream/70">{i.v}</div>
+            </div>
           ))}
         </div>
       </div>
@@ -190,61 +97,92 @@ function Categories({ categories }: { categories: Category[] }) {
   );
 }
 
-function Popular({ products }: { products: Product[] }) {
-  if (products.length === 0) return null;
+const SHELVES: { name: string; slug: string; blurb: string }[] = [
+  { name: "Cream chargers", slug: "cream-chargers", blurb: "8g & 8.2g N₂O canisters — food-grade, ID required." },
+  { name: "Smartwhip tanks", slug: "smartwhip-tanks", blurb: "580g, 640g, 666g — equivalent to 70+ chargers." },
+  { name: "MAXXI tanks", slug: "maxxi-tanks", blurb: "2KG & 4KG disposables — 250 chargers per tank." },
+  { name: "Whippers", slug: "whippers", blurb: "Quarter and half-litre dispensers — pro-grade." },
+  { name: "CO₂ cartridges", slug: "co2-cartridges", blurb: "Pro Fizz · Liss · Mosa · ISI — for soda siphons." },
+  { name: "Soda siphons", slug: "soda-siphons", blurb: "ISI 1L — the bar-standard sparkling water maker." },
+  { name: "Monin syrups", slug: "monin-syrups", blurb: "Full flavour range — strawberry, gomme, curaçao." },
+  { name: "Coffee", slug: "coffee", blurb: "Lavazza, Starbucks, Costa, Nescafé beans & instant." },
+  { name: "Baking", slug: "baking", blurb: "Flour, sugar, eggs, baking powder — trade quantities." },
+  { name: "Disposables", slug: "disposables", blurb: "Bagasse plates, paper cups, wooden cutlery, SOS bags." },
+];
+
+function Shelves() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24">
+    <section className="mx-auto max-w-[1280px] px-6 py-20">
       <div className="flex items-end justify-between gap-6">
         <div>
-          <Eyebrow>Kitchen favourites</Eyebrow>
+          <Eyebrow>What we stock</Eyebrow>
           <h2 className="mt-5 font-display text-[40px] leading-[1] text-ink md:text-[52px]">
-            What people <span className="italic text-clay">keep ordering</span>
+            The <span className="italic text-forest">whole shelf</span>, on demand
           </h2>
         </div>
+        <Link href="/shop" className="hidden text-[13px] font-medium text-ink-muted transition-colors hover:text-forest sm:inline-flex">
+          Full catalogue →
+        </Link>
       </div>
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((p, i) => (
-          <ProductCard key={p.id} product={p} index={i} />
+
+      <div className="mt-12 grid gap-px overflow-hidden rounded-lg border hairline bg-line sm:grid-cols-2 lg:grid-cols-5">
+        {SHELVES.map((c, i) => (
+          <Link
+            key={c.slug}
+            href={`/shop/${c.slug}`}
+            className="group relative block bg-paper p-6 transition-colors hover:bg-cream-deep"
+          >
+            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-clay">№ {String(i + 1).padStart(2, "0")}</div>
+            <h3 className="mt-5 font-display text-[20px] leading-tight text-ink transition-colors group-hover:text-forest">
+              {c.name}
+            </h3>
+            <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-ink-muted">{c.blurb}</p>
+            <div className="mt-5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-forest">
+              <span>Browse</span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </div>
+          </Link>
         ))}
       </div>
     </section>
   );
 }
 
-function Process() {
+function HowItWorks() {
   const steps = [
-    { n: "1", t: "Choose your spread", d: "Mix and match from our full menu. No minimum dish — just a £20 order total." },
-    { n: "2", t: "Pick a slot", d: "Order at least 24 hours ahead. We'll confirm your window by email and text." },
-    { n: "3", t: "We arrive", d: "A driver turns up within a 30-minute window, trays laid out, ready to serve." },
+    { n: "1", t: "Verify once", d: "Upload ID at sign-up — passport, driving licence or residency card. Approved in minutes, never asked again." },
+    { n: "2", t: "Add to bag", d: "Shop chargers, tanks, syrups, packaging. Stock levels shown live. Mix brands in one order." },
+    { n: "3", t: "Pick a window", d: "Standard (20 min), Priority (+£5, 10 min) or Super-priority for true emergencies." },
+    { n: "4", t: "We're at the door", d: "Watch the driver on the map. SMS & WhatsApp updates at every stage. Pay card, cash, Klarna." },
   ];
   return (
     <section className="border-y hairline bg-forest text-cream">
-      <div className="mx-auto grid max-w-6xl gap-16 px-6 py-24 md:grid-cols-[1fr_1.3fr] md:gap-24">
+      <div className="mx-auto grid max-w-[1280px] gap-16 px-6 py-24 md:grid-cols-[1fr_1.4fr] md:gap-20">
         <div>
           <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-butter">
             <span className="h-px w-8 bg-butter/60" />
             <span>How it works</span>
           </div>
           <h2 className="mt-6 font-display text-[40px] leading-[1] text-cream md:text-[56px]">
-            Simple,
+            Faster than your
             <br />
-            <span className="italic font-light text-butter">from tray to table</span>
+            <span className="italic font-light text-butter">usual supplier</span>
           </h2>
           <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-cream/70">
-            Whether it's a ten-person boardroom lunch or a hundred-person wedding
-            breakfast, the process is the same — straightforward, and on time.
+            We carry stock close to the city so your kitchen doesn't stop when it
+            runs out. Order by 3am, Tuesday to Sunday.
           </p>
         </div>
 
-        <ol className="space-y-px overflow-hidden rounded-lg bg-cream/10">
+        <ol className="grid gap-px overflow-hidden rounded-lg bg-cream/10 sm:grid-cols-2">
           {steps.map((s) => (
-            <li key={s.n} className="flex gap-8 bg-forest p-8">
-              <div className="font-display text-[56px] italic font-light leading-none text-butter/80">
+            <li key={s.n} className="flex gap-6 bg-forest p-7">
+              <div className="font-display text-[48px] italic font-light leading-none text-butter/80">
                 {s.n}
               </div>
-              <div className="flex-1 pt-2">
-                <h3 className="font-display text-[24px] leading-tight text-cream">{s.t}</h3>
-                <p className="mt-2 text-[14px] leading-relaxed text-cream/70">{s.d}</p>
+              <div className="flex-1 pt-1.5">
+                <h3 className="font-display text-[20px] leading-tight text-cream">{s.t}</h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-cream/70">{s.d}</p>
               </div>
             </li>
           ))}
@@ -254,26 +192,79 @@ function Process() {
   );
 }
 
+function Compliance() {
+  return (
+    <section className="mx-auto max-w-[1280px] px-6 py-24">
+      <div className="grid gap-12 rounded-2xl border hairline bg-cream-deep/50 p-10 md:grid-cols-[1.1fr_1fr] md:gap-16 md:p-14">
+        <div>
+          <Eyebrow>Strictly trade &amp; over-18</Eyebrow>
+          <h2 className="mt-5 font-display text-[32px] leading-tight text-ink md:text-[40px]">
+            Sold for catering and <span className="italic text-forest">culinary use only</span>.
+          </h2>
+          <p className="mt-5 max-w-md text-[14px] leading-relaxed text-ink-soft">
+            Nitrous oxide is a Class C substance under the Misuse of Drugs Act 2023.
+            Supply for food preparation is legal — and we take that seriously. Every
+            customer is ID-checked and every order carries a signed statement of use.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+            <span className="rounded-full border hairline bg-paper px-3 py-1.5">Passport</span>
+            <span className="rounded-full border hairline bg-paper px-3 py-1.5">Driving licence</span>
+            <span className="rounded-full border hairline bg-paper px-3 py-1.5">Residency card</span>
+            <span className="rounded-full border hairline bg-paper px-3 py-1.5">Citizen card</span>
+            <span className="rounded-full border hairline bg-paper px-3 py-1.5">Military ID</span>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-paper p-8">
+          <div className="flex items-center justify-between border-b hairline pb-4 text-[11px] font-medium uppercase tracking-[0.16em] text-ink-muted">
+            <span>Order readiness</span>
+            <span className="text-forest">3 of 3</span>
+          </div>
+          <ul className="mt-5 space-y-4 text-[13px] text-ink-soft">
+            <Check>Account created &amp; email verified</Check>
+            <Check>ID uploaded once — valid for 2 years</Check>
+            <Check>Statement of use signed at checkout</Check>
+          </ul>
+          <Link
+            href="/register"
+            className="mt-7 inline-flex h-11 w-full items-center justify-center rounded-full bg-ink px-5 text-[13px] font-medium text-cream transition-colors hover:bg-ink-soft"
+          >
+            Open a trade account →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Check({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-forest text-[10px] font-semibold text-butter">✓</span>
+      <span>{children}</span>
+    </li>
+  );
+}
+
 function ClosingCta() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-28 text-center">
-      <Eyebrow className="justify-center">Made on Tyneside</Eyebrow>
+    <section className="mx-auto max-w-[1280px] px-6 pb-28 text-center">
+      <Eyebrow className="justify-center">Dialawhip · Newcastle</Eyebrow>
       <p className="mx-auto mt-8 max-w-3xl font-display text-[44px] leading-[1.05] text-ink md:text-[68px]">
-        <span className="italic font-light text-forest">Proper</span> food,
-        delivered <span className="italic font-light text-clay">properly</span>.
+        Out of stock? <span className="italic font-light text-forest">Not for long</span>.
       </p>
-      <div className="mt-10 flex justify-center gap-3">
+      <div className="mt-10 flex flex-wrap justify-center gap-3">
         <Link
-          href="/menu"
+          href="/shop"
           className="inline-flex h-13 items-center rounded-full bg-forest px-8 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep"
         >
           Start your order
         </Link>
         <Link
-          href="/contact"
+          href="/trade"
           className="inline-flex h-13 items-center rounded-full border hairline bg-paper px-8 text-[14px] font-medium text-ink transition-colors hover:border-ink/30"
         >
-          Talk to our team
+          Open a trade account
         </Link>
       </div>
     </section>
