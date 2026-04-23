@@ -15,9 +15,16 @@ export default function LoginPage() {
   );
 }
 
+const HOME_BY_ROLE: Record<string, string> = {
+  admin: "/admin",
+  staff: "/admin",
+  driver: "/driver",
+  customer: "/account",
+};
+
 function LoginForm() {
   const router = useRouter();
-  const next = useSearchParams().get("next") ?? "/account";
+  const next = useSearchParams().get("next");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -38,7 +45,9 @@ function LoginForm() {
         setErrors(body?.errors ?? { email: [body?.message ?? "Login failed."] });
         return;
       }
-      router.push(next);
+      const role = body?.user?.role as string | undefined;
+      const home = (role && HOME_BY_ROLE[role]) ?? "/account";
+      router.push(next ?? home);
       router.refresh();
     } finally {
       setPending(false);
