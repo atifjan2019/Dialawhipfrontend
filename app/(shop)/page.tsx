@@ -19,36 +19,36 @@ function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-full bg-gradient-to-b from-cream-deep/40 via-cream to-cream" aria-hidden />
-      <div className="relative mx-auto grid max-w-[1280px] gap-14 px-6 pt-16 pb-24 md:grid-cols-[1.15fr_1fr] md:gap-10 md:pt-24 md:pb-32">
+      <div className="relative mx-auto grid max-w-[1280px] gap-12 px-4 pt-12 pb-16 sm:px-6 sm:pt-16 sm:pb-24 md:grid-cols-[1.15fr_1fr] md:gap-10 md:pt-24 md:pb-32">
         <div className="flex flex-col justify-center">
           <Eyebrow>Newcastle · 20-minute delivery</Eyebrow>
-          <h1 className="mt-6 font-display text-[56px] leading-[0.95] tracking-[-0.02em] text-ink md:text-[88px]">
+          <h1 className="mt-5 font-display text-[44px] leading-[0.95] tracking-[-0.02em] text-ink sm:text-[56px] md:text-[88px]">
             Catering supplies,
             <br />
             <span className="italic font-light text-forest">in minutes</span>
             <span className="text-clay">.</span>
           </h1>
-          <p className="mt-8 max-w-md text-[17px] leading-relaxed text-ink-soft">
+          <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink-soft sm:mt-8 sm:text-[17px]">
             Cream chargers, whippers, syrups, coffee, and disposables — delivered to
             your kitchen, bar, or event across Tyneside. Average arrival: 18 minutes.
           </p>
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3 sm:mt-10">
             <Link
               href="/shop"
-              className="inline-flex h-13 items-center rounded-full bg-forest px-7 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep"
+              className="inline-flex h-12 items-center gap-1.5 whitespace-nowrap rounded-full bg-forest px-6 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep sm:h-13 sm:px-7"
             >
               Shop now
-              <span className="ml-2">→</span>
+              <span aria-hidden>→</span>
             </Link>
             <a
               href="tel:01910000000"
-              className="inline-flex h-13 items-center rounded-full border hairline bg-paper px-7 text-[14px] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-cream-deep"
+              className="inline-flex h-12 items-center whitespace-nowrap rounded-full border hairline bg-paper px-6 text-[14px] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-cream-deep sm:h-13 sm:px-7"
             >
               Call 0191 000 0000
             </a>
           </div>
 
-          <div className="mt-14 grid grid-cols-3 gap-6 border-t hairline pt-8 text-[13px]">
+          <div className="mt-10 grid grid-cols-3 gap-4 border-t hairline pt-7 text-[13px] sm:mt-14 sm:gap-6 sm:pt-8">
             <Stat k="18 min" v="Avg delivery" />
             <Stat k="20 mi" v="Radius, NE" />
             <Stat k="24/7" v="Support line" />
@@ -68,8 +68,8 @@ function Hero() {
 function Stat({ k, v }: { k: string; v: string }) {
   return (
     <div>
-      <div className="font-display text-[24px] leading-tight text-forest">{k}</div>
-      <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted">{v}</div>
+      <div className="font-display text-[20px] leading-tight text-forest sm:text-[24px]">{k}</div>
+      <div className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-muted sm:text-[11px] sm:tracking-[0.14em]">{v}</div>
     </div>
   );
 }
@@ -83,12 +83,12 @@ function TrustRow() {
   ];
   return (
     <section className="border-y hairline bg-forest text-cream">
-      <div className="mx-auto max-w-[1280px] px-6 py-8">
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
+      <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-6 md:grid-cols-4">
           {items.map((i) => (
-            <div key={i.k} className="flex items-baseline gap-3">
-              <div className="font-display text-[22px] leading-none text-butter">{i.k}</div>
-              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-cream/70">{i.v}</div>
+            <div key={i.k} className="flex flex-col gap-1.5 md:flex-row md:items-baseline md:gap-3">
+              <div className="font-display text-[18px] leading-none text-butter sm:text-[22px]">{i.k}</div>
+              <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-cream/70 sm:text-[11px] sm:tracking-[0.18em]">{i.v}</div>
             </div>
           ))}
         </div>

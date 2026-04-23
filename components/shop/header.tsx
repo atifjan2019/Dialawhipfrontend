@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import type { User } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 
 const SHOP_LINKS: { name: string; href: string; hot?: boolean }[] = [
@@ -23,8 +24,11 @@ export function ShopHeader({ user }: { user: User | null }) {
   const count = useCart((s) => s.count());
   const [open, setOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const shopRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
@@ -35,11 +39,26 @@ export function ShopHeader({ user }: { user: User | null }) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
+  useEffect(() => {
+    setMobileOpen(false);
+    setShopOpen(false);
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (mobileOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
   return (
-    <header className="sticky top-0 z-40 border-b hairline bg-cream/85 backdrop-blur-md">
-      <div className="mx-auto flex h-18 max-w-[1280px] items-center justify-between px-6 py-5">
+    <>
+    <header className="sticky top-0 z-40 border-b hairline bg-cream/90 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:h-18 sm:px-6">
         <Link href="/" className="group flex items-baseline gap-2">
-          <span className="font-display text-[24px] font-medium leading-none tracking-tight text-forest">
+          <span className="font-display text-[22px] font-medium leading-none tracking-tight text-forest sm:text-[24px]">
             Dialawhip
           </span>
           <span className="hidden font-display text-[14px] italic font-light leading-none text-clay sm:inline">
@@ -91,23 +110,23 @@ export function ShopHeader({ user }: { user: User | null }) {
           <Link href="/contact" className="transition-colors hover:text-forest">Contact</Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/cart"
-            className="group relative inline-flex h-10 items-center gap-2 rounded-full border hairline bg-paper px-4 text-[13px] font-medium text-ink-soft transition-all hover:border-forest hover:text-forest"
+            className="group relative inline-flex h-10 items-center gap-1.5 rounded-full border hairline bg-paper px-3 text-[13px] font-medium text-ink-soft transition-all hover:border-forest hover:text-forest sm:gap-2 sm:px-4"
             aria-label="Cart"
           >
             <BagIcon />
             <span className="hidden sm:inline">Bag</span>
             {mounted && count > 0 ? (
-              <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-clay px-1.5 text-[11px] font-semibold text-cream tabular-nums">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-clay px-1.5 text-[11px] font-semibold text-cream tabular-nums">
                 {count}
               </span>
             ) : null}
           </Link>
 
           {user ? (
-            <div className="relative">
+            <div className="relative hidden md:block">
               <button
                 onClick={() => setOpen((v) => !v)}
                 className="inline-flex h-10 items-center gap-2 rounded-full border hairline bg-paper px-4 text-[13px] font-medium text-ink-soft transition-colors hover:border-forest hover:text-forest"
@@ -150,14 +169,177 @@ export function ShopHeader({ user }: { user: User | null }) {
           ) : (
             <Link
               href="/login"
-              className="inline-flex h-10 items-center rounded-full bg-forest px-5 text-[13px] font-medium text-cream transition-colors hover:bg-forest-deep"
+              className="hidden h-10 items-center rounded-full bg-forest px-5 text-[13px] font-medium text-cream transition-colors hover:bg-forest-deep md:inline-flex"
             >
               Sign in
             </Link>
           )}
+
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border hairline bg-paper text-ink-soft transition-colors hover:border-forest hover:text-forest md:hidden"
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+          >
+            <BurgerIcon />
+          </button>
         </div>
       </div>
     </header>
+
+    {mobileOpen ? (
+      <MobileDrawer user={user} onClose={() => setMobileOpen(false)} />
+    ) : null}
+    </>
+  );
+}
+
+function MobileDrawer({ user, onClose }: { user: User | null; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 md:hidden">
+      <div
+        className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden
+      />
+      <aside className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col bg-cream shadow-[-20px_0_60px_-20px_rgba(10,22,40,0.35)]">
+        <div className="flex items-center justify-between border-b hairline px-5 py-4">
+          <div className="font-display leading-tight">
+            <span className="block text-[20px] text-forest">Dialawhip</span>
+            <span className="block text-[12px] italic font-light text-clay">Newcastle · supplies</span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border hairline bg-paper text-ink-soft transition-colors hover:border-forest hover:text-forest"
+            aria-label="Close menu"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          {user ? (
+            <div className="border-b hairline bg-paper px-5 py-5">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-forest font-display text-[15px] text-cream">
+                  {user.name.charAt(0).toUpperCase()}
+                </span>
+                <div>
+                  <div className="font-display text-[16px] text-ink">{user.name}</div>
+                  <div className="text-[12px] text-ink-muted">{user.email}</div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="border-b hairline bg-paper px-5 py-5">
+              <Link
+                href="/login"
+                className="inline-flex h-11 w-full items-center justify-center rounded-full bg-forest px-5 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/register"
+                className="mt-2 inline-flex h-11 w-full items-center justify-center rounded-full border hairline bg-paper px-5 text-[14px] font-medium text-ink"
+              >
+                Create an account
+              </Link>
+            </div>
+          )}
+
+          <nav className="px-5 py-4">
+            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-ink-muted">Shop by category</div>
+            <div className="mt-3 space-y-1">
+              {SHOP_LINKS.map((l) => (
+                <DrawerLink key={l.href} href={l.href}>
+                  <span>{l.name}</span>
+                  {l.hot ? (
+                    <span className="rounded-full bg-butter/90 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-forest">Hot</span>
+                  ) : null}
+                </DrawerLink>
+              ))}
+              <DrawerLink href="/shop" highlight>
+                <span>All products →</span>
+              </DrawerLink>
+            </div>
+          </nav>
+
+          <nav className="border-t hairline px-5 py-4">
+            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-ink-muted">Dialawhip</div>
+            <div className="mt-3 space-y-1">
+              <DrawerLink href="/delivery"><span>Delivery &amp; ETAs</span></DrawerLink>
+              <DrawerLink href="/trade"><span>Trade accounts</span></DrawerLink>
+              <DrawerLink href="/about"><span>About us</span></DrawerLink>
+              <DrawerLink href="/contact"><span>Contact</span></DrawerLink>
+            </div>
+          </nav>
+
+          {user ? (
+            <nav className="border-t hairline px-5 py-4">
+              <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-ink-muted">Your account</div>
+              <div className="mt-3 space-y-1">
+                <DrawerLink href="/account"><span>Account</span></DrawerLink>
+                <DrawerLink href="/account/orders"><span>My orders</span></DrawerLink>
+                <DrawerLink href="/account/addresses"><span>Addresses</span></DrawerLink>
+                <DrawerLink href="/account/verification"><span>ID &amp; verification</span></DrawerLink>
+                {(user.role === "admin" || user.role === "staff") ? (
+                  <DrawerLink href="/admin" highlight><span>Admin dashboard →</span></DrawerLink>
+                ) : null}
+                {user.role === "driver" ? (
+                  <DrawerLink href="/driver" highlight><span>Driver app →</span></DrawerLink>
+                ) : null}
+              </div>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  await fetch("/api/auth/logout", { method: "POST" });
+                  window.location.href = "/";
+                }}
+                className="mt-2"
+              >
+                <button
+                  type="submit"
+                  className="inline-flex h-11 w-full items-center justify-center rounded-full border hairline bg-paper px-4 text-[13px] font-medium text-ink-muted transition-colors hover:border-ink/25"
+                >
+                  Sign out
+                </button>
+              </form>
+            </nav>
+          ) : null}
+        </div>
+
+        <div className="border-t hairline px-5 py-4 text-[11px] leading-relaxed text-ink-muted">
+          <p className="font-medium text-ink">18+ only.</p>
+          <p className="mt-1">For culinary use. We reserve the right to refuse supply.</p>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function DrawerLink({
+  href,
+  children,
+  highlight,
+}: {
+  href: string;
+  children: React.ReactNode;
+  highlight?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex items-center justify-between rounded-lg px-3 py-2.5 text-[14px] transition-colors",
+        highlight
+          ? "font-medium text-forest hover:bg-cream-deep"
+          : "text-ink-soft hover:bg-cream-deep hover:text-ink",
+      )}
+    >
+      {children}
+    </Link>
   );
 }
 
@@ -181,6 +363,22 @@ function BagIcon() {
       <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
       <path d="M3 6h18" />
       <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+}
+
+function BurgerIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+      <path d="M6 6 18 18M18 6 6 18" />
     </svg>
   );
 }

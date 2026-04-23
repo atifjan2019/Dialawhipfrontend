@@ -22,19 +22,19 @@ export default async function AdminVerificationDetail({ params }: { params: Para
   const isPending = data.status === "pending";
 
   return (
-    <div className="px-10 py-10">
+    <div className="px-4 py-8 sm:px-6 md:px-10 md:py-10">
       <nav className="text-[12px] text-ink-muted">
         <Link href="/admin/verifications" className="transition-colors hover:text-forest">
           ← All verifications
         </Link>
       </nav>
 
-      <div className="mt-6 flex items-start justify-between gap-6">
+      <div className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div>
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-ink-muted">
             Review ID submission
           </div>
-          <h1 className="mt-2 font-display text-[36px] leading-tight text-ink">
+          <h1 className="mt-2 font-display text-[28px] leading-tight text-ink sm:text-[36px]">
             {data.user?.name}
           </h1>
           <div className="mt-1 text-[13px] text-ink-muted">
@@ -55,7 +55,7 @@ export default async function AdminVerificationDetail({ params }: { params: Para
           <div className="mt-5 overflow-hidden rounded-lg border hairline bg-cream-deep/40">
             <iframe
               src={downloadUrl}
-              className="h-[560px] w-full"
+              className="h-[380px] w-full sm:h-[480px] md:h-[560px]"
               title="ID document"
             />
           </div>

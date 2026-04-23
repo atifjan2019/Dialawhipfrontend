@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
-import { LayoutDashboard, ClipboardList, Users, Package, Truck, BarChart3, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Users, Package, Truck, BarChart3, LogOut, ShieldCheck, Menu, X } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -17,15 +18,78 @@ const NAV = [
 
 export function AdminSidebar({ name }: { name: string }) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => setMobileOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (mobileOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/";
   }
 
+  const active = NAV.find((n) => (n.exact ? pathname === n.href : pathname.startsWith(n.href)))?.label ?? "Admin";
+
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col bg-forest text-cream">
-      <div className="px-6 py-7">
+    <>
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-cream/10 bg-forest px-4 py-3 text-cream md:hidden">
+        <Link href="/admin" className="flex items-baseline gap-1.5">
+          <span className="font-display text-[20px] leading-none text-cream">Dialawhip</span>
+          <span className="font-display text-[12px] italic text-butter">{active}</span>
+        </Link>
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-cream/15 bg-forest-deep/40 text-cream"
+          aria-label="Open admin menu"
+        >
+          <Menu className="h-4 w-4" />
+        </button>
+      </header>
+
+      <aside className="hidden h-screen w-64 shrink-0 flex-col bg-forest text-cream md:sticky md:top-0 md:flex">
+        <SidebarContents name={name} pathname={pathname} onLogout={logout} />
+      </aside>
+
+      {mobileOpen ? (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-ink/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-hidden />
+          <aside className="absolute inset-y-0 left-0 flex w-[82%] max-w-xs flex-col bg-forest text-cream shadow-[20px_0_60px_-20px_rgba(10,22,40,0.45)]">
+            <div className="flex justify-end px-3 py-3">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cream/15 bg-forest-deep/40 text-cream"
+                aria-label="Close menu"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <SidebarContents name={name} pathname={pathname} onLogout={logout} />
+          </aside>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+function SidebarContents({
+  name,
+  pathname,
+  onLogout,
+}: {
+  name: string;
+  pathname: string;
+  onLogout: () => void;
+}) {
+  return (
+    <>
+      <div className="px-6 py-7 md:pt-7 pt-0">
         <div className="font-display leading-tight">
           <span className="block text-[24px] text-cream">Dialawhip</span>
           <span className="block text-[13px] italic font-light text-butter">Newcastle · supplies</span>
@@ -33,7 +97,7 @@ export function AdminSidebar({ name }: { name: string }) {
         <div className="mt-5 text-[10px] font-medium uppercase tracking-[0.22em] text-butter/80">Admin</div>
         <div className="mt-1 font-display text-[15px] text-cream">{name}</div>
       </div>
-      <nav className="flex-1 space-y-0.5 px-3">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3">
         {NAV.map((n) => {
           const active = n.exact ? pathname === n.href : pathname.startsWith(n.href);
           return (
@@ -61,13 +125,13 @@ export function AdminSidebar({ name }: { name: string }) {
           ← Back to site
         </Link>
         <button
-          onClick={logout}
+          onClick={onLogout}
           className="mt-1 flex w-full items-center gap-2 rounded-md px-3.5 py-2 text-[12px] font-medium text-cream/60 transition-colors hover:text-clay"
         >
           <LogOut className="h-4 w-4" />
           Sign out
         </button>
       </div>
-    </aside>
+    </>
   );
 }

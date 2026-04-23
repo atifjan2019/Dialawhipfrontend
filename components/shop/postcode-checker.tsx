@@ -52,13 +52,16 @@ export function PostcodeChecker() {
           onChange={(e) => setValue(e.target.value)}
           placeholder="e.g. NE1 5QQ"
           aria-label="Postcode"
-          className="h-12 flex-1 rounded-full border hairline bg-cream px-5 text-[14px] text-ink placeholder:text-ink-muted/60 focus:border-forest focus:outline-none"
+          inputMode="text"
+          autoCapitalize="characters"
+          className="h-12 min-w-0 flex-1 rounded-full border hairline bg-cream px-4 text-[16px] text-ink placeholder:text-ink-muted/60 focus:border-forest focus:outline-none sm:text-[14px]"
         />
         <button
           type="submit"
-          className="inline-flex h-12 items-center rounded-full bg-forest px-6 text-[13px] font-medium text-cream transition-colors hover:bg-forest-deep"
+          className="inline-flex h-12 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-forest px-5 text-[13px] font-medium text-cream transition-colors hover:bg-forest-deep sm:px-6"
         >
-          Check →
+          Check
+          <span aria-hidden>→</span>
         </button>
       </form>
 
