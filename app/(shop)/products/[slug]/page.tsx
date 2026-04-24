@@ -3,7 +3,7 @@ import Link from "next/link";
 import { apiServer, ApiRequestError, getCurrentUser } from "@/lib/api-server";
 import type { Product } from "@/lib/types";
 import { Money } from "@/components/ui/money";
-import { AddToCart } from "@/components/shop/add-to-cart";
+import { ProductBuyBox } from "@/components/shop/product-buy-box";
 import { Eyebrow } from "@/components/shop/eyebrow";
 
 type Params = Promise<{ slug: string }>;
@@ -130,7 +130,17 @@ export default async function ProductPage({ params }: { params: Params }) {
           </h1>
 
           <div className="mt-5 flex items-baseline gap-4">
-            <Money pence={product.price_pence} className="font-display text-[36px] font-medium text-forest" />
+            {product.variants && product.variants.length > 0 ? (
+              <>
+                <span className="font-display text-[14px] italic text-ink-muted">from</span>
+                <Money
+                  pence={Math.min(...product.variants.filter((v) => v.is_active).map((v) => v.price_pence))}
+                  className="font-display text-[36px] font-medium text-forest"
+                />
+              </>
+            ) : (
+              <Money pence={product.price_pence} className="font-display text-[36px] font-medium text-forest" />
+            )}
             {lowStock ? (
               <span className="rounded-full bg-butter px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-forest">
                 Only {product.stock_count} left
@@ -199,12 +209,12 @@ export default async function ProductPage({ params }: { params: Params }) {
 
           <div className="mt-10">
             {inStock ? (
-              <AddToCart
-                item={{
+              <ProductBuyBox
+                product={product}
+                base={{
                   product_id: product.id,
                   slug: product.slug,
                   name: product.name,
-                  unit_price_pence: product.price_pence,
                   image_url: product.image_url,
                 }}
               />

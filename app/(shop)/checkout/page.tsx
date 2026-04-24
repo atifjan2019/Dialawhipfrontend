@@ -49,7 +49,11 @@ export default function CheckoutPage() {
     apiClient<{ data: PricingResult }>("/api/v1/checkout/preview", {
       method: "POST",
       json: {
-        items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+        items: items.map((i) => ({
+          product_id: i.product_id,
+          variant_id: i.variant_id ?? null,
+          quantity: i.quantity,
+        })),
         postcode: address?.postcode ?? null,
         delivery_tier: tier,
       },
@@ -91,7 +95,11 @@ export default function CheckoutPage() {
           method: "POST",
           idempotencyKey: randomIdempotencyKey(),
           json: {
-            items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+            items: items.map((i) => ({
+              product_id: i.product_id,
+              variant_id: i.variant_id ?? null,
+              quantity: i.quantity,
+            })),
             address_id: addressId,
             delivery_tier: tier,
             statement_of_use_accepted: statementAccepted,
@@ -324,9 +332,12 @@ export default function CheckoutPage() {
             <h2 className="font-display text-[22px] text-ink">Your order</h2>
             <ul className="mt-5 space-y-3 text-[13px]">
               {items.map((i) => (
-                <li key={i.product_id} className="flex justify-between gap-4">
+                <li key={`${i.product_id}::${i.variant_id ?? ""}`} className="flex justify-between gap-4">
                   <span className="text-ink-soft">
                     <span className="font-medium text-ink">{i.quantity} ×</span> {i.name}
+                    {i.variant_label ? (
+                      <span className="ml-1 text-[11px] uppercase tracking-[0.12em] text-clay">· {i.variant_label}</span>
+                    ) : null}
                   </span>
                   <Money pence={i.unit_price_pence * i.quantity} className="shrink-0 text-ink" />
                 </li>

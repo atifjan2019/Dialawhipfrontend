@@ -30,7 +30,11 @@ export default function CartPage() {
     apiClient<{ data: PricingResult }>("/api/v1/checkout/preview", {
       method: "POST",
       json: {
-        items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+        items: items.map((i) => ({
+          product_id: i.product_id,
+          variant_id: i.variant_id ?? null,
+          quantity: i.quantity,
+        })),
         postcode: postcode || null,
       },
       signal: ctrl.signal,
@@ -74,7 +78,7 @@ export default function CartPage() {
       <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_380px]">
         <ul className="divide-y hairline overflow-hidden rounded-lg border hairline bg-paper">
           {items.map((i, idx) => (
-            <li key={i.product_id} className="flex items-center gap-5 p-5">
+            <li key={`${i.product_id}::${i.variant_id ?? ""}`} className="flex items-center gap-5 p-5">
               <div
                 className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md paper-grain"
                 style={{ backgroundColor: idx % 2 === 0 ? "#E6DCC6" : "#DCE6DB" }}
@@ -87,14 +91,19 @@ export default function CartPage() {
                 <Link href={`/products/${i.slug}`} className="font-display text-[19px] leading-tight text-ink hover:text-forest">
                   {i.name}
                 </Link>
+                {i.variant_label ? (
+                  <div className="mt-0.5 text-[12px] font-medium uppercase tracking-[0.12em] text-clay">
+                    {i.variant_label}
+                  </div>
+                ) : null}
                 <div className="mt-1 text-[13px] text-ink-muted">
-                  <Money pence={i.unit_price_pence} /> per serving
+                  <Money pence={i.unit_price_pence} /> {i.variant_id ? "each" : "per serving"}
                 </div>
               </div>
               <div className="flex h-10 items-center rounded-full border hairline bg-cream">
                 <button
                   className="flex h-10 w-10 items-center justify-center text-ink-soft transition-colors hover:text-forest"
-                  onClick={() => setQuantity(i.product_id, i.quantity - 1)}
+                  onClick={() => setQuantity(i.product_id, i.quantity - 1, i.variant_id ?? null)}
                   aria-label="Decrease"
                 >
                   <Minus className="h-3.5 w-3.5" />
@@ -102,7 +111,7 @@ export default function CartPage() {
                 <span className="w-7 text-center text-[14px] font-medium tabular-nums">{i.quantity}</span>
                 <button
                   className="flex h-10 w-10 items-center justify-center text-ink-soft transition-colors hover:text-forest"
-                  onClick={() => setQuantity(i.product_id, i.quantity + 1)}
+                  onClick={() => setQuantity(i.product_id, i.quantity + 1, i.variant_id ?? null)}
                   aria-label="Increase"
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -110,7 +119,7 @@ export default function CartPage() {
               </div>
               <Money pence={i.unit_price_pence * i.quantity} className="w-20 text-right text-[15px] font-medium text-forest" />
               <button
-                onClick={() => remove(i.product_id)}
+                onClick={() => remove(i.product_id, i.variant_id ?? null)}
                 className="text-ink-muted transition-colors hover:text-clay"
                 aria-label="Remove"
               >

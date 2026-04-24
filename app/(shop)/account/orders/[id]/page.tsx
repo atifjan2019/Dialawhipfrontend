@@ -51,6 +51,11 @@ export default async function OrderDetailPage({ params }: { params: Params }) {
                 <li key={i.id} className="flex items-center justify-between gap-4 p-5">
                   <div>
                     <div className="font-display text-[16px] text-ink">{i.name}</div>
+                    {i.variant_label ? (
+                      <div className="mt-0.5 text-[11px] uppercase tracking-[0.12em] text-clay">
+                        {i.variant_label}
+                      </div>
+                    ) : null}
                     <div className="mt-0.5 text-[12px] text-ink-muted">
                       Qty <span className="number">{i.quantity}</span> · <Money pence={i.unit_price_pence} /> each
                     </div>
@@ -61,10 +66,10 @@ export default async function OrderDetailPage({ params }: { params: Params }) {
             </ul>
           </section>
 
-          {order.notes ? (
+          {order.customer_notes ? (
             <section className="rounded-lg border hairline bg-paper p-6">
               <h2 className="font-display text-[14px] italic text-clay">A note from you</h2>
-              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft whitespace-pre-line">{order.notes}</p>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft whitespace-pre-line">{order.customer_notes}</p>
             </section>
           ) : null}
         </div>

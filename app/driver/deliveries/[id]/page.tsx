@@ -108,10 +108,10 @@ export default async function DeliveryDetail({ params }: { params: Params }) {
         </div>
       </div>
 
-      {order.notes ? (
+      {order.customer_notes ? (
         <div className="mt-3 rounded-lg border border-clay/30 bg-[#FBEFE8] p-5">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-clay">Customer notes</div>
-          <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed text-ink">{order.notes}</p>
+          <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed text-ink">{order.customer_notes}</p>
         </div>
       ) : null}
 

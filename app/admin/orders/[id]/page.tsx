@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiServer, ApiRequestError } from "@/lib/api-server";
-import type { Order } from "@/lib/types";
+import type { Order, User } from "@/lib/types";
 import { Money } from "@/components/ui/money";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { DateTime } from "@/components/ui/datetime";
 import { OrderActions } from "@/components/admin/order-actions";
+import { AssignDriver } from "@/components/admin/assign-driver";
+import { OrderTimeline } from "@/components/admin/order-timeline";
 import { Eyebrow } from "@/components/shop/eyebrow";
 
 type Params = Promise<{ id: string }>;
@@ -19,6 +21,10 @@ export default async function AdminOrderDetail({ params }: { params: Params }) {
     if (e instanceof ApiRequestError && e.status === 404) return notFound();
     throw e;
   }
+
+  // Available drivers for assignment.
+  const driversRes = await apiServer<{ data: User[] }>("/api/v1/admin/drivers")
+    .catch(() => ({ data: [] as User[] }));
 
   return (
     <div className="mx-auto max-w-[1280px] px-10 py-10">
@@ -44,14 +50,19 @@ export default async function AdminOrderDetail({ params }: { params: Params }) {
             <ul className="divide-y hairline">
               {order.items.map((i) => (
                 <li key={i.id} className="flex justify-between px-6 py-4 text-[13px]">
-                  <span className="text-ink-soft"><span className="font-medium text-ink">{i.quantity} ×</span> {i.name}</span>
+                  <div className="flex-1">
+                    <span className="font-medium text-ink">{i.quantity} ×</span> <span className="text-ink-soft">{i.name}</span>
+                    {i.variant_label ? (
+                      <span className="ml-1 text-[11px] uppercase tracking-[0.12em] text-clay">· {i.variant_label}</span>
+                    ) : null}
+                  </div>
                   <Money pence={i.line_total_pence} className="text-ink" />
                 </li>
               ))}
             </ul>
             <div className="space-y-2 border-t hairline px-6 py-5 text-[13px]">
               <Row label="Subtotal"><Money pence={order.subtotal_pence} /></Row>
-              <Row label="Delivery"><Money pence={order.delivery_fee_pence} /></Row>
+              <Row label={`Delivery${order.delivery_tier ? ` (${order.delivery_tier})` : ""}`}><Money pence={order.delivery_fee_pence} /></Row>
               {order.vat_pence > 0 ? <Row label="VAT"><Money pence={order.vat_pence} /></Row> : null}
               <div className="mt-2 flex justify-between border-t hairline pt-3">
                 <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-muted">Total</span>
@@ -60,12 +71,26 @@ export default async function AdminOrderDetail({ params }: { params: Params }) {
             </div>
           </section>
 
-          {order.notes ? (
+          {order.customer_notes ? (
             <section className="rounded-lg border hairline bg-paper p-6">
               <h2 className="font-display text-[14px] italic text-clay">Customer notes</h2>
-              <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed text-ink-soft">{order.notes}</p>
+              <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed text-ink-soft">{order.customer_notes}</p>
             </section>
           ) : null}
+
+          {order.driver_notes ? (
+            <section className="rounded-lg border hairline bg-paper p-6">
+              <h2 className="font-display text-[14px] italic text-clay">Driver log</h2>
+              <pre className="mt-2 whitespace-pre-line font-mono text-[12px] leading-relaxed text-ink-soft">{order.driver_notes}</pre>
+            </section>
+          ) : null}
+
+          <section className="rounded-lg border hairline bg-paper p-6">
+            <h2 className="font-display text-[18px] text-ink">Activity</h2>
+            <div className="mt-5">
+              <OrderTimeline events={order.events ?? []} />
+            </div>
+          </section>
         </div>
 
         <div className="space-y-5">
@@ -74,6 +99,10 @@ export default async function AdminOrderDetail({ params }: { params: Params }) {
             <div className="mt-3">
               <OrderActions orderId={order.id} status={order.status} />
             </div>
+          </div>
+
+          <div className="rounded-lg border hairline bg-paper p-6">
+            <AssignDriver orderId={order.id} drivers={driversRes.data} current={order.driver ?? null} />
           </div>
 
           <div className="rounded-lg border hairline bg-paper p-6">

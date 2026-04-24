@@ -41,6 +41,17 @@ export interface Category {
   sort_order: number;
 }
 
+export interface ProductVariant {
+  id: string;
+  label: string;
+  price_pence: number;
+  qty_multiplier: number;
+  stock_count: number | null;
+  sku: string | null;
+  sort_order: number;
+  is_active: boolean;
+}
+
 export interface Product {
   id: string;
   category_id: string;
@@ -55,6 +66,7 @@ export interface Product {
   short_spec?: Record<string, string | number | boolean> | null;
   stock_count?: number | null;
   category?: Category;
+  variants?: ProductVariant[];
 }
 
 export interface Address {
@@ -70,6 +82,8 @@ export interface Address {
 export interface OrderItem {
   id: string;
   product_id: string;
+  product_variant_id?: string | null;
+  variant_label?: string | null;
   name: string;
   unit_price_pence: number;
   quantity: number;
@@ -91,10 +105,25 @@ export interface Order {
   delivery_tier?: DeliveryTier;
   statement_of_use_accepted?: boolean;
   n2o_agreement_accepted?: boolean;
-  notes: string | null;
-  delivery_window_start: string | null;
-  delivery_window_end: string | null;
+  customer_notes?: string | null;
+  driver_notes?: string | null;
+  delivery_window_start?: string | null;
+  delivery_window_end?: string | null;
+  scheduled_for?: string | null;
+  allowed_transitions?: OrderStatus[];
+  driver?: User | null;
+  events?: OrderEvent[];
   created_at: string;
+  updated_at?: string;
+}
+
+export interface OrderEvent {
+  id: string;
+  from_status: OrderStatus | null;
+  to_status: OrderStatus;
+  note: string | null;
+  created_at: string;
+  actor?: User | null;
 }
 
 export interface ServiceAreaInfo {
@@ -156,4 +185,42 @@ export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
   code?: string;
+}
+
+export type SettingType =
+  | "string"
+  | "text"
+  | "int"
+  | "bool"
+  | "url"
+  | "email"
+  | "image"
+  | "json";
+
+export interface SettingItem {
+  key: string;
+  label: string;
+  type: SettingType;
+  public: boolean;
+  value: unknown;
+}
+
+export type SettingGroups = Record<string, SettingItem[]>;
+
+export interface SettingsPayload {
+  groups: SettingGroups;
+  flat: Record<string, unknown>;
+}
+
+export interface ServiceArea {
+  id: string;
+  postcode_prefix: string;
+  delivery_fee_pence: number;
+  priority_fee_pence: number | null;
+  super_fee_pence: number | null;
+  eta_standard_minutes: number | null;
+  eta_priority_minutes: number | null;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }

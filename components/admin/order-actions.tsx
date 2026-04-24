@@ -40,7 +40,7 @@ export function OrderActions({ orderId, status }: { orderId: string; status: Ord
     try {
       await apiClient(`/api/v1/admin/orders/${orderId}/status`, {
         method: "PATCH",
-        json: { status: to },
+        json: { to_status: to },
         idempotencyKey: randomIdempotencyKey(),
       });
       router.refresh();

@@ -91,6 +91,9 @@ function SuccessInner() {
                 <div className="text-[14px]">
                   <span className="font-medium text-ink">{i.quantity} ×</span>{" "}
                   <span className="text-ink-soft">{i.name}</span>
+                  {i.variant_label ? (
+                    <span className="ml-1 text-[11px] uppercase tracking-[0.12em] text-clay">· {i.variant_label}</span>
+                  ) : null}
                 </div>
                 <Money pence={i.line_total_pence} className="text-[14px] text-ink" />
               </li>

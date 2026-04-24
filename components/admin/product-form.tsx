@@ -4,7 +4,39 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiClient, ApiRequestError, randomIdempotencyKey } from "@/lib/api-client";
 import { Input, Label, Textarea, FieldError } from "@/components/ui/input";
-import type { Category, Product } from "@/lib/types";
+import type { Category, Product, ProductVariant } from "@/lib/types";
+import { Plus, Trash2 } from "lucide-react";
+
+type VariantDraft = {
+  id?: string;
+  label: string;
+  price_pounds: string;         // UX in pounds; converted to pence on submit
+  qty_multiplier: string;
+  stock_count: string;
+  sku: string;
+  is_active: boolean;
+};
+
+function toDraft(v: ProductVariant): VariantDraft {
+  return {
+    id: v.id,
+    label: v.label,
+    price_pounds: (v.price_pence / 100).toFixed(2),
+    qty_multiplier: String(v.qty_multiplier),
+    stock_count: v.stock_count !== null && v.stock_count !== undefined ? String(v.stock_count) : "",
+    sku: v.sku ?? "",
+    is_active: v.is_active,
+  };
+}
+
+const EMPTY_VARIANT: VariantDraft = {
+  label: "",
+  price_pounds: "",
+  qty_multiplier: "1",
+  stock_count: "",
+  sku: "",
+  is_active: true,
+};
 
 export function ProductForm({ product, categories }: { product?: Product; categories: Category[] }) {
   const router = useRouter();
@@ -16,15 +48,46 @@ export function ProductForm({ product, categories }: { product?: Product; catego
     price_pence: product ? String(product.price_pence) : "",
     is_active: product?.is_active ?? true,
   });
+  const [variants, setVariants] = useState<VariantDraft[]>(
+    product?.variants?.length ? product.variants.map(toDraft) : [],
+  );
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [pending, setPending] = useState(false);
+
+  function addVariant() {
+    setVariants((list) => [...list, { ...EMPTY_VARIANT }]);
+  }
+  function removeVariant(idx: number) {
+    setVariants((list) => list.filter((_, i) => i !== idx));
+  }
+  function updateVariant(idx: number, patch: Partial<VariantDraft>) {
+    setVariants((list) => list.map((v, i) => (i === idx ? { ...v, ...patch } : v)));
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors({});
     setPending(true);
     try {
-      const body = { ...form, price_pence: Number(form.price_pence) };
+      const body: Record<string, unknown> = {
+        ...form,
+        price_pence: Number(form.price_pence || 0),
+      };
+      if (variants.length > 0) {
+        body.variants = variants.map((v, i) => ({
+          id: v.id,
+          label: v.label,
+          price_pence: Math.round(Number(v.price_pounds || 0) * 100),
+          qty_multiplier: Number(v.qty_multiplier || 1),
+          stock_count: v.stock_count === "" ? null : Number(v.stock_count),
+          sku: v.sku || null,
+          sort_order: i,
+          is_active: v.is_active,
+        }));
+      } else {
+        body.variants = []; // explicit: clear all variants
+      }
+
       if (product) {
         await apiClient(`/api/v1/admin/products/${product.id}`, {
           method: "PATCH",
@@ -55,7 +118,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label>Name</Label>
@@ -81,8 +144,9 @@ export function ProductForm({ product, categories }: { product?: Product; catego
           </select>
         </div>
         <div className="space-y-1.5">
-          <Label>Price (pence)</Label>
+          <Label>Base price (pence)</Label>
           <Input type="number" min="0" step="1" required value={form.price_pence} onChange={(e) => setForm({ ...form, price_pence: e.target.value })} />
+          <div className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">Used when no variant is selected.</div>
           <FieldError>{errors.price_pence?.[0]}</FieldError>
         </div>
       </div>
@@ -101,6 +165,109 @@ export function ProductForm({ product, categories }: { product?: Product; catego
         />
         Visible to customers
       </label>
+
+      <section className="rounded-lg border hairline bg-cream-deep/30 p-5">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <div className="font-display text-[13px] italic text-clay">Pricing options</div>
+            <h3 className="mt-1 font-display text-[22px] text-ink">Variants</h3>
+            <p className="mt-1 max-w-xl text-[12px] text-ink-muted">
+              Offer pack-size or bundle pricing (e.g. "2 tanks for £80"). Leave empty for a single-price product.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={addVariant}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-forest px-4 text-[12px] font-medium text-cream transition-colors hover:bg-forest-deep"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add variant
+          </button>
+        </div>
+
+        {variants.length === 0 ? (
+          <p className="mt-4 rounded-md border hairline bg-paper px-4 py-3 text-[12px] italic text-ink-muted">
+            No variants yet. Customers will see the base price only.
+          </p>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {variants.map((v, idx) => (
+              <div key={v.id ?? `new-${idx}`} className="rounded-md border hairline bg-paper p-4">
+                <div className="grid gap-3 md:grid-cols-12">
+                  <div className="md:col-span-4 space-y-1">
+                    <Label>Label</Label>
+                    <Input
+                      placeholder="2 tanks for £80"
+                      value={v.label}
+                      onChange={(e) => updateVariant(idx, { label: e.target.value })}
+                      required
+                    />
+                    <FieldError>{errors[`variants.${idx}.label`]?.[0]}</FieldError>
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label>Price (£)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="80.00"
+                      value={v.price_pounds}
+                      onChange={(e) => updateVariant(idx, { price_pounds: e.target.value })}
+                      required
+                    />
+                    <FieldError>{errors[`variants.${idx}.price_pence`]?.[0]}</FieldError>
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label>Units</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={v.qty_multiplier}
+                      onChange={(e) => updateVariant(idx, { qty_multiplier: e.target.value })}
+                    />
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label>Stock</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="—"
+                      value={v.stock_count}
+                      onChange={(e) => updateVariant(idx, { stock_count: e.target.value })}
+                    />
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label>SKU</Label>
+                    <Input
+                      value={v.sku}
+                      onChange={(e) => updateVariant(idx, { sku: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <label className="flex items-center gap-2 text-[12px] text-ink-soft">
+                    <input
+                      type="checkbox"
+                      checked={v.is_active}
+                      onChange={(e) => updateVariant(idx, { is_active: e.target.checked })}
+                      className="h-4 w-4 accent-forest"
+                    />
+                    Active
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => removeVariant(idx)}
+                    className="inline-flex items-center gap-1 text-[12px] font-medium text-[#8B2A1D] transition-colors hover:text-[#731F13]"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" /> Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       <div className="flex items-center justify-between border-t hairline pt-6">
         <button

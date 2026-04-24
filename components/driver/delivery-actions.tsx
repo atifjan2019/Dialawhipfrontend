@@ -31,18 +31,14 @@ export function DeliveryActions({ orderId, status }: { orderId: string; status: 
     setPending(to);
     setError(null);
     try {
-      if (note.trim()) {
-        await apiClient(`/api/v1/driver/deliveries/${orderId}/note`, {
-          method: "POST",
-          json: { note },
-          idempotencyKey: randomIdempotencyKey(),
-        });
-      }
+      // Pass the optional note directly into the transition call; the backend
+      // writes it onto the order event and timeline in one round-trip.
       await apiClient(`/api/v1/driver/deliveries/${orderId}/status`, {
         method: "PATCH",
-        json: { status: to },
+        json: { to_status: to, note: note.trim() || null },
         idempotencyKey: randomIdempotencyKey(),
       });
+      setNote("");
       router.refresh();
     } catch (e: unknown) {
       if (e instanceof ApiRequestError) setError(e.body.message);
