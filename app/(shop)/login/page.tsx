@@ -47,7 +47,11 @@ function LoginForm() {
       }
       const role = body?.user?.role as string | undefined;
       const home = (role && HOME_BY_ROLE[role]) ?? "/account";
-      router.push(next ?? home);
+      // Privileged roles always land on their role home — a stray `next`
+      // from a customer-facing page must not put an admin/driver on
+      // /account by accident.
+      const privileged = role === "admin" || role === "staff" || role === "driver";
+      router.push(privileged ? home : (next ?? home));
       router.refresh();
     } finally {
       setPending(false);
