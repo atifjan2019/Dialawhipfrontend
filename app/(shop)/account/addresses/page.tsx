@@ -46,43 +46,48 @@ export default function AddressesPage() {
 
   return (
     <div className="mx-auto max-w-[1280px] px-6 py-14">
-      <Link href="/account" className="text-[12px] font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-forest">
+      <Link
+        href="/account"
+        className="text-[12px] font-bold uppercase tracking-[0.18em] text-ink-muted transition-colors hover:text-brand"
+      >
         ← Account
       </Link>
       <div className="mt-8">
         <Eyebrow>Saved locations</Eyebrow>
-        <h1 className="mt-5 font-display text-[48px] leading-[1] text-ink md:text-[56px]">
-          Your <span className="italic font-light text-forest">addresses</span>
+        <h1 className="mt-5 font-display text-[48px] font-bold leading-[1] tracking-tight text-ink md:text-[64px]">
+          Your <span className="text-brand">addresses.</span>
         </h1>
       </div>
 
-      <div className="mt-12 grid gap-10 md:grid-cols-[1.1fr_1fr]">
+      <div className="mt-12 grid gap-8 md:grid-cols-[1.1fr_1fr]">
         <div>
-          <h2 className="font-display text-[18px] text-ink">Saved</h2>
+          <h2 className="font-display text-[20px] font-bold text-ink">Saved</h2>
           <ul className="mt-4 space-y-3">
             {addresses.length === 0 ? (
-              <li className="rounded-lg border hairline bg-paper p-6 text-[14px] text-ink-muted">
+              <li className="rounded-2xl bg-yellow p-6 text-[14px] font-medium text-ink ring-2 ring-ink">
                 No saved addresses yet. Add one to speed up future checkouts.
               </li>
             ) : null}
             {addresses.map((a) => (
-              <li key={a.id} className="rounded-lg border hairline bg-paper p-5">
+              <li key={a.id} className="rounded-2xl bg-paper p-5 ring-2 ring-ink/10">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-display text-[18px] text-ink">{a.label ?? "Address"}</span>
+                      <span className="font-display text-[18px] font-bold text-ink">{a.label ?? "Address"}</span>
                       {a.is_default ? (
-                        <span className="rounded-full bg-forest/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-forest">Default</span>
+                        <span className="rounded-full bg-yellow px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-ink">
+                          Default
+                        </span>
                       ) : null}
                     </div>
-                    <div className="mt-1.5 text-[13px] leading-relaxed text-ink-muted">
+                    <div className="mt-1.5 text-[13px] font-medium leading-relaxed text-ink-muted">
                       {a.line1}{a.line2 ? `, ${a.line2}` : ""}<br />
                       {a.city}, {a.postcode}
                     </div>
                   </div>
                   <button
                     onClick={() => remove(a.id)}
-                    className="text-[12px] font-medium text-ink-muted transition-colors hover:text-clay"
+                    className="text-[12px] font-bold text-ink-muted transition-colors hover:text-danger"
                   >
                     Remove
                   </button>
@@ -92,10 +97,10 @@ export default function AddressesPage() {
           </ul>
         </div>
 
-        <form onSubmit={save} className="h-fit space-y-4 rounded-lg border hairline bg-paper p-6">
+        <form onSubmit={save} className="h-fit space-y-4 rounded-2xl bg-paper p-6 ring-2 ring-ink">
           <div>
-            <div className="font-display text-[13px] italic text-clay">Add new</div>
-            <h2 className="mt-1 font-display text-[22px] text-ink">New address</h2>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">Add new</div>
+            <h2 className="mt-1.5 font-display text-[24px] font-bold text-ink">New address</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -104,7 +109,11 @@ export default function AddressesPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Postcode</Label>
-              <Input value={form.postcode} onChange={(e) => setForm({ ...form, postcode: e.target.value.toUpperCase() })} required />
+              <Input
+                value={form.postcode}
+                onChange={(e) => setForm({ ...form, postcode: e.target.value.toUpperCase() })}
+                required
+              />
               <FieldError>{errors.postcode?.[0]}</FieldError>
             </div>
           </div>
@@ -121,19 +130,19 @@ export default function AddressesPage() {
             <Label>City</Label>
             <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required />
           </div>
-          <label className="flex items-center gap-2.5 text-[13px] text-ink-soft">
+          <label className="flex items-center gap-2.5 text-[13px] font-medium text-ink-soft">
             <input
               type="checkbox"
               checked={form.is_default}
               onChange={(e) => setForm({ ...form, is_default: e.target.checked })}
-              className="h-4 w-4 accent-forest"
+              className="h-4 w-4 accent-brand"
             />
             Set as default
           </label>
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex h-11 w-full items-center justify-center rounded-full bg-forest px-6 text-[13px] font-medium text-cream transition-colors hover:bg-forest-deep disabled:opacity-50"
+            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[13px] font-bold text-yellow transition-transform hover:-translate-y-0.5 disabled:opacity-50"
           >
             {pending ? "Saving…" : "Save address"}
           </button>

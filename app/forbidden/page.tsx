@@ -2,11 +2,22 @@ import Link from "next/link";
 
 export default function ForbiddenPage() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4 text-center">
-      <div className="text-6xl">🚫</div>
-      <h1 className="mt-4 text-3xl font-bold">Access denied</h1>
-      <p className="mt-2 text-slate-600">Your account does not have permission to view this page.</p>
-      <Link href="/" className="mt-6 inline-flex h-11 items-center rounded-md bg-slate-900 px-5 text-sm font-medium text-white hover:bg-slate-800">Return home</Link>
-    </div>
+    <main className="mx-auto flex min-h-[80vh] max-w-2xl flex-col items-center justify-center px-6 text-center">
+      <div className="rounded-3xl bg-yellow p-12 ring-2 ring-ink">
+        <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">403 · Forbidden</div>
+        <h1 className="mt-5 font-display text-[44px] font-bold leading-[1] tracking-tight text-ink sm:text-[64px]">
+          Access denied.
+        </h1>
+        <p className="mt-5 text-[15px] font-medium leading-relaxed text-ink/80">
+          Your account does not have permission to view this page.
+        </p>
+        <Link
+          href="/"
+          className="mt-8 inline-flex h-13 items-center rounded-full bg-ink px-8 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5"
+        >
+          Return home →
+        </Link>
+      </div>
+    </main>
   );
 }
