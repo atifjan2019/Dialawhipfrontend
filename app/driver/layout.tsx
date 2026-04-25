@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#1E3A2B",
+  themeColor: "#000000",
 };
 
 export default async function DriverLayout({ children }: { children: React.ReactNode }) {
@@ -19,15 +19,19 @@ export default async function DriverLayout({ children }: { children: React.React
   if (user.role !== "driver" && user.role !== "admin") redirect("/forbidden");
 
   return (
-    <div className="flex min-h-screen flex-col bg-cream">
-      <header className="sticky top-0 z-30 border-b hairline bg-forest text-cream">
-        <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
-          <Link href="/driver" className="flex items-baseline gap-1.5">
-            <span className="font-display text-[20px] tracking-tight">Dialawhip</span>
-            <span className="font-display text-[13px] italic text-butter">on the road</span>
+    <div className="flex min-h-screen flex-col bg-paper">
+      <header className="sticky top-0 z-30 border-b-2 border-ink bg-ink text-paper">
+        <div className="mx-auto flex h-16 max-w-2xl items-center justify-between px-4">
+          <Link href="/driver" className="flex items-baseline gap-2">
+            <span className="font-display text-[22px] font-bold leading-none">
+              Dialawhip<span className="text-yellow">.</span>
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-yellow">
+              On the road
+            </span>
           </Link>
-          <div className="flex items-center gap-4 text-[13px]">
-            <span className="text-cream/80">{user.name.split(" ")[0]}</span>
+          <div className="flex items-center gap-3 text-[13px]">
+            <span className="hidden font-bold text-paper/85 sm:inline">{user.name.split(" ")[0]}</span>
             <DriverLogoutButton />
           </div>
         </div>

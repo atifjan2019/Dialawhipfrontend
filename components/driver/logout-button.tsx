@@ -6,7 +6,10 @@ export function DriverLogoutButton() {
     window.location.href = "/";
   }
   return (
-    <button onClick={logout} className="font-medium text-butter transition-colors hover:text-cream">
+    <button
+      onClick={logout}
+      className="rounded-full border-2 border-yellow px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-yellow transition-colors hover:bg-yellow hover:text-ink"
+    >
       Sign out
     </button>
   );
