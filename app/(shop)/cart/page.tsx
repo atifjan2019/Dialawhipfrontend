@@ -40,8 +40,14 @@ export default function CartPage() {
       },
       signal: ctrl.signal,
     })
-      .then((r) => { setPricing(r.data); setError(null); setShopClosed(null); })
+      .then((r) => {
+        if (ctrl.signal.aborted) return;
+        setPricing(r.data); setError(null); setShopClosed(null);
+      })
       .catch((e: unknown) => {
+        // React strict-mode runs effects twice in dev; the cleanup aborts the
+        // first fetch. Treat any abort as a no-op so it never surfaces.
+        if (ctrl.signal.aborted) return;
         if (e instanceof ApiRequestError) {
           if (e.body.code === "shop_closed") {
             setShopClosed({ message: e.body.message || "We are not accepting orders right now." });
@@ -50,11 +56,14 @@ export default function CartPage() {
             setShopClosed(null);
             setError(e.body.message);
           }
-        } else if ((e as Error).name !== "AbortError") {
+        } else {
           setError("Could not price cart.");
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (ctrl.signal.aborted) return;
+        setLoading(false);
+      });
     return () => ctrl.abort();
   }, [items, postcode]);
 
