@@ -66,9 +66,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const ga = settingString(s, "seo.google_analytics_id");
   const gtm = settingString(s, "seo.gtm_id");
   const fbPixel = settingString(s, "seo.facebook_pixel_id");
+  const brandColor = settingString(s, "branding.primary_color");
+  const accentColor = settingString(s, "branding.accent_color");
+
+  // Surface admin colour choices as CSS custom properties so any component
+  // that opts in (e.g. via `style={{ background: 'var(--color-brand)' }}`)
+  // picks up the live value. Falls back to the existing palette tokens.
+  const brandStyle = {
+    ...(brandColor ? { "--color-brand": brandColor } : {}),
+    ...(accentColor ? { "--color-accent": accentColor } : {}),
+  } as React.CSSProperties;
 
   return (
-    <html lang="en-GB" className={`${sans.variable} ${display.variable} h-full antialiased`}>
+    <html lang="en-GB" className={`${sans.variable} ${display.variable} h-full antialiased`} style={brandStyle}>
       <head>
         {gtm ? (
           <script

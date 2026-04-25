@@ -17,6 +17,11 @@
   --color-stone-soft: #E8ECEF;
   --color-line: #C9D0D8;
 
+  /* Brand colour tokens. Default to forest/butter; the root layout overrides
+     them inline with admin-set values from branding.primary_color / accent_color. */
+  --color-brand: #0B1D3A;
+  --color-accent: #FFDA1A;
+
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display), ui-serif, Georgia, serif;
 

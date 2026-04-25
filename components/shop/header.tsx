@@ -32,6 +32,7 @@ export function ShopHeader({
   const brandName = (settings?.["business.name"] as string) || "Dialawhip";
   const logoUrl = (settings?.["branding.logo_url"] as string) || "";
   const phone = (settings?.["business.phone"] as string) || "";
+  const whatsapp = (settings?.["business.whatsapp"] as string) || "";
 
   const count = useCart((s) => s.count());
   const [open, setOpen] = useState(false);
@@ -207,20 +208,21 @@ export function ShopHeader({
     </header>
 
     {mobileOpen ? (
-      <MobileDrawer user={user} onClose={() => setMobileOpen(false)} brandName={brandName} logoUrl={logoUrl} phone={phone} />
+      <MobileDrawer user={user} onClose={() => setMobileOpen(false)} brandName={brandName} logoUrl={logoUrl} phone={phone} whatsapp={whatsapp} />
     ) : null}
     </>
   );
 }
 
 function MobileDrawer({
-  user, onClose, brandName, logoUrl, phone,
+  user, onClose, brandName, logoUrl, phone, whatsapp,
 }: {
   user: User | null;
   onClose: () => void;
   brandName: string;
   logoUrl: string;
   phone: string;
+  whatsapp: string;
 }) {
   return (
     <div className="fixed inset-0 z-50 md:hidden">
@@ -311,6 +313,16 @@ function MobileDrawer({
                   className="flex items-center justify-between rounded-lg px-3 py-2.5 text-[14px] font-medium text-forest hover:bg-cream-deep"
                 >
                   <span>Call {phone}</span>
+                </a>
+              ) : null}
+              {whatsapp ? (
+                <a
+                  href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-lg px-3 py-2.5 text-[14px] font-medium text-forest hover:bg-cream-deep"
+                >
+                  <span>WhatsApp {whatsapp}</span>
                 </a>
               ) : null}
             </div>

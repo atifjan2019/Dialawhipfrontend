@@ -9,7 +9,9 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
   const tagline = settingString(s, "business.tagline", "Newcastle · 20-min delivery");
   const logoUrl = settingString(s, "branding.logo_url");
   const phone = settingString(s, "business.phone");
+  const whatsapp = settingString(s, "business.whatsapp");
   const email = settingString(s, "business.email");
+  const supportEmail = settingString(s, "business.support_email");
   const address = settingString(s, "business.address");
   const city = settingString(s, "business.city");
   const country = settingString(s, "business.country");
@@ -52,9 +54,28 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
                     </a>
                   </div>
                 ) : null}
+                {whatsapp ? (
+                  <div>
+                    <a
+                      href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-butter"
+                    >
+                      WhatsApp · {whatsapp}
+                    </a>
+                  </div>
+                ) : null}
                 {email ? (
                   <div>
                     <a href={`mailto:${email}`} className="hover:text-butter">{email}</a>
+                  </div>
+                ) : null}
+                {supportEmail && supportEmail !== email ? (
+                  <div>
+                    <a href={`mailto:${supportEmail}`} className="hover:text-butter">
+                      Support · {supportEmail}
+                    </a>
                   </div>
                 ) : null}
                 {address || city || country ? (
