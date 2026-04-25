@@ -11,6 +11,10 @@ const SESSION_COOKIE = process.env.SESSION_COOKIE_NAME ?? "catering_session";
 const HOP_BY_HOP = new Set([
   "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
   "te", "trailer", "transfer-encoding", "upgrade", "host", "content-length",
+  // Strip encoding headers so the browser doesn't try to decode an already-decoded body.
+  // fetch() auto-decompresses the upstream response, but the original Content-Encoding
+  // header would still be forwarded — causing ERR_CONTENT_DECODING_FAILED in the browser.
+  "content-encoding", "accept-encoding",
 ]);
 
 async function forward(req: NextRequest, path: string[]): Promise<NextResponse> {
