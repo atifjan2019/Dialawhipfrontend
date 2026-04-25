@@ -15,6 +15,8 @@ export interface FetchOpts extends RequestInit {
   query?: Record<string, string | number | boolean | undefined | null>;
   json?: unknown;
   idempotencyKey?: string;
+  /** Legacy flag — auth is now driven by Supabase cookies; option is accepted but ignored. */
+  auth?: boolean;
 }
 
 function buildUrl(path: string, query?: FetchOpts["query"]): string {
@@ -28,16 +30,16 @@ function buildUrl(path: string, query?: FetchOpts["query"]): string {
 }
 
 export async function apiClient<T = unknown>(path: string, opts: FetchOpts = {}): Promise<T> {
-  const { query, json, idempotencyKey, headers, body, ...rest } = opts;
+  const { query, json, idempotencyKey, headers, body, auth: _auth, ...rest } = opts;
+  void _auth;
 
   const h = new Headers(headers);
   h.set("Accept", "application/json");
   if (json !== undefined) h.set("Content-Type", "application/json");
   if (idempotencyKey) h.set("Idempotency-Key", idempotencyKey);
 
-  const targetPath = path.startsWith("/api/") && !path.startsWith("/api/proxy/")
-    ? `/api/proxy${path.replace(/^\/api/, "")}`
-    : path;
+  // Backend now lives in-process under /api/v1/*. No proxy rewrite needed.
+  const targetPath = path;
 
   const res = await fetch(buildUrl(targetPath, query), {
     ...rest,

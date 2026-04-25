@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
-const SESSION_COOKIE = process.env.SESSION_COOKIE_NAME ?? "catering_session";
+import { createServerClient } from "@supabase/ssr";
 
 type RouteGuard = { prefix: string; roles: string[] };
 
@@ -20,33 +18,31 @@ export async function proxy(req: NextRequest) {
   const guard = match(pathname);
   if (!guard) return NextResponse.next();
 
-  const token = req.cookies.get(SESSION_COOKIE)?.value;
-  if (!token) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) return NextResponse.next();
+
+  const res = NextResponse.next();
+  const sb = createServerClient(url, anon, {
+    cookies: {
+      getAll: () => req.cookies.getAll(),
+      setAll: (toSet) => {
+        for (const c of toSet) res.cookies.set(c.name, c.value, c.options);
+      },
+    },
+  });
+
+  const { data } = await sb.auth.getUser();
+  if (!data?.user) {
     const login = new URL("/login", req.url);
     login.searchParams.set("next", pathname);
     return NextResponse.redirect(login);
   }
-
-  try {
-    const res = await fetch(`${API_URL}/api/v1/auth/me`, {
-      headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      const login = new URL("/login", req.url);
-      login.searchParams.set("next", pathname);
-      return NextResponse.redirect(login);
-    }
-    const data = await res.json();
-    const role = data?.data?.role as string | undefined;
-    if (!role || !guard.roles.includes(role)) {
-      return NextResponse.redirect(new URL("/forbidden", req.url));
-    }
-  } catch {
-    return NextResponse.redirect(new URL("/login", req.url));
+  const role = (data.user.user_metadata?.role as string | undefined) ?? "customer";
+  if (!guard.roles.includes(role)) {
+    return NextResponse.redirect(new URL("/forbidden", req.url));
   }
-
-  return NextResponse.next();
+  return res;
 }
 
 export const config = {

@@ -1,8 +1,5 @@
-import { cookies } from "next/headers";
-import type { ApiError } from "./types";
-
-const API_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
-const SESSION_COOKIE = process.env.SESSION_COOKIE_NAME ?? "catering_session";
+import { headers } from "next/headers";
+import type { ApiError, User } from "./types";
 
 export class ApiRequestError extends Error {
   constructor(
@@ -17,16 +14,20 @@ export interface FetchOpts extends RequestInit {
   query?: Record<string, string | number | boolean | undefined | null>;
   json?: unknown;
   idempotencyKey?: string;
+  /** Legacy flag — auth is now driven by Supabase cookies; option is accepted but ignored. */
   auth?: boolean;
 }
 
-async function getToken(): Promise<string | null> {
-  const jar = await cookies();
-  return jar.get(SESSION_COOKIE)?.value ?? null;
+async function selfOrigin(): Promise<string> {
+  const h = await headers();
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  return `${proto}://${host}`;
 }
 
-export function buildUrl(path: string, query?: FetchOpts["query"]): string {
-  const url = new URL(path.startsWith("http") ? path : `${API_URL}${path}`);
+export async function buildUrl(path: string, query?: FetchOpts["query"]): Promise<string> {
+  const base = path.startsWith("http") ? path : `${await selfOrigin()}${path}`;
+  const url = new URL(base);
   if (query) {
     for (const [k, v] of Object.entries(query)) {
       if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
@@ -36,18 +37,20 @@ export function buildUrl(path: string, query?: FetchOpts["query"]): string {
 }
 
 export async function apiServer<T = unknown>(path: string, opts: FetchOpts = {}): Promise<T> {
-  const { query, json, idempotencyKey, auth = true, headers, body, ...rest } = opts;
+  const { query, json, idempotencyKey, headers: extraHeaders, body, auth: _auth, ...rest } = opts;
+  void _auth;
 
-  const h = new Headers(headers);
+  const h = new Headers(extraHeaders);
   h.set("Accept", "application/json");
   if (json !== undefined) h.set("Content-Type", "application/json");
   if (idempotencyKey) h.set("Idempotency-Key", idempotencyKey);
-  if (auth) {
-    const token = await getToken();
-    if (token) h.set("Authorization", `Bearer ${token}`);
-  }
 
-  const res = await fetch(buildUrl(path, query), {
+  const reqHeaders = await headers();
+  const cookie = reqHeaders.get("cookie");
+  if (cookie) h.set("cookie", cookie);
+
+  const url = await buildUrl(path, query);
+  const res = await fetch(url, {
     ...rest,
     headers: h,
     body: json !== undefined ? JSON.stringify(json) : body,
@@ -68,11 +71,18 @@ export async function apiServer<T = unknown>(path: string, opts: FetchOpts = {})
   return (await res.json()) as T;
 }
 
-export async function getCurrentUser() {
-  try {
-    return await apiServer<{ data: import("./types").User }>("/api/v1/auth/me").then((r) => r.data);
-  } catch (e) {
-    if (e instanceof ApiRequestError && (e.status === 401 || e.status === 419)) return null;
-    throw e;
-  }
+export async function getCurrentUser(): Promise<User | null> {
+  // Read directly from Supabase rather than round-tripping through HTTP.
+  const { currentProfile } = await import("./api/auth");
+  const profile = await currentProfile();
+  if (!profile) return null;
+  return {
+    id: profile.id,
+    name: profile.name,
+    email: profile.email,
+    phone: profile.phone,
+    role: profile.role,
+    verification_status: profile.verification_status,
+    verified_at: profile.verified_at,
+  };
 }
