@@ -25,7 +25,22 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
   const hours = formatBusinessHours(s);
 
   return (
-    <footer className="mt-24 bg-forest text-cream/90">
+    <footer className="mt-24 border-t-2 border-ink bg-ink text-paper">
+      {/* Top yellow band */}
+      <div className="border-b-2 border-ink bg-yellow text-ink">
+        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-4 px-6 py-6">
+          <p className="font-display text-[24px] font-bold leading-tight md:text-[32px]">
+            Out of stock? <span className="text-brand">Not for long.</span>
+          </p>
+          <Link
+            href="/shop"
+            className="inline-flex h-11 items-center rounded-full bg-ink px-6 text-[12px] font-bold text-yellow transition-colors hover:bg-brand hover:text-paper"
+          >
+            Start your order →
+          </Link>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-[1280px] px-6 pt-16 pb-10">
         <div className="grid gap-12 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div>
@@ -34,23 +49,25 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={logoUrl} alt={brandName} className="h-12 w-auto" />
               ) : (
-                <span className="block text-[32px]">{brandName}</span>
+                <span className="block text-[36px] font-bold text-paper">
+                  {brandName}<span className="text-yellow">.</span>
+                </span>
               )}
               {tagline ? (
-                <span className="mt-2 block text-[18px] italic font-light text-butter">{tagline}</span>
+                <span className="mt-3 block text-[15px] font-medium text-paper/70">{tagline}</span>
               ) : null}
             </div>
-            <p className="mt-5 max-w-sm text-[14px] leading-relaxed text-cream/70">
+            <p className="mt-6 max-w-sm text-[14px] leading-relaxed text-paper/65">
               Rapid catering supplies across Tyneside — chargers, whippers, syrups,
               coffee and disposables, at your door in minutes. Strictly trade &amp; 18+.
             </p>
 
             {(phone || email || address) ? (
-              <div className="mt-6 space-y-2 text-[13px] text-cream/80">
+              <div className="mt-7 space-y-2.5 text-[13px] text-paper/85">
                 {phone ? (
                   <div>
-                    <a href={`tel:${phone.replace(/\s+/g, "")}`} className="hover:text-butter">
-                      {phone}
+                    <a href={`tel:${phone.replace(/\s+/g, "")}`} className="font-medium hover:text-yellow">
+                      ☎ {phone}
                     </a>
                   </div>
                 ) : null}
@@ -60,7 +77,7 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
                       href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-butter"
+                      className="font-medium hover:text-yellow"
                     >
                       WhatsApp · {whatsapp}
                     </a>
@@ -68,18 +85,18 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
                 ) : null}
                 {email ? (
                   <div>
-                    <a href={`mailto:${email}`} className="hover:text-butter">{email}</a>
+                    <a href={`mailto:${email}`} className="font-medium hover:text-yellow">{email}</a>
                   </div>
                 ) : null}
                 {supportEmail && supportEmail !== email ? (
                   <div>
-                    <a href={`mailto:${supportEmail}`} className="hover:text-butter">
+                    <a href={`mailto:${supportEmail}`} className="font-medium hover:text-yellow">
                       Support · {supportEmail}
                     </a>
                   </div>
                 ) : null}
                 {address || city || country ? (
-                  <div className="text-cream/60">
+                  <div className="text-paper/55">
                     {[address, city, country].filter(Boolean).join(", ")}
                   </div>
                 ) : null}
@@ -87,28 +104,20 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
             ) : null}
 
             {socials.length > 0 ? (
-              <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.12em]">
+              <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-[0.14em]">
                 {socials.map((soc) => (
                   <a
                     key={soc.key}
                     href={soc.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-cream/15 px-3 py-1.5 text-cream/70 transition-colors hover:border-butter hover:text-butter"
+                    className="rounded-full border-2 border-paper/15 px-3 py-1.5 text-paper/70 transition-colors hover:border-yellow hover:text-yellow"
                   >
                     {soc.label}
                   </a>
                 ))}
               </div>
             ) : null}
-
-            <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-cream/60">
-              <span className="rounded-full border border-cream/15 px-3 py-1.5">Visa</span>
-              <span className="rounded-full border border-cream/15 px-3 py-1.5">Amex</span>
-              <span className="rounded-full border border-cream/15 px-3 py-1.5">Klarna</span>
-              <span className="rounded-full border border-cream/15 px-3 py-1.5">Apple Pay</span>
-              <span className="rounded-full border border-cream/15 px-3 py-1.5">Cash</span>
-            </div>
           </div>
 
           <FooterCol title="Shop">
@@ -138,19 +147,19 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
           </FooterCol>
         </div>
 
-        <div className="mt-14 space-y-3 rounded-xl border border-cream/10 bg-forest-deep/50 p-5 text-[12px] leading-relaxed text-cream/70">
-          <p><strong className="text-butter">You must be at least 18 years of age to use this website.</strong></p>
-          <p>Products for sale on this website are for use in the preparation of food and beverages only.</p>
-          <p>We retain the right to refuse to sell to anyone we suspect may have the intention of misusing our products.</p>
+        <div className="mt-12 grid gap-3 rounded-2xl border-2 border-yellow/30 bg-paper/[0.04] p-5 text-[12px] leading-relaxed text-paper/70 md:grid-cols-3">
+          <p><strong className="block text-[11px] font-bold uppercase tracking-[0.14em] text-yellow">18+ only</strong>You must be at least 18 years of age to use this website.</p>
+          <p><strong className="block text-[11px] font-bold uppercase tracking-[0.14em] text-yellow">Culinary use</strong>Products are for use in the preparation of food and beverages only.</p>
+          <p><strong className="block text-[11px] font-bold uppercase tracking-[0.14em] text-yellow">Right to refuse</strong>We retain the right to refuse to sell to anyone we suspect may misuse our products.</p>
         </div>
 
-        <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-cream/10 pt-8 text-[12px] text-cream/50 md:flex-row md:items-center">
-          <p>© {new Date().getFullYear()} {brandName} Ltd{city ? ` — ${city}` : ""}.</p>
+        <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t-2 border-paper/10 pt-8 text-[12px] text-paper/55 md:flex-row md:items-center">
+          <p>© {new Date().getFullYear()} {brandName} Ltd{city ? ` · ${city}` : ""}.</p>
           {hours.length > 0 ? (
             <p className="flex flex-wrap gap-x-5 gap-y-1.5">
               {hours.map((h, idx) => (
                 <span key={`${h.label}-${idx}`}>
-                  {h.label ? <strong className="font-medium text-cream/80">{h.label}</strong> : null}
+                  {h.label ? <strong className="font-bold text-paper/85">{h.label}</strong> : null}
                   {h.label ? " · " : ""}
                   {h.value}
                 </span>
@@ -166,7 +175,7 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
 function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="text-[11px] font-medium uppercase tracking-[0.18em] text-butter/90">{title}</h4>
+      <h4 className="text-[11px] font-bold uppercase tracking-[0.18em] text-yellow">{title}</h4>
       <div className="mt-4 flex flex-col gap-2.5 text-[14px]">{children}</div>
     </div>
   );
@@ -174,7 +183,7 @@ function FooterCol({ title, children }: { title: string; children: React.ReactNo
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="text-cream/70 transition-colors hover:text-butter">
+    <Link href={href} className="font-medium text-paper/70 transition-colors hover:text-yellow">
       {children}
     </Link>
   );
