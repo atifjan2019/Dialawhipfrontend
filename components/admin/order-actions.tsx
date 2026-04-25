@@ -17,7 +17,20 @@ const FROM_STATUS: Record<OrderStatus, OrderStatus[]> = {
   refunded: [],
 };
 
-const LABELS: Record<OrderStatus, string> = {
+// Labels are context-aware: from `pending`, "Confirm" reads as
+// "Accept order" — that's what the admin actually wants to express.
+const LABELS: Record<OrderStatus, Record<string, string>> = {
+  pending: {},
+  confirmed: { pending: "Accept order ✓" },
+  in_prep: { confirmed: "Mark in prep" },
+  out_for_delivery: { in_prep: "Send out for delivery" },
+  delivered: { out_for_delivery: "Mark delivered" },
+  failed: { out_for_delivery: "Mark failed" },
+  cancelled: { pending: "Reject order", confirmed: "Cancel", in_prep: "Cancel", failed: "Cancel" },
+  refunded: { delivered: "Refund" },
+};
+
+const DEFAULT_LABEL: Record<OrderStatus, string> = {
   pending: "Mark pending",
   confirmed: "Confirm",
   in_prep: "Mark in prep",
@@ -53,7 +66,7 @@ export function OrderActions({ orderId, status }: { orderId: string; status: Ord
   }
 
   if (next.length === 0) {
-    return <p className="text-[13px] italic text-ink-muted">No further actions.</p>;
+    return <p className="text-[13px] font-medium italic text-ink-muted">No further actions.</p>;
   }
 
   return (
@@ -62,26 +75,26 @@ export function OrderActions({ orderId, status }: { orderId: string; status: Ord
         {next.map((to) => {
           const danger = to === "cancelled" || to === "failed";
           const subtle = to === "refunded";
+          const primary = !danger && !subtle;
+          const label = LABELS[to][status] ?? DEFAULT_LABEL[to];
           return (
             <button
               key={to}
               disabled={!!pending}
               onClick={() => transition(to)}
               className={cn(
-                "inline-flex h-10 w-full items-center justify-center rounded-full px-4 text-[13px] font-medium transition-colors disabled:opacity-50",
-                danger
-                  ? "bg-[#8B2A1D] text-cream hover:bg-[#731F13]"
-                  : subtle
-                  ? "border hairline bg-paper text-ink hover:border-ink/30"
-                  : "bg-forest text-cream hover:bg-forest-deep",
+                "inline-flex h-11 w-full items-center justify-center rounded-full px-4 text-[13px] font-bold transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0",
+                danger && "bg-danger text-paper",
+                subtle && "border-2 border-ink bg-paper text-ink hover:bg-yellow",
+                primary && "bg-ink text-yellow",
               )}
             >
-              {pending === to ? "…" : LABELS[to]}
+              {pending === to ? "…" : label}
             </button>
           );
         })}
       </div>
-      {error ? <p className="mt-3 text-[12px] text-[#8B2A1D]">{error}</p> : null}
+      {error ? <p className="mt-3 text-[12px] font-medium text-danger">{error}</p> : null}
     </div>
   );
 }
