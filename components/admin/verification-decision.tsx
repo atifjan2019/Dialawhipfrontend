@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Status = "pending" | "approved" | "rejected";
+type Status = "pending" | "approved" | "rejected" | "expired";
 
 /** Default expiry: today + 2 years (as YYYY-MM-DD). */
 function defaultExpiry(): string {
