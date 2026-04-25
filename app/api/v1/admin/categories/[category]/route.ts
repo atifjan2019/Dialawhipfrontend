@@ -42,7 +42,8 @@ export const PATCH = handle(async (req: NextRequest, { params }: Ctx) => {
 });
 
 export const DELETE = handle(async (_req: NextRequest, { params }: Ctx) => {
-  await requireRole("admin");
+  // Match the PATCH handler — admin and staff share the admin app.
+  await requireRole("admin", "staff");
   const { category: id } = await params;
   const admin = supabaseAdmin();
   // Block delete when products reference this category — would otherwise hit
