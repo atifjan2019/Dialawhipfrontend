@@ -17,7 +17,15 @@ const NAV = [
   { href: "/admin/settings", label: "Settings", icon: SettingsIcon },
 ];
 
-export function AdminSidebar({ name }: { name: string }) {
+export function AdminSidebar({
+  name,
+  brandName = "Dialawhip",
+  logoUrl = "",
+}: {
+  name: string;
+  brandName?: string;
+  logoUrl?: string;
+}) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -40,7 +48,12 @@ export function AdminSidebar({ name }: { name: string }) {
     <>
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-cream/10 bg-forest px-4 py-3 text-cream md:hidden">
         <Link href="/admin" className="flex items-baseline gap-1.5">
-          <span className="font-display text-[20px] leading-none text-cream">Dialawhip</span>
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt={brandName} className="h-7 w-auto" />
+          ) : (
+            <span className="font-display text-[20px] leading-none text-cream">{brandName}</span>
+          )}
           <span className="font-display text-[12px] italic text-butter">{active}</span>
         </Link>
         <button
@@ -54,7 +67,7 @@ export function AdminSidebar({ name }: { name: string }) {
       </header>
 
       <aside className="hidden h-screen w-64 shrink-0 flex-col bg-forest text-cream md:sticky md:top-0 md:flex">
-        <SidebarContents name={name} pathname={pathname} onLogout={logout} />
+        <SidebarContents name={name} brandName={brandName} logoUrl={logoUrl} pathname={pathname} onLogout={logout} />
       </aside>
 
       {mobileOpen ? (
@@ -71,7 +84,7 @@ export function AdminSidebar({ name }: { name: string }) {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <SidebarContents name={name} pathname={pathname} onLogout={logout} />
+            <SidebarContents name={name} brandName={brandName} logoUrl={logoUrl} pathname={pathname} onLogout={logout} />
           </aside>
         </div>
       ) : null}
@@ -81,20 +94,28 @@ export function AdminSidebar({ name }: { name: string }) {
 
 function SidebarContents({
   name,
+  brandName,
+  logoUrl,
   pathname,
   onLogout,
 }: {
   name: string;
+  brandName: string;
+  logoUrl: string;
   pathname: string;
   onLogout: () => void;
 }) {
   return (
     <>
       <div className="px-6 py-7 md:pt-7 pt-0">
-        <div className="font-display leading-tight">
-          <span className="block text-[24px] text-cream">Dialawhip</span>
-          <span className="block text-[13px] italic font-light text-butter">Newcastle · supplies</span>
-        </div>
+        {logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={logoUrl} alt={brandName} className="h-10 w-auto" />
+        ) : (
+          <div className="font-display leading-tight">
+            <span className="block text-[24px] text-cream">{brandName}</span>
+          </div>
+        )}
         <div className="mt-5 text-[10px] font-medium uppercase tracking-[0.22em] text-butter/80">Admin</div>
         <div className="mt-1 font-display text-[15px] text-cream">{name}</div>
       </div>
