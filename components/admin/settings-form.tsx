@@ -217,7 +217,41 @@ function FieldRenderer({
         </div>
       );
 
-    case "int":
+    case "int": {
+      const isPence = item.key.endsWith("_pence");
+      if (isPence) {
+        const pounds =
+          value === null || value === undefined || value === ""
+            ? ""
+            : (Number(value) / 100).toFixed(2);
+        return (
+          <div className="space-y-1.5">
+            <Label>{item.label}</Label>
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[14px] text-ink-muted">
+                £
+              </span>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                inputMode="decimal"
+                className="pl-7"
+                value={pounds}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "") return onChange(null);
+                  const n = Number(raw);
+                  if (Number.isNaN(n)) return;
+                  onChange(Math.round(n * 100));
+                }}
+              />
+            </div>
+            <KeyHint k={item.key} />
+            <FieldError>{error}</FieldError>
+          </div>
+        );
+      }
       return (
         <div className="space-y-1.5">
           <Label>{item.label}</Label>
@@ -230,6 +264,7 @@ function FieldRenderer({
           <FieldError>{error}</FieldError>
         </div>
       );
+    }
 
     case "url":
       return (
