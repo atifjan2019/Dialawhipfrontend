@@ -79,30 +79,28 @@ export default function VerificationPage() {
 
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-14">
-      <nav className="flex items-center gap-3 text-[12px] text-ink-muted">
-        <Link href="/account" className="transition-colors hover:text-forest">Account</Link>
-        <span className="opacity-50">/</span>
+      <nav className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+        <Link href="/account" className="transition-colors hover:text-brand">Account</Link>
+        <span aria-hidden>·</span>
         <span className="text-ink">ID &amp; verification</span>
       </nav>
 
       <Eyebrow className="mt-8">Compliance · 18+</Eyebrow>
-      <h1 className="mt-6 font-display text-[48px] leading-[1] text-ink md:text-[72px]">
-        ID <span className="italic font-light text-forest">verification</span>.
+      <h1 className="mt-6 font-display text-[48px] font-bold leading-[1] tracking-tight text-ink md:text-[72px]">
+        ID <span className="text-brand">verification.</span>
       </h1>
-      <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft">
-        Upload one government-issued photo ID. We verify once and never ask again
-        (unless your document expires). Usually approved inside ten minutes during
-        operating hours.
+      <p className="mt-5 max-w-xl text-[15px] font-medium leading-relaxed text-ink/80">
+        Upload one government-issued photo ID. We verify once and never ask again (unless your document expires). Usually approved inside ten minutes during operating hours.
       </p>
 
       <StatusBanner status={status} verifiedAt={data?.verified_at ?? null} />
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
         {status !== "verified" && status !== "pending" ? (
-          <form onSubmit={onSubmit} className="space-y-6 rounded-2xl border hairline bg-paper p-8">
+          <form onSubmit={onSubmit} className="space-y-6 rounded-2xl bg-paper p-8 ring-2 ring-ink">
             <div>
-              <h2 className="font-display text-[24px] text-ink">Upload your ID</h2>
-              <p className="mt-2 text-[13px] text-ink-muted">
+              <h2 className="font-display text-[26px] font-bold text-ink">Upload your ID</h2>
+              <p className="mt-2 text-[13px] font-medium text-ink-muted">
                 Clear photo or scan. All four corners must be visible. No glare.
               </p>
             </div>
@@ -113,10 +111,10 @@ export default function VerificationPage() {
                 {DOC_OPTIONS.map((opt) => (
                   <label
                     key={opt.value}
-                    className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 text-[13px] transition-all ${
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg p-4 text-[13px] font-bold transition-all ${
                       docType === opt.value
-                        ? "border-forest bg-cream-deep/50 text-ink"
-                        : "hairline bg-paper text-ink-soft hover:border-ink/25"
+                        ? "bg-yellow text-ink ring-2 ring-ink"
+                        : "bg-paper text-ink-soft ring-2 ring-ink/15 hover:ring-ink/40"
                     }`}
                   >
                     <input
@@ -125,7 +123,7 @@ export default function VerificationPage() {
                       value={opt.value}
                       checked={docType === opt.value}
                       onChange={() => setDocType(opt.value)}
-                      className="accent-forest"
+                      className="accent-brand"
                     />
                     <span>{opt.label}</span>
                   </label>
@@ -135,7 +133,7 @@ export default function VerificationPage() {
 
             <div className="space-y-2">
               <Label htmlFor="id-file">File (JPG, PNG, WebP or PDF · max 8MB)</Label>
-              <div className="relative rounded-lg border border-dashed hairline bg-cream-deep/30 p-6 text-center">
+              <div className="relative rounded-2xl border-2 border-dashed border-ink/25 bg-yellow-soft/40 p-7 text-center">
                 <input
                   id="id-file"
                   type="file"
@@ -146,20 +144,20 @@ export default function VerificationPage() {
                 />
                 {file ? (
                   <div>
-                    <p className="font-display text-[17px] text-ink">{file.name}</p>
-                    <p className="mt-1 text-[11px] text-ink-muted">{(file.size / 1024).toFixed(0)} KB · click to change</p>
+                    <p className="font-display text-[18px] font-bold text-ink">{file.name}</p>
+                    <p className="mt-1 text-[11px] font-medium text-ink-muted">{(file.size / 1024).toFixed(0)} KB · click to change</p>
                   </div>
                 ) : (
                   <div>
-                    <p className="font-display text-[17px] text-ink">Click to choose a file</p>
-                    <p className="mt-1 text-[11px] text-ink-muted">or drag and drop</p>
+                    <p className="font-display text-[18px] font-bold text-ink">Click to choose a file</p>
+                    <p className="mt-1 text-[11px] font-medium text-ink-muted">or drag and drop</p>
                   </div>
                 )}
               </div>
             </div>
 
             {error ? (
-              <div className="rounded-lg border border-[#C87863]/40 bg-[#F3D4CC]/60 p-4 text-[13px] text-[#8B2A1D]">
+              <div className="rounded-lg bg-danger-soft p-4 text-[13px] font-medium text-danger ring-1 ring-danger/30">
                 {error}
               </div>
             ) : null}
@@ -167,27 +165,27 @@ export default function VerificationPage() {
             <button
               type="submit"
               disabled={!file || uploading}
-              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-forest px-6 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep disabled:opacity-50"
+              className="inline-flex h-13 w-full items-center justify-center rounded-full bg-ink px-6 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50"
             >
               {uploading ? "Uploading…" : "Submit for review →"}
             </button>
-            <p className="text-[11px] text-ink-muted">
+            <p className="text-[11px] font-medium text-ink-muted">
               Your document is encrypted at rest and accessible only to our compliance team.
             </p>
           </form>
         ) : (
-          <div className="space-y-5 rounded-2xl border hairline bg-paper p-8">
-            <h2 className="font-display text-[24px] text-ink">
+          <div className="space-y-5 rounded-2xl bg-yellow p-8 ring-2 ring-ink">
+            <h2 className="font-display text-[28px] font-bold text-ink">
               {status === "verified" ? "All set." : "Under review."}
             </h2>
-            <p className="text-[14px] leading-relaxed text-ink-soft">
+            <p className="text-[14px] font-medium leading-relaxed text-ink/80">
               {status === "verified"
                 ? "Your ID has been verified. You can order age-restricted items without further checks."
                 : "Thanks — a compliance reviewer is looking at your document. Usually inside ten minutes during operating hours."}
             </p>
             <Link
               href="/shop"
-              className="inline-flex h-12 items-center rounded-full bg-forest px-7 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep"
+              className="inline-flex h-12 items-center rounded-full bg-ink px-7 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5"
             >
               Continue shopping →
             </Link>
@@ -195,9 +193,9 @@ export default function VerificationPage() {
         )}
 
         <aside className="space-y-6">
-          <div className="rounded-2xl border hairline bg-cream-deep/50 p-7">
-            <h3 className="font-display text-[17px] text-ink">How it works</h3>
-            <ol className="mt-4 space-y-3 text-[13px] text-ink-soft">
+          <div className="rounded-2xl bg-yellow p-7 ring-2 ring-ink">
+            <h3 className="font-display text-[18px] font-bold text-ink">How it works</h3>
+            <ol className="mt-5 space-y-3 text-[13px] font-medium text-ink/85">
               <Step n="1">Pick a government-issued ID you own.</Step>
               <Step n="2">Upload a clear photo or scan.</Step>
               <Step n="3">Our team reviews inside ten minutes during operating hours.</Step>
@@ -205,17 +203,24 @@ export default function VerificationPage() {
             </ol>
           </div>
 
-          <div className="rounded-2xl border hairline bg-paper p-7">
-            <h3 className="font-display text-[17px] text-ink">Your history</h3>
+          <div className="rounded-2xl bg-paper p-7 ring-2 ring-ink/10">
+            <h3 className="font-display text-[18px] font-bold text-ink">Your history</h3>
             {data && data.data.length > 0 ? (
               <ul className="mt-4 space-y-3 text-[13px]">
                 {data.data.map((v) => (
-                  <li key={v.id} className="flex items-baseline justify-between gap-4 border-b hairline pb-3 last:border-0 last:pb-0">
+                  <li
+                    key={v.id}
+                    className="flex items-baseline justify-between gap-4 border-b-2 border-ink/10 pb-3 last:border-0 last:pb-0"
+                  >
                     <div>
-                      <div className="font-display text-[14px] text-ink">{v.doc_type.replace(/_/g, " ")}</div>
-                      <div className="text-[11px] text-ink-muted">{new Date(v.created_at).toLocaleString("en-GB")}</div>
+                      <div className="font-display text-[14px] font-bold text-ink capitalize">
+                        {v.doc_type.replace(/_/g, " ")}
+                      </div>
+                      <div className="text-[11px] font-medium text-ink-muted">
+                        {new Date(v.created_at).toLocaleString("en-GB")}
+                      </div>
                       {v.rejection_reason ? (
-                        <div className="mt-1 text-[11px] text-[#8B2A1D]">Reason: {v.rejection_reason}</div>
+                        <div className="mt-1 text-[11px] font-medium text-danger">Reason: {v.rejection_reason}</div>
                       ) : null}
                     </div>
                     <StatusPill status={v.status} />
@@ -223,7 +228,7 @@ export default function VerificationPage() {
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-[13px] text-ink-muted">No uploads yet.</p>
+              <p className="mt-3 text-[13px] font-medium text-ink-muted">No uploads yet.</p>
             )}
           </div>
         </aside>
@@ -235,11 +240,11 @@ export default function VerificationPage() {
 function StatusBanner({ status, verifiedAt }: { status: VerificationStatus; verifiedAt: string | null }) {
   if (status === "verified") {
     return (
-      <div className="mt-8 flex items-center gap-4 rounded-xl bg-forest px-5 py-4 text-cream">
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-butter font-display text-[14px] font-semibold text-forest">✓</span>
+      <div className="mt-8 flex items-center gap-4 rounded-2xl bg-ink px-6 py-5 text-paper ring-2 ring-ink">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-yellow font-display text-[16px] font-bold text-ink">✓</span>
         <div>
-          <div className="text-[14px] font-medium">Account verified</div>
-          <div className="text-[12px] text-butter">
+          <div className="font-display text-[15px] font-bold">Account verified</div>
+          <div className="mt-0.5 text-[12px] font-medium text-yellow">
             Approved {verifiedAt ? new Date(verifiedAt).toLocaleDateString("en-GB") : "—"} · valid for 2 years
           </div>
         </div>
@@ -248,36 +253,42 @@ function StatusBanner({ status, verifiedAt }: { status: VerificationStatus; veri
   }
   if (status === "pending") {
     return (
-      <div className="mt-8 rounded-xl border border-clay/40 bg-butter/20 px-5 py-4">
-        <div className="text-[14px] font-medium text-ink">Under review</div>
-        <div className="mt-1 text-[12px] text-ink-muted">Our compliance team is reviewing your upload. Usually ready in ten minutes.</div>
+      <div className="mt-8 rounded-2xl bg-yellow px-6 py-5 ring-2 ring-ink">
+        <div className="font-display text-[15px] font-bold text-ink">Under review</div>
+        <div className="mt-1 text-[12px] font-medium text-ink/75">
+          Our compliance team is reviewing your upload. Usually ready in ten minutes.
+        </div>
       </div>
     );
   }
   if (status === "rejected") {
     return (
-      <div className="mt-8 rounded-xl border border-[#C87863]/40 bg-[#F3D4CC]/40 px-5 py-4">
-        <div className="text-[14px] font-medium text-[#8B2A1D]">Last upload was rejected</div>
-        <div className="mt-1 text-[12px] text-ink-muted">See reason below and try again with a clearer image.</div>
+      <div className="mt-8 rounded-2xl bg-paper px-6 py-5 ring-2 ring-danger">
+        <div className="font-display text-[15px] font-bold text-danger">Last upload was rejected</div>
+        <div className="mt-1 text-[12px] font-medium text-ink-muted">
+          See reason below and try again with a clearer image.
+        </div>
       </div>
     );
   }
   return (
-    <div className="mt-8 rounded-xl border hairline bg-cream-deep/40 px-5 py-4">
-      <div className="text-[14px] font-medium text-ink">Not yet verified</div>
-      <div className="mt-1 text-[12px] text-ink-muted">Upload an ID below to unlock age-restricted products.</div>
+    <div className="mt-8 rounded-2xl bg-paper px-6 py-5 ring-2 ring-ink/15">
+      <div className="font-display text-[15px] font-bold text-ink">Not yet verified</div>
+      <div className="mt-1 text-[12px] font-medium text-ink-muted">
+        Upload an ID below to unlock age-restricted products.
+      </div>
     </div>
   );
 }
 
 function StatusPill({ status }: { status: "pending" | "approved" | "rejected" }) {
   const map = {
-    pending: "bg-butter/80 text-forest",
-    approved: "bg-forest text-butter",
-    rejected: "bg-[#8B2A1D]/10 text-[#8B2A1D]",
+    pending: "bg-yellow text-ink ring-2 ring-ink",
+    approved: "bg-ink text-yellow",
+    rejected: "bg-danger-soft text-danger ring-1 ring-danger/30",
   } as const;
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${map[status]}`}>
+    <span className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${map[status]}`}>
       {status}
     </span>
   );
@@ -286,7 +297,7 @@ function StatusPill({ status }: { status: "pending" | "approved" | "rejected" })
 function Step({ n, children }: { n: string; children: React.ReactNode }) {
   return (
     <li className="flex gap-3">
-      <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-forest font-display text-[11px] text-butter">{n}</span>
+      <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink font-display text-[12px] font-bold text-yellow">{n}</span>
       <span>{children}</span>
     </li>
   );

@@ -137,16 +137,18 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-28 text-center">
-        <h1 className="text-[44px] font-extrabold tracking-tight text-ink sm:text-[56px]">
-          Your bag is empty.
-        </h1>
-        <Link
-          href="/shop"
-          className="mt-8 inline-flex h-12 items-center rounded-full bg-yellow px-8 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5"
-        >
-          Browse the shop
-        </Link>
+      <div className="mx-auto max-w-2xl px-6 py-24 text-center">
+        <div className="rounded-3xl bg-yellow p-12 ring-2 ring-ink">
+          <h1 className="font-display text-[44px] font-bold tracking-tight text-ink sm:text-[60px]">
+            Your bag is empty.
+          </h1>
+          <Link
+            href="/shop"
+            className="mt-8 inline-flex h-13 items-center rounded-full bg-ink px-8 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5"
+          >
+            Browse the shop →
+          </Link>
+        </div>
       </div>
     );
   }
@@ -158,17 +160,17 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-[1280px] px-6 py-14">
       <Eyebrow>Step 2 of 2</Eyebrow>
-      <h1 className="mt-3 text-[40px] font-extrabold tracking-tight text-ink sm:text-[56px]">
-        Almost there.
+      <h1 className="mt-4 font-display text-[44px] font-bold leading-[1] tracking-tight text-ink sm:text-[60px]">
+        Almost <span className="text-brand">there.</span>
       </h1>
 
       {shopClosed ? (
-        <div className="mt-8 rounded-2xl border border-danger/25 bg-danger-soft p-4 text-[13px] leading-relaxed text-ink" role="alert">
+        <div className="mt-8 rounded-2xl bg-yellow p-5 ring-2 ring-ink" role="alert">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-danger text-[12px] font-bold text-paper">!</span>
+            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-bold text-yellow">!</span>
             <div>
-              <strong className="block text-[14px] font-semibold text-ink">Shop is currently closed</strong>
-              <span className="mt-1 block text-ink-soft">{shopClosed.message}</span>
+              <strong className="block font-display text-[16px] font-bold text-ink">Shop is currently closed</strong>
+              <span className="mt-1 block text-[13px] font-medium text-ink/80">{shopClosed.message}</span>
             </div>
           </div>
         </div>
@@ -182,10 +184,10 @@ export default function CheckoutPage() {
                 {addresses.map((a) => (
                   <label
                     key={a.id}
-                    className={`flex cursor-pointer items-start gap-4 rounded-2xl border p-5 transition-all ${
+                    className={`flex cursor-pointer items-start gap-4 rounded-2xl p-5 transition-all ${
                       selectedAddress === a.id
-                        ? "border-brand bg-paper shadow-[0_4px_14px_-8px_rgba(0,79,176,0.35)]"
-                        : "hairline bg-paper hover:border-ink/25"
+                        ? "bg-yellow ring-2 ring-ink"
+                        : "bg-paper ring-2 ring-ink/15 hover:ring-ink/40"
                     }`}
                   >
                     <input
@@ -217,7 +219,7 @@ export default function CheckoutPage() {
                 </button>
               </div>
             ) : (
-              <div className="space-y-4 rounded-2xl border hairline bg-paper p-6">
+              <div className="space-y-4 rounded-2xl bg-paper p-6 ring-2 ring-ink/15">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Label">
                     <Input value={addr.label} onChange={(e) => setAddr({ ...addr, label: e.target.value })} />
@@ -283,7 +285,7 @@ export default function CheckoutPage() {
 
           {requiresId ? (
             <Section step="03" title="ID & compliance">
-              <div className="space-y-4 rounded-2xl border hairline bg-paper p-6">
+              <div className="space-y-4 rounded-2xl bg-paper p-6 ring-2 ring-ink/15">
                 {!user ? (
                   <div className="rounded-lg bg-surface p-4 text-[13px] text-ink-soft">
                     Your bag contains age-restricted items.{" "}
@@ -343,50 +345,50 @@ export default function CheckoutPage() {
           ) : null}
 
           <Section step={requiresId ? "04" : "03"} title="Anything we should know?">
-            <div className="rounded-2xl border hairline bg-paper p-6">
+            <div className="rounded-2xl bg-paper p-6 ring-2 ring-ink/15">
               <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Gate codes, buzzer details, doorman instructions…" />
             </div>
           </Section>
 
           {error ? (
-            <div className="rounded-2xl border border-danger/30 bg-danger-soft p-4 text-[13px] text-danger">
+            <div className="rounded-2xl bg-danger-soft p-4 text-[13px] font-medium text-danger ring-1 ring-danger/30">
               {error}
             </div>
           ) : null}
         </div>
 
         <aside className="h-fit space-y-5 lg:sticky lg:top-24">
-          <div className="rounded-2xl border hairline bg-paper p-6">
-            <h2 className="text-[18px] font-bold text-ink">Your order</h2>
+          <div className="rounded-2xl bg-paper p-6 ring-2 ring-ink">
+            <h2 className="font-display text-[20px] font-bold text-ink">Your order</h2>
             <ul className="mt-5 space-y-3 text-[13px]">
               {items.map((i) => (
                 <li key={`${i.product_id}::${i.variant_id ?? ""}`} className="flex justify-between gap-4">
-                  <span className="text-ink-soft">
-                    <span className="font-bold text-ink">{i.quantity} ×</span> {i.name}
+                  <span className="font-medium text-ink-soft">
+                    <span className="font-display font-bold text-ink">{i.quantity} ×</span> {i.name}
                     {i.variant_label ? (
-                      <span className="ml-1 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">· {i.variant_label}</span>
+                      <span className="ml-1 text-[11px] font-bold uppercase tracking-[0.14em] text-brand">· {i.variant_label}</span>
                     ) : null}
                   </span>
-                  <Money pence={i.unit_price_pence * i.quantity} className="shrink-0 text-ink" />
+                  <Money pence={i.unit_price_pence * i.quantity} className="shrink-0 font-bold text-ink" />
                 </li>
               ))}
             </ul>
 
-            <div className="mt-6 space-y-2 border-t hairline pt-5 text-[13px]">
+            <div className="mt-6 space-y-2 border-t-2 border-ink/10 pt-5 text-[13px]">
               <Row label="Subtotal"><Money pence={pricing?.subtotal_pence ?? 0} /></Row>
               <Row label={`Delivery (${tier})`}><Money pence={pricing?.delivery_fee_pence ?? 0} /></Row>
               {pricing && pricing.vat_pence > 0 ? <Row label="VAT"><Money pence={pricing.vat_pence} /></Row> : null}
             </div>
 
-            <div className="mt-5 flex items-baseline justify-between border-t hairline pt-5">
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">Total</span>
-              <Money pence={pricing?.total_pence ?? 0} className="text-[28px] font-extrabold text-ink" />
+            <div className="mt-5 flex items-baseline justify-between border-t-2 border-ink/15 pt-5">
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand">Total</span>
+              <Money pence={pricing?.total_pence ?? 0} className="font-display text-[32px] font-bold text-ink" />
             </div>
 
             <button
               type="submit"
               disabled={pending || !pricing || !!shopClosed || (requiresId && !isVerified)}
-              className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-yellow px-6 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0"
+              className="mt-6 inline-flex h-13 w-full items-center justify-center rounded-full bg-ink px-6 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0"
             >
               {pending
                 ? "Starting secure checkout…"
@@ -394,7 +396,7 @@ export default function CheckoutPage() {
                 ? "Shop closed — try again later"
                 : "Pay securely →"}
             </button>
-            <p className="mt-3 text-center text-[11px] text-ink-muted">
+            <p className="mt-3 text-center text-[11px] font-medium text-ink-muted">
               Powered by Stripe · Klarna · Apple Pay · Cash on delivery
             </p>
           </div>
