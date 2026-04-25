@@ -6,6 +6,7 @@ import { apiClient, ApiRequestError, randomIdempotencyKey } from "@/lib/api-clie
 import { Input, Label, Textarea, FieldError } from "@/components/ui/input";
 import type { Category, Product, ProductVariant } from "@/lib/types";
 import { Plus, Trash2 } from "lucide-react";
+import { ProductImageManager } from "@/components/admin/product-image-manager";
 
 type VariantDraft = {
   id?: string;
@@ -51,6 +52,8 @@ export function ProductForm({ product, categories }: { product?: Product; catego
   const [variants, setVariants] = useState<VariantDraft[]>(
     product?.variants?.length ? product.variants.map(toDraft) : [],
   );
+  const [featuredImage, setFeaturedImage] = useState<string | null>(product?.image_url ?? null);
+  const [galleryImages, setGalleryImages] = useState<string[]>(product?.gallery_urls ?? []);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [pending, setPending] = useState(false);
 
@@ -72,6 +75,8 @@ export function ProductForm({ product, categories }: { product?: Product; catego
       const body: Record<string, unknown> = {
         ...form,
         price_pence: Number(form.price_pence || 0),
+        image_url: featuredImage || null,
+        gallery_urls: galleryImages,
       };
       if (variants.length > 0) {
         body.variants = variants.map((v, i) => ({
@@ -165,6 +170,13 @@ export function ProductForm({ product, categories }: { product?: Product; catego
         />
         Visible to customers
       </label>
+
+      <ProductImageManager
+        featured={featuredImage}
+        gallery={galleryImages}
+        onFeaturedChange={setFeaturedImage}
+        onGalleryChange={setGalleryImages}
+      />
 
       <section className="rounded-lg border hairline bg-cream-deep/30 p-5">
         <div className="flex items-end justify-between gap-3">

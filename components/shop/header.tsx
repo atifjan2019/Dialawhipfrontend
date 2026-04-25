@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import type { User } from "@/lib/types";
+import type { PublicSettings } from "@/lib/settings";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
@@ -20,7 +21,19 @@ const SHOP_LINKS: { name: string; href: string; hot?: boolean }[] = [
   { name: "Disposables", href: "/shop/disposables" },
 ];
 
-export function ShopHeader({ user }: { user: User | null }) {
+export function ShopHeader({
+  user,
+  settings,
+}: {
+  user: User | null;
+  settings?: PublicSettings;
+}) {
+  // Brand info pulled from admin settings (with sensible fallbacks).
+  const brandName = (settings?.["business.name"] as string) || "Dialawhip";
+  const brandTagline = (settings?.["business.city"] as string) || "Newcastle";
+  const logoUrl = (settings?.["branding.logo_url"] as string) || "";
+  const phone = (settings?.["business.phone"] as string) || "";
+
   const count = useCart((s) => s.count());
   const [open, setOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
@@ -57,13 +70,24 @@ export function ShopHeader({ user }: { user: User | null }) {
     <>
     <header className="sticky top-0 z-40 border-b hairline bg-cream/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:h-18 sm:px-6">
-        <Link href="/" className="group flex items-baseline gap-2">
-          <span className="font-display text-[22px] font-medium leading-none tracking-tight text-forest sm:text-[24px]">
-            Dialawhip
-          </span>
-          <span className="hidden font-display text-[14px] italic font-light leading-none text-clay sm:inline">
-            Newcastle
-          </span>
+        <Link href="/" className="group flex items-center gap-2.5">
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt={brandName}
+              className="h-8 w-auto sm:h-10"
+            />
+          ) : (
+            <span className="font-display text-[22px] font-medium leading-none tracking-tight text-forest sm:text-[24px]">
+              {brandName}
+            </span>
+          )}
+          {brandTagline ? (
+            <span className="hidden font-display text-[14px] italic font-light leading-none text-clay sm:inline">
+              {brandTagline}
+            </span>
+          ) : null}
         </Link>
 
         <nav className="hidden items-center gap-7 text-[13px] font-medium text-ink-soft md:flex">
@@ -189,13 +213,22 @@ export function ShopHeader({ user }: { user: User | null }) {
     </header>
 
     {mobileOpen ? (
-      <MobileDrawer user={user} onClose={() => setMobileOpen(false)} />
+      <MobileDrawer user={user} onClose={() => setMobileOpen(false)} brandName={brandName} brandTagline={brandTagline} logoUrl={logoUrl} phone={phone} />
     ) : null}
     </>
   );
 }
 
-function MobileDrawer({ user, onClose }: { user: User | null; onClose: () => void }) {
+function MobileDrawer({
+  user, onClose, brandName, brandTagline, logoUrl, phone,
+}: {
+  user: User | null;
+  onClose: () => void;
+  brandName: string;
+  brandTagline: string;
+  logoUrl: string;
+  phone: string;
+}) {
   return (
     <div className="fixed inset-0 z-50 md:hidden">
       <div
@@ -205,9 +238,18 @@ function MobileDrawer({ user, onClose }: { user: User | null; onClose: () => voi
       />
       <aside className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col bg-cream shadow-[-20px_0_60px_-20px_rgba(10,22,40,0.35)]">
         <div className="flex items-center justify-between border-b hairline px-5 py-4">
-          <div className="font-display leading-tight">
-            <span className="block text-[20px] text-forest">Dialawhip</span>
-            <span className="block text-[12px] italic font-light text-clay">Newcastle · supplies</span>
+          <div className="flex items-center gap-2.5">
+            {logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoUrl} alt={brandName} className="h-9 w-auto" />
+            ) : (
+              <div className="font-display leading-tight">
+                <span className="block text-[20px] text-forest">{brandName}</span>
+                {brandTagline ? (
+                  <span className="block text-[12px] italic font-light text-clay">{brandTagline}</span>
+                ) : null}
+              </div>
+            )}
           </div>
           <button
             type="button"
@@ -267,12 +309,20 @@ function MobileDrawer({ user, onClose }: { user: User | null; onClose: () => voi
           </nav>
 
           <nav className="border-t hairline px-5 py-4">
-            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-ink-muted">Dialawhip</div>
+            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-ink-muted">{brandName}</div>
             <div className="mt-3 space-y-1">
               <DrawerLink href="/delivery"><span>Delivery &amp; ETAs</span></DrawerLink>
               <DrawerLink href="/trade"><span>Trade accounts</span></DrawerLink>
               <DrawerLink href="/about"><span>About us</span></DrawerLink>
               <DrawerLink href="/contact"><span>Contact</span></DrawerLink>
+              {phone ? (
+                <a
+                  href={`tel:${phone.replace(/\s+/g, "")}`}
+                  className="flex items-center justify-between rounded-lg px-3 py-2.5 text-[14px] font-medium text-forest hover:bg-cream-deep"
+                >
+                  <span>Call {phone}</span>
+                </a>
+              ) : null}
             </div>
           </nav>
 

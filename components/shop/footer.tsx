@@ -1,19 +1,86 @@
 import Link from "next/link";
+import type { PublicSettings } from "@/lib/settings";
+import { settingString, socialLinks, formatBusinessHours } from "@/lib/settings";
 
-export function ShopFooter() {
+export function ShopFooter({ settings }: { settings?: PublicSettings }) {
+  const s = settings ?? {};
+
+  const brandName = settingString(s, "business.name", "Dialawhip");
+  const tagline = settingString(s, "business.tagline", "Newcastle · 20-min delivery");
+  const logoUrl = settingString(s, "branding.logo_url");
+  const phone = settingString(s, "business.phone");
+  const email = settingString(s, "business.email");
+  const address = settingString(s, "business.address");
+  const city = settingString(s, "business.city");
+  const country = settingString(s, "business.country");
+
+  const termsUrl = settingString(s, "legal.terms_url", "/legal/terms");
+  const privacyUrl = settingString(s, "legal.privacy_url", "/legal/privacy");
+  const shippingUrl = settingString(s, "legal.refund_url", "/legal/shipping");
+  const cookiesUrl = settingString(s, "legal.cookies_url");
+
+  const socials = socialLinks(s);
+  const hours = formatBusinessHours(s);
+
   return (
     <footer className="mt-24 bg-forest text-cream/90">
       <div className="mx-auto max-w-[1280px] px-6 pt-16 pb-10">
         <div className="grid gap-12 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div>
             <div className="font-display leading-tight">
-              <span className="block text-[32px]">Dialawhip</span>
-              <span className="block text-[18px] italic font-light text-butter">Newcastle · 20-min delivery</span>
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt={brandName} className="h-12 w-auto" />
+              ) : (
+                <span className="block text-[32px]">{brandName}</span>
+              )}
+              {tagline ? (
+                <span className="mt-2 block text-[18px] italic font-light text-butter">{tagline}</span>
+              ) : null}
             </div>
             <p className="mt-5 max-w-sm text-[14px] leading-relaxed text-cream/70">
               Rapid catering supplies across Tyneside — chargers, whippers, syrups,
               coffee and disposables, at your door in minutes. Strictly trade &amp; 18+.
             </p>
+
+            {(phone || email || address) ? (
+              <div className="mt-6 space-y-2 text-[13px] text-cream/80">
+                {phone ? (
+                  <div>
+                    <a href={`tel:${phone.replace(/\s+/g, "")}`} className="hover:text-butter">
+                      {phone}
+                    </a>
+                  </div>
+                ) : null}
+                {email ? (
+                  <div>
+                    <a href={`mailto:${email}`} className="hover:text-butter">{email}</a>
+                  </div>
+                ) : null}
+                {address || city || country ? (
+                  <div className="text-cream/60">
+                    {[address, city, country].filter(Boolean).join(", ")}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {socials.length > 0 ? (
+              <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.12em]">
+                {socials.map((soc) => (
+                  <a
+                    key={soc.key}
+                    href={soc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-cream/15 px-3 py-1.5 text-cream/70 transition-colors hover:border-butter hover:text-butter"
+                  >
+                    {soc.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
+
             <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-cream/60">
               <span className="rounded-full border border-cream/15 px-3 py-1.5">Visa</span>
               <span className="rounded-full border border-cream/15 px-3 py-1.5">Amex</span>
@@ -37,13 +104,14 @@ export function ShopFooter() {
             <FooterLink href="/trade">Trade accounts</FooterLink>
             <FooterLink href="/account/orders">Track an order</FooterLink>
             <FooterLink href="/contact">Contact us</FooterLink>
-            <FooterLink href="/about">About Dialawhip</FooterLink>
+            <FooterLink href="/about">About {brandName}</FooterLink>
           </FooterCol>
 
           <FooterCol title="Legal">
-            <FooterLink href="/legal/terms">Terms &amp; conditions</FooterLink>
-            <FooterLink href="/legal/privacy">Privacy policy</FooterLink>
-            <FooterLink href="/legal/shipping">Shipping &amp; payment</FooterLink>
+            <FooterLink href={termsUrl}>Terms &amp; conditions</FooterLink>
+            <FooterLink href={privacyUrl}>Privacy policy</FooterLink>
+            <FooterLink href={shippingUrl}>Shipping &amp; payment</FooterLink>
+            {cookiesUrl ? <FooterLink href={cookiesUrl}>Cookies policy</FooterLink> : null}
             <FooterLink href="/legal/n2o-agreement">N₂O chargers agreement</FooterLink>
             <FooterLink href="/legal/report-abuse">Report abuse</FooterLink>
           </FooterCol>
@@ -56,11 +124,18 @@ export function ShopFooter() {
         </div>
 
         <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-cream/10 pt-8 text-[12px] text-cream/50 md:flex-row md:items-center">
-          <p>© {new Date().getFullYear()} Dialawhip Ltd — Newcastle upon Tyne.</p>
-          <p className="flex flex-wrap gap-5">
-            <span>Tue–Sun · 10:00–03:00</span>
-            <span>Closed Mondays</span>
-          </p>
+          <p>© {new Date().getFullYear()} {brandName} Ltd{city ? ` — ${city}` : ""}.</p>
+          {hours.length > 0 ? (
+            <p className="flex flex-wrap gap-x-5 gap-y-1.5">
+              {hours.map((h, idx) => (
+                <span key={`${h.label}-${idx}`}>
+                  {h.label ? <strong className="font-medium text-cream/80">{h.label}</strong> : null}
+                  {h.label ? " · " : ""}
+                  {h.value}
+                </span>
+              ))}
+            </p>
+          ) : null}
         </div>
       </div>
     </footer>

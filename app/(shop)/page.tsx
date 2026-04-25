@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { Eyebrow } from "@/components/shop/eyebrow";
 import { PostcodeChecker } from "@/components/shop/postcode-checker";
+import { getPublicSettings, settingString } from "@/lib/settings";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const settings = await getPublicSettings();
+  const tagline = settingString(settings, "business.tagline", "Newcastle · 20-minute delivery");
+  const phone = settingString(settings, "business.phone");
+
   return (
     <>
-      <Hero />
+      <Hero tagline={tagline} phone={phone} />
       <TrustRow />
       <Shelves />
       <HowItWorks />
@@ -15,13 +20,13 @@ export default function HomePage() {
   );
 }
 
-function Hero() {
+function Hero({ tagline, phone }: { tagline: string; phone: string }) {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-full bg-gradient-to-b from-cream-deep/40 via-cream to-cream" aria-hidden />
       <div className="relative mx-auto grid max-w-[1280px] gap-12 px-4 pt-12 pb-16 sm:px-6 sm:pt-16 sm:pb-24 md:grid-cols-[1.15fr_1fr] md:gap-10 md:pt-24 md:pb-32">
         <div className="flex flex-col justify-center">
-          <Eyebrow>Newcastle · 20-minute delivery</Eyebrow>
+          <Eyebrow>{tagline}</Eyebrow>
           <h1 className="mt-5 font-display text-[44px] leading-[0.95] tracking-[-0.02em] text-ink sm:text-[56px] md:text-[88px]">
             Catering supplies,
             <br />
@@ -40,12 +45,14 @@ function Hero() {
               Shop now
               <span aria-hidden>→</span>
             </Link>
-            <a
-              href="tel:01910000000"
-              className="inline-flex h-12 items-center whitespace-nowrap rounded-full border hairline bg-paper px-6 text-[14px] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-cream-deep sm:h-13 sm:px-7"
-            >
-              Call 0191 000 0000
-            </a>
+            {phone ? (
+              <a
+                href={`tel:${phone.replace(/\s+/g, "")}`}
+                className="inline-flex h-12 items-center whitespace-nowrap rounded-full border hairline bg-paper px-6 text-[14px] font-medium text-ink transition-colors hover:border-ink/30 hover:bg-cream-deep sm:h-13 sm:px-7"
+              >
+                Call {phone}
+              </a>
+            ) : null}
           </div>
 
           <div className="mt-10 grid grid-cols-3 gap-4 border-t hairline pt-7 text-[13px] sm:mt-14 sm:gap-6 sm:pt-8">

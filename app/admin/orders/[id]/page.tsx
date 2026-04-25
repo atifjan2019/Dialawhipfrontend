@@ -8,6 +8,7 @@ import { DateTime } from "@/components/ui/datetime";
 import { OrderActions } from "@/components/admin/order-actions";
 import { AssignDriver } from "@/components/admin/assign-driver";
 import { OrderTimeline } from "@/components/admin/order-timeline";
+import { PaymentPanel } from "@/components/admin/payment-panel";
 import { Eyebrow } from "@/components/shop/eyebrow";
 
 type Params = Promise<{ id: string }>;
@@ -38,7 +39,10 @@ export default async function AdminOrderDetail({ params }: { params: Params }) {
           <h1 className="mt-4 font-display text-[42px] leading-[1] text-ink">{order.reference}</h1>
           <div className="mt-3 text-[13px] text-ink-muted"><DateTime iso={order.created_at} /></div>
         </div>
-        <StatusBadge status={order.status} />
+        <div className="flex flex-wrap items-center gap-2">
+          <StatusBadge status={order.status} />
+          {order.payment ? <PaymentPill status={order.payment.status} /> : null}
+        </div>
       </div>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
@@ -84,6 +88,8 @@ export default async function AdminOrderDetail({ params }: { params: Params }) {
               <pre className="mt-2 whitespace-pre-line font-mono text-[12px] leading-relaxed text-ink-soft">{order.driver_notes}</pre>
             </section>
           ) : null}
+
+          <PaymentPanel orderId={order.id} payment={order.payment ?? null} />
 
           <section className="rounded-lg border hairline bg-paper p-6">
             <h2 className="font-display text-[18px] text-ink">Activity</h2>
@@ -139,5 +145,21 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
       <span className="text-ink-muted">{label}</span>
       <span className="text-ink">{children}</span>
     </div>
+  );
+}
+
+function PaymentPill({ status }: { status: "paid" | "unpaid" | "refunded" }) {
+  const cls =
+    status === "paid"
+      ? "bg-[#DCE6DB] text-forest-deep ring-moss/40"
+      : status === "refunded"
+      ? "bg-cream-deep text-ink-muted ring-line"
+      : "bg-[#F3D4CC] text-[#8B2A1D] ring-[#C87863]/40";
+  const label = status === "paid" ? "Paid" : status === "refunded" ? "Refunded" : "Unpaid";
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] ring-1 ring-inset ${cls}`}>
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+      {label}
+    </span>
   );
 }

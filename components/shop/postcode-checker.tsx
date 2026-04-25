@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/cn";
 
 type Result =
   | { state: "idle" }
@@ -9,11 +10,19 @@ type Result =
   | { state: "outside"; postcode: string }
   | { state: "invalid" };
 
-const COVERED_PREFIXES = ["NE1", "NE2", "NE3", "NE4", "NE5", "NE6", "NE7", "NE8", "NE9", "NE10", "NE11", "NE12", "NE13", "NE15", "NE16", "NE20", "NE25", "NE26", "NE27", "NE28", "NE29", "NE30"];
+const COVERED_PREFIXES = [
+  "NE1", "NE2", "NE3", "NE4", "NE5", "NE6", "NE7", "NE8", "NE9", "NE10",
+  "NE11", "NE12", "NE13", "NE15", "NE16", "NE20", "NE25", "NE26", "NE27",
+  "NE28", "NE29", "NE30",
+];
 
 const UK_POSTCODE = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i;
 
-export function PostcodeChecker() {
+/**
+ * White card overlay on the dark hero. Headline reads
+ * "Can we reach you in 20 minutes?" with a postcode input + Check button.
+ */
+export function PostcodeChecker({ tone = "card" }: { tone?: "card" | "plain" }) {
   const [value, setValue] = useState("");
   const [result, setResult] = useState<Result>({ state: "idle" });
 
@@ -29,7 +38,9 @@ export function PostcodeChecker() {
     setTimeout(() => {
       const prefix = normalised.match(/^[A-Z]{1,2}\d{1,2}/)?.[0] ?? "";
       if (COVERED_PREFIXES.includes(prefix)) {
-        const eta = prefix === "NE1" || prefix === "NE2" || prefix === "NE4" ? "18 min" : prefix.startsWith("NE2") ? "32 min" : "24 min";
+        const eta =
+          ["NE1", "NE2", "NE4"].includes(prefix) ? "18 min" :
+          prefix.startsWith("NE2") ? "32 min" : "24 min";
         setResult({ state: "covered", eta, postcode: formatted });
       } else {
         setResult({ state: "outside", postcode: formatted });
@@ -38,15 +49,24 @@ export function PostcodeChecker() {
   }
 
   return (
-    <div className="rounded-2xl border hairline bg-paper p-5 shadow-[0_20px_50px_-30px_rgba(10,22,40,0.25)]">
-      <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-clay">
-        <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-clay" />
-        <span>Live delivery check</span>
+    <div
+      className={cn(
+        "rounded-2xl bg-paper p-5",
+        tone === "card" ? "shadow-[0_30px_60px_-30px_rgba(0,0,0,0.45)]" : "border hairline",
+      )}
+    >
+      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-success">
+        <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
+        <span>Live</span>
       </div>
-      <h2 className="mt-3 font-display text-[24px] leading-tight text-ink">
-        Can we reach you in <span className="italic text-forest">20 minutes?</span>
+      <h2 className="mt-3 text-[20px] font-bold leading-tight text-ink">
+        Can we reach you in 20 minutes?
       </h2>
-      <form onSubmit={onCheck} className="mt-5 flex gap-2">
+      <p className="mt-1 text-[12px] text-ink-muted">
+        Enter your postcode for a live ETA across Tyneside.
+      </p>
+
+      <form onSubmit={onCheck} className="mt-4 flex gap-2">
         <input
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -54,42 +74,47 @@ export function PostcodeChecker() {
           aria-label="Postcode"
           inputMode="text"
           autoCapitalize="characters"
-          className="h-12 min-w-0 flex-1 rounded-full border hairline bg-cream px-4 text-[16px] text-ink placeholder:text-ink-muted/60 focus:border-forest focus:outline-none sm:text-[14px]"
+          className="h-11 min-w-0 flex-1 rounded-lg border hairline bg-paper px-3.5 text-[14px] text-ink placeholder:text-ink-faint focus:border-brand focus:outline-none"
         />
         <button
           type="submit"
-          className="inline-flex h-12 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-forest px-5 text-[13px] font-medium text-cream transition-colors hover:bg-forest-deep sm:px-6"
+          className="inline-flex h-11 shrink-0 items-center whitespace-nowrap rounded-lg bg-brand px-5 text-[13px] font-semibold text-paper transition-colors hover:bg-brand-deep"
         >
           Check
-          <span aria-hidden>→</span>
         </button>
       </form>
 
-      <div className="mt-4 min-h-[56px]">
+      <div className="mt-3 min-h-[40px]">
         {result.state === "idle" && (
           <p className="text-[12px] text-ink-muted">
-            Covering Newcastle, Gateshead, North & South Tyneside. Enter your postcode for a live ETA.
+            Covering Newcastle, Gateshead, North &amp; South Tyneside.
           </p>
         )}
         {result.state === "checking" && (
           <p className="text-[12px] text-ink-muted">Checking coverage…</p>
         )}
         {result.state === "invalid" && (
-          <p className="text-[12px] text-red-700">That doesn't look like a UK postcode. Try "NE1 5QQ".</p>
+          <p className="text-[12px] text-danger">
+            That doesn't look like a UK postcode. Try "NE1 5QQ".
+          </p>
         )}
         {result.state === "covered" && (
-          <div className="flex items-center gap-3 rounded-xl bg-forest px-4 py-3 text-cream">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-butter font-display text-[13px] font-semibold text-forest">✓</span>
-            <div className="flex-1">
-              <div className="text-[13px] font-medium">{result.postcode} — in zone</div>
-              <div className="text-[11px] text-butter">Average delivery: <strong className="text-cream">{result.eta}</strong></div>
+          <div className="flex items-center gap-3 rounded-lg bg-success-soft px-3 py-2.5 text-success">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-success text-[12px] font-bold text-paper">✓</span>
+            <div className="flex-1 text-[13px]">
+              <strong className="font-semibold">{result.postcode}</strong>
+              <span className="ml-1.5">in zone · ETA {result.eta}</span>
             </div>
           </div>
         )}
         {result.state === "outside" && (
-          <div className="rounded-xl bg-cream-deep px-4 py-3">
-            <div className="text-[13px] font-medium text-ink">{result.postcode} is outside our zone</div>
-            <div className="mt-1 text-[11px] text-ink-muted">Leave your number and we'll call when we expand — or order online for next-day courier.</div>
+          <div className="rounded-lg bg-surface px-3 py-2.5">
+            <div className="text-[13px] font-medium text-ink">
+              {result.postcode} is outside our zone
+            </div>
+            <div className="mt-0.5 text-[11px] text-ink-muted">
+              Order online for next-day courier across the UK.
+            </div>
           </div>
         )}
       </div>

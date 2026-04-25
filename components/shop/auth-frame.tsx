@@ -1,3 +1,5 @@
+import { Logo } from "@/components/shop/logo";
+
 export function AuthFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto grid max-w-[1280px] gap-12 px-6 py-16 md:grid-cols-[1fr_1fr] md:gap-20 md:py-24">
@@ -5,24 +7,29 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
         <div className="w-full max-w-md">{children}</div>
       </div>
       <div className="hidden md:block">
-        <div className="relative h-full min-h-[520px] overflow-hidden rounded-[22px] bg-forest paper-grain">
-          <div className="absolute inset-0 bg-gradient-to-br from-forest via-forest-deep to-[#0C1811]" />
-          <div className="relative flex h-full flex-col justify-between p-10 text-cream">
+        <div
+          className="relative h-full min-h-[520px] overflow-hidden rounded-[22px] text-paper"
+          style={{
+            background:
+              "radial-gradient(700px 400px at 90% 0%, #0a2a6b 0%, transparent 60%), linear-gradient(180deg, #04122e 0%, #061a3e 100%)",
+          }}
+        >
+          <div className="relative flex h-full flex-col justify-between p-10">
             <div>
-              <div className="font-display text-[28px] leading-none">Dialawhip</div>
-              <div className="mt-2 text-[11px] font-medium uppercase tracking-[0.22em] text-butter/80">
+              <Logo tone="light" />
+              <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow">
                 Newcastle catering
               </div>
             </div>
             <div>
-              <p className="font-display text-[42px] italic font-light leading-[1.1] text-cream">
+              <p className="text-[36px] font-extrabold leading-[1.05] tracking-tight text-paper">
                 &ldquo;Proper food,
                 <br />
                 delivered
                 <br />
-                properly.&rdquo;
+                <span className="text-yellow">properly.</span>&rdquo;
               </p>
-              <p className="mt-8 text-[12px] font-medium uppercase tracking-[0.18em] text-butter/70">
+              <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.18em] text-paper/55">
                 — Our kitchen, since 2019
               </p>
             </div>

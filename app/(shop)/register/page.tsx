@@ -42,10 +42,10 @@ export default function RegisterPage() {
   return (
     <AuthFrame>
       <Eyebrow>Join us</Eyebrow>
-      <h1 className="mt-5 font-display text-[48px] leading-[1] text-ink">
-        Create an <span className="italic font-light text-forest">account</span>.
+      <h1 className="mt-3 text-[44px] font-extrabold tracking-tight text-ink">
+        Create an account.
       </h1>
-      <p className="mt-4 text-[14px] text-ink-muted">
+      <p className="mt-3 text-[14px] text-ink-muted">
         Save addresses, reorder favourites, and track deliveries in one place.
       </p>
 
@@ -79,14 +79,14 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-12 w-full items-center justify-center rounded-full bg-forest px-6 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep disabled:opacity-50"
+          className="inline-flex h-12 w-full items-center justify-center rounded-full bg-yellow px-6 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0"
         >
           {pending ? "Creating account…" : "Create account →"}
         </button>
       </form>
 
       <p className="mt-8 text-center text-[13px] text-ink-muted">
-        Already with us? <Link href="/login" className="font-medium text-forest underline underline-offset-4 hover:text-forest-deep">Sign in</Link>
+        Already with us? <Link href="/login" className="font-semibold text-brand underline underline-offset-2 hover:text-brand-deep">Sign in</Link>
       </p>
     </AuthFrame>
   );

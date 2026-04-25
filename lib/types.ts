@@ -61,6 +61,8 @@ export interface Product {
   description: string | null;
   price_pence: number;
   image_url: string | null;
+  /** Additional gallery images (public URLs). The product page shows these as thumbnails. */
+  gallery_urls?: string[];
   is_active: boolean;
   is_age_restricted?: boolean;
   short_spec?: Record<string, string | number | boolean> | null;
@@ -90,6 +92,26 @@ export interface OrderItem {
   line_total_pence: number;
 }
 
+export type PaymentStatus = "paid" | "unpaid" | "refunded";
+
+export interface OrderPayment {
+  status: PaymentStatus;
+  is_paid: boolean;
+  is_refunded: boolean;
+  paid_at: string | null;
+  amount_paid_pence: number | null;
+  currency: string | null;
+  card_brand: string | null;
+  card_last4: string | null;
+  method: string | null;
+  receipt_url: string | null;
+  stripe_session_id: string | null;
+  stripe_payment_intent_id: string | null;
+  refund_id: string | null;
+  refunded_at: string | null;
+  amount_refunded_pence: number | null;
+}
+
 export interface Order {
   id: string;
   reference: string;
@@ -110,6 +132,7 @@ export interface Order {
   delivery_window_start?: string | null;
   delivery_window_end?: string | null;
   scheduled_for?: string | null;
+  payment?: OrderPayment;
   allowed_transitions?: OrderStatus[];
   driver?: User | null;
   events?: OrderEvent[];

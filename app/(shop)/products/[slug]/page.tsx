@@ -4,16 +4,10 @@ import { apiServer, ApiRequestError, getCurrentUser } from "@/lib/api-server";
 import type { Product } from "@/lib/types";
 import { Money } from "@/components/ui/money";
 import { ProductBuyBox } from "@/components/shop/product-buy-box";
+import { ProductGallery } from "@/components/shop/product-gallery";
 import { Eyebrow } from "@/components/shop/eyebrow";
 
 type Params = Promise<{ slug: string }>;
-
-const HUES = [
-  { bg: "#0B1D3A", ink: "#FFDA1A" },
-  { bg: "#FFDA1A", ink: "#0B1D3A" },
-  { bg: "#F3E9C8", ink: "#0B1D3A" },
-  { bg: "#061229", ink: "#FCD34D" },
-];
 
 const SPEC_LABEL: Record<string, string> = {
   purity: "Purity",
@@ -67,18 +61,17 @@ export default async function ProductPage({ params }: { params: Params }) {
   const user = await getCurrentUser().catch(() => null);
   const isVerified = user?.verification_status === "verified";
 
-  const hue = HUES[product.name.charCodeAt(0) % HUES.length];
   const inStock = typeof product.stock_count === "number" ? product.stock_count > 0 : true;
   const lowStock = typeof product.stock_count === "number" && product.stock_count > 0 && product.stock_count < 10;
 
   return (
     <div className="mx-auto max-w-[1280px] px-6 py-10">
-      <nav className="mb-10 flex items-center gap-3 text-[12px] text-ink-muted">
-        <Link href="/shop" className="transition-colors hover:text-forest">Shop</Link>
+      <nav className="mb-8 flex items-center gap-2 text-[12px] text-ink-muted">
+        <Link href="/shop" className="transition-colors hover:text-brand">Shop</Link>
         <span className="opacity-50">/</span>
         {product.category ? (
           <>
-            <Link href={`/shop/${product.category.slug}`} className="transition-colors hover:text-forest">
+            <Link href={`/shop/${product.category.slug}`} className="transition-colors hover:text-brand">
               {product.category.name}
             </Link>
             <span className="opacity-50">/</span>
@@ -88,88 +81,83 @@ export default async function ProductPage({ params }: { params: Params }) {
       </nav>
 
       <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
-        <div className="relative">
-          <div
-            className="aspect-[4/5] overflow-hidden rounded-[22px] paper-grain"
-            style={{ backgroundColor: hue.bg }}
-          >
-            <div className="flex h-full items-center justify-center">
-              <span
-                className="font-display text-[240px] font-light italic leading-none opacity-95"
-                style={{ color: hue.ink }}
-              >
-                {(product.brand ?? product.name).charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div className="absolute top-5 left-5 flex gap-2">
-              {product.is_age_restricted ? (
-                <span className="rounded-full bg-clay/95 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-cream">
-                  18+ · ID required
-                </span>
-              ) : null}
-              {product.brand ? (
-                <span className="rounded-full bg-paper/95 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-forest">
-                  {product.brand}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="mt-4 flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.18em] text-ink-muted">
-            <span>In stock</span>
+        <div>
+          <ProductGallery
+            featured={product.image_url}
+            gallery={product.gallery_urls ?? []}
+            alt={product.name}
+            fallbackLetter={(product.brand ?? product.name).charAt(0).toUpperCase()}
+            fallbackBg="#f5f1e6"
+            fallbackInk="#04122e"
+            topLeftBadges={
+              <>
+                {product.is_age_restricted ? (
+                  <span className="inline-flex h-6 items-center rounded bg-danger px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-paper">
+                    18+ ID
+                  </span>
+                ) : null}
+                {product.brand ? (
+                  <span className="inline-flex h-6 items-center rounded bg-paper px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-brand">
+                    {product.brand}
+                  </span>
+                ) : null}
+              </>
+            }
+          />
+          <div className="mt-4 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
+            <span>{inStock ? "In stock" : "Out of stock"}</span>
             <span>Newcastle · 20-min</span>
             <span>Live tracking</span>
           </div>
         </div>
 
-        <div className="flex flex-col pt-4">
+        <div className="flex flex-col">
           {product.category ? (
             <Eyebrow>{product.category.name}</Eyebrow>
           ) : null}
-          <h1 className="mt-6 font-display text-[44px] leading-[1.02] text-ink md:text-[60px]">
+          <h1 className="mt-3 text-[40px] font-extrabold leading-[1.05] tracking-tight text-ink md:text-[52px]">
             {product.name}
           </h1>
 
-          <div className="mt-5 flex items-baseline gap-4">
+          <div className="mt-5 flex items-baseline gap-3">
             {product.variants && product.variants.length > 0 ? (
               <>
-                <span className="font-display text-[14px] italic text-ink-muted">from</span>
+                <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-ink-muted">from</span>
                 <Money
                   pence={Math.min(...product.variants.filter((v) => v.is_active).map((v) => v.price_pence))}
-                  className="font-display text-[36px] font-medium text-forest"
+                  className="text-[36px] font-extrabold text-ink"
                 />
               </>
             ) : (
-              <Money pence={product.price_pence} className="font-display text-[36px] font-medium text-forest" />
+              <Money pence={product.price_pence} className="text-[36px] font-extrabold text-ink" />
             )}
             {lowStock ? (
-              <span className="rounded-full bg-butter px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-forest">
+              <span className="inline-flex h-7 items-center rounded bg-yellow px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-navy">
                 Only {product.stock_count} left
               </span>
             ) : null}
           </div>
 
-          <div className="mt-8 h-px bg-line" />
+          <div className="mt-7 h-px bg-line" />
 
           {product.description ? (
-            <p className="mt-8 text-[15px] leading-[1.75] text-ink-soft whitespace-pre-line">
+            <p className="mt-7 text-[15px] leading-[1.7] text-ink-soft whitespace-pre-line">
               {product.description}
             </p>
           ) : null}
 
           {product.short_spec && Object.keys(product.short_spec).length > 0 ? (
-            <div className="mt-8 overflow-hidden rounded-xl border hairline bg-paper">
-              <div className="bg-cream-deep/50 px-5 py-3 text-[11px] font-medium uppercase tracking-[0.18em] text-ink-muted">
+            <div className="mt-7 overflow-hidden rounded-2xl border hairline bg-paper">
+              <div className="bg-surface px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
                 Specs
               </div>
               <dl className="grid grid-cols-2 gap-px bg-line">
                 {Object.entries(product.short_spec).map(([k, v]) => (
                   <div key={k} className="bg-paper px-5 py-4">
-                    <dt className="text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+                    <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">
                       {SPEC_LABEL[k] ?? k.replace(/_/g, " ")}
                     </dt>
-                    <dd className="mt-1 font-display text-[16px] text-ink">
-                      {formatSpecValue(k, v)}
-                    </dd>
+                    <dd className="mt-1 text-[15px] font-bold text-ink">{formatSpecValue(k, v)}</dd>
                   </div>
                 ))}
               </dl>
@@ -177,29 +165,30 @@ export default async function ProductPage({ params }: { params: Params }) {
           ) : null}
 
           {product.is_age_restricted ? (
-            <div className="mt-8 rounded-xl border border-clay/40 bg-cream-deep/60 p-5">
+            <div className="mt-7 rounded-2xl border border-danger/25 bg-danger-soft p-5">
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-clay text-[12px] font-semibold text-cream">18+</span>
+                <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-danger text-[12px] font-bold text-paper">18+</span>
                 <div>
-                  <h3 className="font-display text-[16px] text-ink">ID verification required</h3>
+                  <h3 className="text-[14px] font-bold text-ink">ID verification required</h3>
                   {isVerified ? (
-                    <p className="mt-1.5 text-[13px] text-forest">
-                      ✓ Your account is verified. You can order this product.
-                    </p>
+                    <p className="mt-1 text-[13px] text-success">✓ Your account is verified. You can order this product.</p>
                   ) : user ? (
-                    <p className="mt-1.5 text-[13px] text-ink-muted">
+                    <p className="mt-1 text-[13px] text-ink-soft">
                       Your account is not yet verified.{" "}
-                      <Link href="/account/verification" className="font-medium text-forest underline underline-offset-4">
+                      <Link href="/account/verification" className="font-semibold text-brand underline underline-offset-2">
                         Upload your ID →
-                      </Link>{" "}
-                      (approved within minutes).
+                      </Link>
                     </p>
                   ) : (
-                    <p className="mt-1.5 text-[13px] text-ink-muted">
-                      <Link href={`/login?next=/products/${product.slug}`} className="font-medium text-forest underline underline-offset-4">Sign in</Link>{" "}
+                    <p className="mt-1 text-[13px] text-ink-soft">
+                      <Link href={`/login?next=/products/${product.slug}`} className="font-semibold text-brand underline underline-offset-2">
+                        Sign in
+                      </Link>{" "}
                       or{" "}
-                      <Link href="/register" className="font-medium text-forest underline underline-offset-4">create an account</Link>{" "}
-                      — we'll check ID once, and never again.
+                      <Link href="/register" className="font-semibold text-brand underline underline-offset-2">
+                        create an account
+                      </Link>
+                      .
                     </p>
                   )}
                 </div>
@@ -207,7 +196,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             </div>
           ) : null}
 
-          <div className="mt-10">
+          <div className="mt-9">
             {inStock ? (
               <ProductBuyBox
                 product={product}
@@ -219,14 +208,14 @@ export default async function ProductPage({ params }: { params: Params }) {
                 }}
               />
             ) : (
-              <div className="rounded-xl border hairline bg-paper p-6 text-center">
-                <p className="font-display text-[18px] text-ink">Out of stock</p>
-                <p className="mt-1 text-[13px] text-ink-muted">We'll restock within 48 hours — try again shortly.</p>
+              <div className="rounded-2xl border hairline bg-paper p-6 text-center">
+                <p className="text-[16px] font-bold text-ink">Out of stock</p>
+                <p className="mt-1 text-[13px] text-ink-muted">We'll restock within 48 hours.</p>
               </div>
             )}
           </div>
 
-          <p className="mt-6 text-[12px] text-ink-muted">
+          <p className="mt-5 text-[12px] text-ink-muted">
             Order before 03:00 for immediate Newcastle delivery. Free delivery NE1–NE4.
           </p>
         </div>

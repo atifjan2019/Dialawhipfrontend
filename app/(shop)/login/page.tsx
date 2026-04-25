@@ -57,14 +57,14 @@ function LoginForm() {
   return (
     <AuthFrame>
       <Eyebrow>Welcome back</Eyebrow>
-      <h1 className="mt-5 font-display text-[48px] leading-[1] text-ink">
-        Sign <span className="italic font-light text-forest">in</span>.
+      <h1 className="mt-3 text-[44px] font-extrabold tracking-tight text-ink">
+        Sign in.
       </h1>
-      <p className="mt-4 text-[14px] text-ink-muted">
+      <p className="mt-3 text-[14px] text-ink-muted">
         Your bag, your addresses and your past orders — right where you left them.
       </p>
 
-      <form onSubmit={onSubmit} className="mt-10 space-y-5">
+      <form onSubmit={onSubmit} className="mt-8 space-y-5">
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -78,14 +78,14 @@ function LoginForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-12 w-full items-center justify-center rounded-full bg-forest px-6 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep disabled:opacity-50"
+          className="inline-flex h-12 w-full items-center justify-center rounded-full bg-yellow px-6 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0"
         >
           {pending ? "Signing in…" : "Sign in →"}
         </button>
       </form>
 
       <p className="mt-8 text-center text-[13px] text-ink-muted">
-        New customer? <Link href="/register" className="font-medium text-forest underline underline-offset-4 hover:text-forest-deep">Create an account</Link>
+        New customer? <Link href="/register" className="font-semibold text-brand underline underline-offset-2 hover:text-brand-deep">Create an account</Link>
       </p>
     </AuthFrame>
   );

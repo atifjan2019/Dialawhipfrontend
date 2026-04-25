@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 // Where the Laravel backend lives. The Next.js proxy forwards every
 // /api/proxy/* request to ${API_URL}/api/*  e.g.
@@ -61,6 +62,16 @@ async function forward(req: NextRequest, path: string[]): Promise<NextResponse> 
       out.headers.set(k, v);
     }
   });
+
+  // When admin endpoints that touch public-facing data succeed, drop the
+  // cached settings/products so customer pages pick up the change instantly.
+  if (res.ok && req.method !== "GET" && req.method !== "HEAD") {
+    const joined = path.join("/");
+    if (joined.startsWith("v1/admin/settings")) {
+      revalidateTag("public-settings");
+    }
+  }
+
   return out;
 }
 

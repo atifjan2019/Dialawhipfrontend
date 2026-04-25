@@ -22,6 +22,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [pending, setPending] = useState(false);
+  const [shopClosed, setShopClosed] = useState<{ message: string } | null>(null);
   const [newAddr, setNewAddr] = useState(false);
   const [addr, setAddr] = useState({ label: "Kitchen", line1: "", line2: "", city: "Newcastle upon Tyne", postcode: "" });
 
@@ -58,9 +59,17 @@ export default function CheckoutPage() {
         delivery_tier: tier,
       },
     })
-      .then((r) => { setPricing(r.data); setError(null); })
+      .then((r) => { setPricing(r.data); setError(null); setShopClosed(null); })
       .catch((e: unknown) => {
-        if (e instanceof ApiRequestError) setError(e.body.message);
+        if (e instanceof ApiRequestError) {
+          if (e.body.code === "shop_closed") {
+            setShopClosed({ message: e.body.message || "We are not accepting orders right now." });
+            setError(null);
+          } else {
+            setShopClosed(null);
+            setError(e.body.message);
+          }
+        }
       });
   }, [items, addresses, selectedAddress, tier]);
 
@@ -111,8 +120,13 @@ export default function CheckoutPage() {
       window.location.href = res.data.checkout_url;
     } catch (e: unknown) {
       if (e instanceof ApiRequestError) {
-        setErrors(e.body.errors ?? {});
-        setError(e.body.message);
+        if (e.body.code === "shop_closed") {
+          setShopClosed({ message: e.body.message || "We are not accepting orders right now." });
+          setError(null);
+        } else {
+          setErrors(e.body.errors ?? {});
+          setError(e.body.message);
+        }
       } else {
         setError("Unable to start checkout.");
       }
@@ -124,10 +138,12 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-6 py-28 text-center">
-        <h1 className="font-display text-[56px] italic font-light text-forest">Your bag is empty.</h1>
+        <h1 className="text-[44px] font-extrabold tracking-tight text-ink sm:text-[56px]">
+          Your bag is empty.
+        </h1>
         <Link
           href="/shop"
-          className="mt-10 inline-flex h-12 items-center rounded-full bg-forest px-8 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep"
+          className="mt-8 inline-flex h-12 items-center rounded-full bg-yellow px-8 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5"
         >
           Browse the shop
         </Link>
@@ -142,9 +158,21 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-[1280px] px-6 py-14">
       <Eyebrow>Step 2 of 2</Eyebrow>
-      <h1 className="mt-5 font-display text-[48px] leading-[1] text-ink md:text-[64px]">
-        Almost <span className="italic font-light text-forest">there</span>.
+      <h1 className="mt-3 text-[40px] font-extrabold tracking-tight text-ink sm:text-[56px]">
+        Almost there.
       </h1>
+
+      {shopClosed ? (
+        <div className="mt-8 rounded-2xl border border-danger/25 bg-danger-soft p-4 text-[13px] leading-relaxed text-ink" role="alert">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-danger text-[12px] font-bold text-paper">!</span>
+            <div>
+              <strong className="block text-[14px] font-semibold text-ink">Shop is currently closed</strong>
+              <span className="mt-1 block text-ink-soft">{shopClosed.message}</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <form onSubmit={onSubmit} className="mt-12 grid gap-10 lg:grid-cols-[1fr_380px]">
         <div className="space-y-10">
@@ -154,9 +182,9 @@ export default function CheckoutPage() {
                 {addresses.map((a) => (
                   <label
                     key={a.id}
-                    className={`flex cursor-pointer items-start gap-4 rounded-lg border p-5 transition-all ${
+                    className={`flex cursor-pointer items-start gap-4 rounded-2xl border p-5 transition-all ${
                       selectedAddress === a.id
-                        ? "border-forest bg-paper shadow-[0_1px_0_0_var(--color-forest)]"
+                        ? "border-brand bg-paper shadow-[0_4px_14px_-8px_rgba(0,79,176,0.35)]"
                         : "hairline bg-paper hover:border-ink/25"
                     }`}
                   >
@@ -166,12 +194,12 @@ export default function CheckoutPage() {
                       value={a.id}
                       checked={selectedAddress === a.id}
                       onChange={(e) => setSelectedAddress(e.target.value)}
-                      className="mt-1 accent-forest"
+                      className="mt-1 accent-brand"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-display text-[17px] text-ink">{a.label ?? "Address"}</span>
-                        {a.is_default ? <span className="rounded-full bg-cream-deep px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-ink-muted">Default</span> : null}
+                        <span className="text-[15px] font-bold text-ink">{a.label ?? "Address"}</span>
+                        {a.is_default ? <span className="rounded-full bg-surface px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted">Default</span> : null}
                       </div>
                       <div className="mt-1 text-[13px] leading-relaxed text-ink-muted">
                         {a.line1}{a.line2 ? `, ${a.line2}` : ""}<br />
@@ -183,13 +211,13 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setNewAddr(true)}
-                  className="mt-2 text-[13px] font-medium text-forest transition-colors hover:text-forest-deep"
+                  className="mt-2 text-[13px] font-semibold text-brand transition-colors hover:text-brand-deep"
                 >
                   + Add new address
                 </button>
               </div>
             ) : (
-              <div className="space-y-4 rounded-lg border hairline bg-paper p-6">
+              <div className="space-y-4 rounded-2xl border hairline bg-paper p-6">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Label">
                     <Input value={addr.label} onChange={(e) => setAddr({ ...addr, label: e.target.value })} />
@@ -211,7 +239,7 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => setNewAddr(false)}
-                    className="text-[13px] font-medium text-forest hover:text-forest-deep"
+                    className="text-[13px] font-semibold text-brand hover:text-brand-deep"
                   >
                     ← Choose existing
                   </button>
@@ -255,38 +283,38 @@ export default function CheckoutPage() {
 
           {requiresId ? (
             <Section step="03" title="ID & compliance">
-              <div className="space-y-4 rounded-xl border hairline bg-paper p-6">
+              <div className="space-y-4 rounded-2xl border hairline bg-paper p-6">
                 {!user ? (
-                  <div className="rounded-lg bg-cream-deep/50 p-4 text-[13px] text-ink-soft">
+                  <div className="rounded-lg bg-surface p-4 text-[13px] text-ink-soft">
                     Your bag contains age-restricted items.{" "}
-                    <Link href="/login?next=/checkout" className="font-medium text-forest underline underline-offset-4">Sign in</Link>
+                    <Link href="/login?next=/checkout" className="font-semibold text-brand underline underline-offset-2">Sign in</Link>
                     {" or "}
-                    <Link href="/register" className="font-medium text-forest underline underline-offset-4">register</Link>{" "}
+                    <Link href="/register" className="font-semibold text-brand underline underline-offset-2">register</Link>{" "}
                     to continue.
                   </div>
                 ) : !isVerified ? (
-                  <div className="rounded-lg border border-clay/40 bg-butter/20 p-4 text-[13px]">
-                    <div className="font-medium text-ink">ID verification required</div>
-                    <div className="mt-1 text-ink-muted">
+                  <div className="rounded-lg border border-yellow/60 bg-yellow-soft p-4 text-[13px]">
+                    <div className="font-bold text-ink">ID verification required</div>
+                    <div className="mt-1 text-ink-soft">
                       Upload a government-issued ID once — approved inside ten minutes.{" "}
-                      <Link href="/account/verification" className="font-medium text-forest underline underline-offset-4">
+                      <Link href="/account/verification" className="font-semibold text-brand underline underline-offset-2">
                         Start verification →
                       </Link>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 rounded-lg bg-forest px-4 py-3 text-cream">
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-butter font-display text-[12px] font-semibold text-forest">✓</span>
-                    <div className="text-[13px] font-medium">Your account is verified</div>
+                  <div className="flex items-center gap-3 rounded-lg bg-success-soft px-4 py-3 text-success">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-success text-[12px] font-bold text-paper">✓</span>
+                    <div className="text-[13px] font-semibold">Your account is verified</div>
                   </div>
                 )}
 
-                <label className="flex cursor-pointer items-start gap-3 rounded-lg border hairline bg-cream-deep/30 p-4 text-[13px] text-ink-soft">
+                <label className="flex cursor-pointer items-start gap-3 rounded-lg border hairline bg-surface/60 p-4 text-[13px] text-ink-soft">
                   <input
                     type="checkbox"
                     checked={statementAccepted}
                     onChange={(e) => setStatementAccepted(e.target.checked)}
-                    className="mt-1 accent-forest"
+                    className="mt-1 accent-brand"
                   />
                   <span>
                     <strong className="text-ink">Statement of use.</strong> I confirm I am purchasing these products
@@ -295,16 +323,16 @@ export default function CheckoutPage() {
                   </span>
                 </label>
 
-                <label className="flex cursor-pointer items-start gap-3 rounded-lg border hairline bg-cream-deep/30 p-4 text-[13px] text-ink-soft">
+                <label className="flex cursor-pointer items-start gap-3 rounded-lg border hairline bg-surface/60 p-4 text-[13px] text-ink-soft">
                   <input
                     type="checkbox"
                     checked={n2oAccepted}
                     onChange={(e) => setN2oAccepted(e.target.checked)}
-                    className="mt-1 accent-forest"
+                    className="mt-1 accent-brand"
                   />
                   <span>
                     I have read and agree to the{" "}
-                    <Link href="/legal/n2o-agreement" target="_blank" className="font-medium text-forest underline underline-offset-4">
+                    <Link href="/legal/n2o-agreement" target="_blank" className="font-semibold text-brand underline underline-offset-2">
                       N₂O chargers agreement
                     </Link>{" "}
                     and accept its binding terms.
@@ -315,28 +343,28 @@ export default function CheckoutPage() {
           ) : null}
 
           <Section step={requiresId ? "04" : "03"} title="Anything we should know?">
-            <div className="rounded-lg border hairline bg-paper p-6">
+            <div className="rounded-2xl border hairline bg-paper p-6">
               <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Gate codes, buzzer details, doorman instructions…" />
             </div>
           </Section>
 
           {error ? (
-            <div className="rounded-lg border border-[#C87863]/40 bg-[#F3D4CC]/60 p-4 text-[13px] text-[#8B2A1D]">
+            <div className="rounded-2xl border border-danger/30 bg-danger-soft p-4 text-[13px] text-danger">
               {error}
             </div>
           ) : null}
         </div>
 
         <aside className="h-fit space-y-5 lg:sticky lg:top-24">
-          <div className="rounded-lg border hairline bg-paper p-6">
-            <h2 className="font-display text-[22px] text-ink">Your order</h2>
+          <div className="rounded-2xl border hairline bg-paper p-6">
+            <h2 className="text-[18px] font-bold text-ink">Your order</h2>
             <ul className="mt-5 space-y-3 text-[13px]">
               {items.map((i) => (
                 <li key={`${i.product_id}::${i.variant_id ?? ""}`} className="flex justify-between gap-4">
                   <span className="text-ink-soft">
-                    <span className="font-medium text-ink">{i.quantity} ×</span> {i.name}
+                    <span className="font-bold text-ink">{i.quantity} ×</span> {i.name}
                     {i.variant_label ? (
-                      <span className="ml-1 text-[11px] uppercase tracking-[0.12em] text-clay">· {i.variant_label}</span>
+                      <span className="ml-1 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">· {i.variant_label}</span>
                     ) : null}
                   </span>
                   <Money pence={i.unit_price_pence * i.quantity} className="shrink-0 text-ink" />
@@ -351,16 +379,20 @@ export default function CheckoutPage() {
             </div>
 
             <div className="mt-5 flex items-baseline justify-between border-t hairline pt-5">
-              <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-muted">Total</span>
-              <Money pence={pricing?.total_pence ?? 0} className="font-display text-[28px] text-forest" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">Total</span>
+              <Money pence={pricing?.total_pence ?? 0} className="text-[28px] font-extrabold text-ink" />
             </div>
 
             <button
               type="submit"
-              disabled={pending || !pricing || (requiresId && !isVerified)}
-              className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-forest px-6 text-[14px] font-medium text-cream transition-colors hover:bg-forest-deep disabled:opacity-50"
+              disabled={pending || !pricing || !!shopClosed || (requiresId && !isVerified)}
+              className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-yellow px-6 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0"
             >
-              {pending ? "Starting secure checkout…" : "Pay securely →"}
+              {pending
+                ? "Starting secure checkout…"
+                : shopClosed
+                ? "Shop closed — try again later"
+                : "Pay securely →"}
             </button>
             <p className="mt-3 text-center text-[11px] text-ink-muted">
               Powered by Stripe · Klarna · Apple Pay · Cash on delivery
