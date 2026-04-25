@@ -138,32 +138,6 @@ export default async function ProductPage({ params }: { params: Params }) {
             ) : null}
           </div>
 
-          <div className="mt-7 h-px bg-line" />
-
-          {product.description ? (
-            <p className="mt-7 text-[15px] leading-[1.7] text-ink-soft whitespace-pre-line">
-              {product.description}
-            </p>
-          ) : null}
-
-          {product.short_spec && Object.keys(product.short_spec).length > 0 ? (
-            <div className="mt-7 overflow-hidden rounded-2xl border hairline bg-paper">
-              <div className="bg-surface px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
-                Specs
-              </div>
-              <dl className="grid grid-cols-2 gap-px bg-line">
-                {Object.entries(product.short_spec).map(([k, v]) => (
-                  <div key={k} className="bg-paper px-5 py-4">
-                    <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">
-                      {SPEC_LABEL[k] ?? k.replace(/_/g, " ")}
-                    </dt>
-                    <dd className="mt-1 text-[15px] font-bold text-ink">{formatSpecValue(k, v)}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          ) : null}
-
           {product.is_age_restricted ? (
             <div className="mt-7 rounded-2xl border border-danger/25 bg-danger-soft p-5">
               <div className="flex items-start gap-3">
@@ -196,7 +170,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             </div>
           ) : null}
 
-          <div className="mt-9">
+          <div className="mt-7">
             {inStock ? (
               <ProductBuyBox
                 product={product}
@@ -210,7 +184,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             ) : (
               <div className="rounded-2xl border hairline bg-paper p-6 text-center">
                 <p className="text-[16px] font-bold text-ink">Out of stock</p>
-                <p className="mt-1 text-[13px] text-ink-muted">We'll restock within 48 hours.</p>
+                <p className="mt-1 text-[13px] text-ink-muted">We&rsquo;ll restock within 48 hours.</p>
               </div>
             )}
           </div>
@@ -218,6 +192,32 @@ export default async function ProductPage({ params }: { params: Params }) {
           <p className="mt-5 text-[12px] text-ink-muted">
             Order before 03:00 for immediate Newcastle delivery. Free delivery NE1–NE4.
           </p>
+
+          <div className="mt-9 h-px bg-line" />
+
+          {product.description ? (
+            <p className="mt-7 text-[15px] leading-[1.7] text-ink-soft whitespace-pre-line">
+              {product.description}
+            </p>
+          ) : null}
+
+          {product.short_spec && Object.keys(product.short_spec).length > 0 ? (
+            <div className="mt-7 overflow-hidden rounded-2xl border hairline bg-paper">
+              <div className="bg-surface px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+                Specs
+              </div>
+              <dl className="grid grid-cols-2 gap-px bg-line">
+                {Object.entries(product.short_spec).map(([k, v]) => (
+                  <div key={k} className="bg-paper px-5 py-4">
+                    <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">
+                      {SPEC_LABEL[k] ?? k.replace(/_/g, " ")}
+                    </dt>
+                    <dd className="mt-1 text-[15px] font-bold text-ink">{formatSpecValue(k, v)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
