@@ -163,15 +163,27 @@ export default function VerificationPage() {
         Upload one government-issued photo ID. We verify once and never ask again (unless your document expires). Usually approved inside ten minutes during operating hours.
       </p>
 
-      <StatusBanner status={status} verifiedAt={data?.verified_at ?? null} />
+      <StatusBanner
+        status={status}
+        verifiedAt={data?.verified_at ?? null}
+        rejectionReason={
+          status === "rejected"
+            ? data?.data.find((v) => v.status === "rejected")?.rejection_reason ?? null
+            : null
+        }
+      />
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
         {status !== "pending" ? (
           <form onSubmit={onSubmit} className="space-y-6 rounded-2xl bg-paper p-8 ring-2 ring-ink">
             <div>
-              <h2 className="font-display text-[26px] font-bold text-ink">Upload your ID</h2>
+              <h2 className="font-display text-[26px] font-bold text-ink">
+                {status === "rejected" ? "Try again" : "Upload your ID"}
+              </h2>
               <p className="mt-2 text-[13px] font-medium text-ink-muted">
-                Clear photo or scan. All four corners must be visible. No glare.
+                {status === "rejected"
+                  ? "Take a fresh photo or scan that addresses the reviewer's note above. All four corners must be visible. No glare."
+                  : "Clear photo or scan. All four corners must be visible. No glare."}
               </p>
             </div>
 
@@ -303,7 +315,15 @@ export default function VerificationPage() {
   );
 }
 
-function StatusBanner({ status, verifiedAt }: { status: VerificationStatus; verifiedAt: string | null }) {
+function StatusBanner({
+  status,
+  verifiedAt,
+  rejectionReason,
+}: {
+  status: VerificationStatus;
+  verifiedAt: string | null;
+  rejectionReason: string | null;
+}) {
   if (status === "verified") {
     return (
       <div className="mt-8 flex items-center gap-4 rounded-2xl bg-ink px-6 py-5 text-paper ring-2 ring-ink">
@@ -329,10 +349,25 @@ function StatusBanner({ status, verifiedAt }: { status: VerificationStatus; veri
   }
   if (status === "rejected") {
     return (
-      <div className="mt-8 rounded-2xl bg-paper px-6 py-5 ring-2 ring-danger">
-        <div className="font-display text-[15px] font-bold text-danger">Last upload was rejected</div>
-        <div className="mt-1 text-[12px] font-medium text-ink-muted">
-          See reason below and try again with a clearer image.
+      <div className="mt-8 rounded-2xl bg-paper p-6 ring-2 ring-danger">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-danger text-[14px] font-bold text-paper">
+            !
+          </span>
+          <div className="flex-1">
+            <div className="font-display text-[18px] font-bold text-danger">Your last upload was rejected</div>
+            {rejectionReason ? (
+              <div className="mt-2 rounded-lg bg-danger-soft p-3 text-[13px] font-medium leading-relaxed text-ink">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-danger">
+                  Reviewer&rsquo;s note
+                </span>
+                <span className="mt-1 block">{rejectionReason}</span>
+              </div>
+            ) : null}
+            <p className="mt-3 text-[13px] font-medium text-ink/75">
+              Please upload a new photo below — fixing the issue above. Most rejections are resolved on the second try.
+            </p>
+          </div>
         </div>
       </div>
     );
