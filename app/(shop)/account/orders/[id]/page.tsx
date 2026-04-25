@@ -21,8 +21,8 @@ export default async function OrderDetailPage({ params }: { params: Params }) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-14">
-      <Link href="/account/orders" className="text-[12px] font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-forest">
+    <div className="mx-auto max-w-[1280px] px-6 py-14">
+      <Link href="/account/orders" className="text-[12px] font-bold uppercase tracking-[0.18em] text-ink-muted transition-colors hover:text-brand">
         ← All orders
       </Link>
 

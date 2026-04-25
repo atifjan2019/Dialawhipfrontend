@@ -12,7 +12,7 @@ export default async function AdminCategoriesPage() {
   return (
     <>
       <section className="border-b-2 border-ink bg-yellow">
-        <div className="mx-auto max-w-3xl px-6 py-12 md:px-10 md:py-16">
+        <div className="mx-auto max-w-[1280px] px-6 py-12 md:px-10 md:py-16">
           <Eyebrow>Catalogue</Eyebrow>
           <h1 className="mt-5 font-display text-[44px] font-bold leading-[1] tracking-tight text-ink md:text-[64px]">
             <span className="text-brand">Categories.</span>
@@ -23,7 +23,7 @@ export default async function AdminCategoriesPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-3xl px-6 py-10 md:px-10">
+      <div className="mx-auto max-w-[1280px] px-6 py-10 md:px-10">
         <CategoriesManager initial={res.data} />
       </div>
     </>

@@ -148,7 +148,7 @@ export default function VerificationPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1100px] px-6 py-14">
+    <div className="mx-auto max-w-[1280px] px-6 py-14">
       <nav className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">
         <Link href="/account" className="transition-colors hover:text-brand">Account</Link>
         <span aria-hidden>·</span>

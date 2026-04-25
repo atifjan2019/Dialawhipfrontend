@@ -19,8 +19,8 @@ export default async function EditProductPage({ params }: { params: Params }) {
   const cats = await apiServer<{ data: Category[] }>("/api/v1/categories", { auth: false });
 
   return (
-    <div className="mx-auto max-w-4xl px-10 py-10">
-      <Link href="/admin/products" className="text-[12px] font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-forest">
+    <div className="mx-auto max-w-[1280px] px-6 py-10 md:px-10">
+      <Link href="/admin/products" className="text-[12px] font-bold uppercase tracking-[0.18em] text-ink-muted transition-colors hover:text-brand">
         ← Products
       </Link>
       <Eyebrow className="mt-8">Edit</Eyebrow>

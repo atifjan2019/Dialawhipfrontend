@@ -7,7 +7,7 @@ export default function AboutPage() {
   return (
     <>
       <section className="border-b-2 border-ink bg-yellow">
-        <div className="mx-auto max-w-[1080px] px-6 py-16 md:py-24">
+        <div className="mx-auto max-w-[1280px] px-6 py-16 md:py-24">
           <Eyebrow>About Dialawhip</Eyebrow>
           <h1 className="mt-6 font-display text-[56px] font-bold leading-[1] tracking-tight text-ink md:text-[96px]">
             Built in <span className="text-brand">Newcastle</span>
@@ -17,7 +17,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1080px] px-6 py-20">
+      <div className="mx-auto max-w-[1280px] px-6 py-20">
         <div className="grid gap-14 md:grid-cols-[1.2fr_1fr]">
           <div className="space-y-6 text-[16px] font-medium leading-[1.8] text-ink-soft">
             <p>

@@ -404,7 +404,7 @@ function Check({ children }: { children: React.ReactNode }) {
 function ClosingCta() {
   return (
     <section className="bg-ink py-24 text-center text-paper">
-      <div className="mx-auto max-w-[1100px] px-6">
+      <div className="mx-auto max-w-[1280px] px-6">
         <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-yellow">
           Dialawhip · Newcastle
         </div>
