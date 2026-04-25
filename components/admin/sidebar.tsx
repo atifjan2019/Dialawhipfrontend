@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
-import { LayoutDashboard, ClipboardList, Users, Package, Truck, BarChart3, LogOut, ShieldCheck, Settings as SettingsIcon, Menu, X } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Users, Package, FolderTree, Truck, BarChart3, LogOut, ShieldCheck, Settings as SettingsIcon, Menu, X } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/admin/verifications", label: "ID verifications", icon: ShieldCheck },
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/drivers", label: "Drivers", icon: Truck },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
   { href: "/admin/settings", label: "Settings", icon: SettingsIcon },

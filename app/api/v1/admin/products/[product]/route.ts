@@ -7,7 +7,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeProduct } from "@/lib/api/resources";
 
 const VariantSchema = z.object({
-  id: z.string().optional().nullable(),
+  id: z.string().uuid().optional().nullable(),
   label: z.string().min(1).max(120),
   price_pence: z.number().int().min(0).max(10_000_000),
   qty_multiplier: z.number().int().min(1).max(1000).optional().nullable(),
@@ -18,7 +18,7 @@ const VariantSchema = z.object({
 });
 
 const ProductBody = z.object({
-  category_id: z.string(),
+  category_id: z.string().uuid({ message: "Pick a category" }),
   name: z.string().min(1).max(160),
   slug: z.string().min(1).max(160),
   brand: z.string().max(80).optional().nullable(),

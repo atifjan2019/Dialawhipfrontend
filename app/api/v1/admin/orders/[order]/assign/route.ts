@@ -6,7 +6,7 @@ import { parseJson } from "@/lib/api/validation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeOrder } from "@/lib/api/resources";
 
-const Body = z.object({ driver_id: z.string() });
+const Body = z.object({ driver_id: z.string().uuid() });
 type Ctx = { params: Promise<{ order: string }> };
 
 export const PATCH = handle(async (req: NextRequest, { params }: Ctx) => {

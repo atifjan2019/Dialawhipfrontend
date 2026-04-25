@@ -10,12 +10,12 @@ import { serializeOrder } from "@/lib/api/resources";
 
 const Body = z.object({
   items: z.array(z.object({
-    product_id: z.string(),
-    variant_id: z.string().optional().nullable(),
+    product_id: z.string().uuid(),
+    variant_id: z.string().uuid().optional().nullable(),
     quantity: z.number().int().min(1).max(500),
     options: z.record(z.string(), z.unknown()).optional().nullable(),
   })).min(1),
-  address_id: z.string(),
+  address_id: z.string().uuid(),
   delivery_tier: z.enum(["standard", "priority", "super"]).optional().nullable(),
   scheduled_for: z.string().datetime().optional().nullable(),
   customer_notes: z.string().max(1000).optional().nullable(),

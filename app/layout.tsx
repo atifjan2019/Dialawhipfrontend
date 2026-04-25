@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -35,7 +35,6 @@ export async function generateMetadata(): Promise<Metadata> {
   const keywords = settingString(s, "seo.meta_keywords");
   const favicon = settingString(s, "branding.favicon_url");
   const ogImage = settingString(s, "branding.og_image_url");
-  const themeColor = settingString(s, "branding.primary_color", "#0B1D3A");
 
   return {
     title: { default: titleDefault, template: `%s · ${name}` },
@@ -57,7 +56,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       images: ogImage ? [ogImage] : undefined,
     },
-    themeColor,
+  };
+}
+
+export async function generateViewport(): Promise<Viewport> {
+  const s = await getPublicSettings();
+  return {
+    themeColor: settingString(s, "branding.primary_color", "#0B1D3A"),
   };
 }
 

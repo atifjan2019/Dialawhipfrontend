@@ -55,16 +55,16 @@ export const SETTINGS: SettingDef[] = [
 
   // order (some public)
   D("order.is_open", "Shop open", "bool", "order", true, true),
-  D("order.minimum_pence", "Minimum order (pence)", "int", "order", true, 2000),
+  D("order.minimum_pence", "Minimum order", "int", "order", true, 2000),
   D("order.lead_time_hours", "Lead time (hours)", "int", "order", true, 0),
-  D("order.free_delivery_threshold_pence", "Free delivery threshold (pence)", "int", "order", true, 0),
+  D("order.free_delivery_threshold_pence", "Free delivery threshold", "int", "order", true, 0),
 
   // delivery defaults
   D("delivery.default_fee_pence", "Default delivery fee", "int", "delivery", false, 0),
   D("delivery.default_priority_fee_pence", "Priority surcharge", "int", "delivery", false, 500),
   D("delivery.default_super_fee_pence", "Super surcharge", "int", "delivery", false, 1500),
-  D("delivery.default_eta_standard_minutes", "Standard ETA", "int", "delivery", true, 25),
-  D("delivery.default_eta_priority_minutes", "Priority ETA", "int", "delivery", true, 12),
+  D("delivery.default_eta_standard_minutes", "Standard ETA (minutes)", "int", "delivery", true, 25),
+  D("delivery.default_eta_priority_minutes", "Priority ETA (minutes)", "int", "delivery", true, 12),
 
   // tax
   D("tax.vat.rate_bps", "VAT rate (basis points)", "int", "tax", false, 0),

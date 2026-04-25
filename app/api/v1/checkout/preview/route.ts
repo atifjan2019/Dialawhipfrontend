@@ -6,8 +6,8 @@ import { priceCart } from "@/lib/domain/pricing";
 
 const Body = z.object({
   items: z.array(z.object({
-    product_id: z.string(),
-    variant_id: z.string().optional().nullable(),
+    product_id: z.string().uuid(),
+    variant_id: z.string().uuid().optional().nullable(),
     quantity: z.number().int().min(1).max(500),
     options: z.record(z.string(), z.unknown()).optional().nullable(),
   })).min(1),
