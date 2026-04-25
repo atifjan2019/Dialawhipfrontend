@@ -68,7 +68,7 @@ async function forward(req: NextRequest, path: string[]): Promise<NextResponse> 
   if (res.ok && req.method !== "GET" && req.method !== "HEAD") {
     const joined = path.join("/");
     if (joined.startsWith("v1/admin/settings")) {
-      revalidateTag("public-settings");
+      revalidateTag("public-settings", "max");
     }
   }
 
