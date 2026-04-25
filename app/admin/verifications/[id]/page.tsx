@@ -103,11 +103,12 @@ export default async function AdminVerificationDetail({ params }: { params: Para
   );
 }
 
-function StatusChip({ status }: { status: "pending" | "approved" | "rejected" }) {
+function StatusChip({ status }: { status: "pending" | "approved" | "rejected" | "expired" }) {
   const map = {
     pending: "bg-yellow text-ink ring-2 ring-ink",
     approved: "bg-ink text-yellow",
     rejected: "bg-danger text-paper",
+    expired: "bg-stone-soft text-ink-muted ring-2 ring-ink/20",
   } as const;
   return (
     <span
