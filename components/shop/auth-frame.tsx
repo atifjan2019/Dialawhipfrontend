@@ -1,4 +1,4 @@
-import { Logo } from "@/components/shop/logo";
+import Link from "next/link";
 
 export function AuthFrame({ children }: { children: React.ReactNode }) {
   return (
@@ -7,30 +7,35 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
         <div className="w-full max-w-md">{children}</div>
       </div>
       <div className="hidden md:block">
-        <div
-          className="relative h-full min-h-[520px] overflow-hidden rounded-[22px] text-paper"
-          style={{
-            background:
-              "radial-gradient(700px 400px at 90% 0%, #0a2a6b 0%, transparent 60%), linear-gradient(180deg, #04122e 0%, #061a3e 100%)",
-          }}
-        >
+        <div className="relative h-full min-h-[560px] overflow-hidden rounded-3xl bg-yellow ring-2 ring-ink">
+          {/* Diagonal black band */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-3/5 bg-ink text-paper"
+            style={{ clipPath: "polygon(0 30%, 100% 0, 100% 100%, 0 100%)" }}
+            aria-hidden
+          />
+
           <div className="relative flex h-full flex-col justify-between p-10">
             <div>
-              <Logo tone="light" />
-              <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 font-display text-[26px] font-bold leading-none text-ink"
+              >
+                Dialawhip
+              </Link>
+              <div className="mt-3 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-ink">
                 Newcastle catering
               </div>
             </div>
-            <div>
-              <p className="text-[36px] font-extrabold leading-[1.05] tracking-tight text-paper">
-                &ldquo;Proper food,
+
+            <div className="relative z-10 text-paper">
+              <p className="font-display text-[40px] font-bold leading-[1.02] tracking-tight md:text-[44px]">
+                Out of gas?
                 <br />
-                delivered
-                <br />
-                <span className="text-yellow">properly.</span>&rdquo;
+                <span className="text-yellow">Not for long.</span>
               </p>
-              <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.18em] text-paper/55">
-                — Our kitchen, since 2019
+              <p className="mt-7 text-[12px] font-bold uppercase tracking-[0.22em] text-paper/60">
+                Order before 03:00 · 20-min delivery
               </p>
             </div>
           </div>

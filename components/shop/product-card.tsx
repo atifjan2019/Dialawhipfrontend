@@ -14,37 +14,25 @@ function specHighlight(spec: Product["short_spec"]): string | null {
   return null;
 }
 
-/**
- * Product card matching the new design language: light cream image area
- * with a diagonal stripe pattern, monospace product label, brand + name
- * + price below, plus a dark "Add +" pill in the bottom right.
- */
-export function ProductCard({
-  product,
-}: {
-  product: Product;
-  /** Kept for backwards compatibility with callers that pass an index. */
-  index?: number;
-}) {
+export function ProductCard({ product }: { product: Product; index?: number }) {
   const highlight = specHighlight(product.short_spec);
   const lowStock = typeof product.stock_count === "number" && product.stock_count > 0 && product.stock_count < 10;
-  const productLabel = `${product.brand ?? product.name} ${highlight ?? ""}`.trim().toUpperCase();
 
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border hairline bg-paper transition-shadow hover:shadow-[0_24px_50px_-30px_rgba(4,18,46,0.25)]"
+      className="group flex flex-col overflow-hidden rounded-2xl bg-paper ring-2 ring-ink/10 transition-all hover:ring-brand"
     >
-      <div className="relative aspect-[4/3] product-stripe bg-cream">
+      <div className="relative aspect-[4/3] bg-yellow">
         {/* badges */}
-        <div className="absolute left-3 top-3 flex gap-1.5">
+        <div className="absolute left-3 top-3 z-10 flex gap-1.5">
           {product.is_age_restricted ? (
-            <span className="inline-flex h-6 items-center rounded bg-danger px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-paper">
+            <span className="inline-flex h-6 items-center rounded bg-ink px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-yellow">
               18+ ID
             </span>
           ) : null}
           {lowStock ? (
-            <span className="inline-flex h-6 items-center rounded bg-yellow px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-navy">
+            <span className="inline-flex h-6 items-center rounded bg-paper px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-ink ring-1 ring-ink">
               Only {product.stock_count}
             </span>
           ) : null}
@@ -55,33 +43,33 @@ export function ProductCard({
           <img
             src={product.image_url}
             alt={product.name}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center px-3 text-center">
-            <span className="font-mono text-[12px] tracking-[0.12em] text-ink-faint">
-              {productLabel || product.name.toUpperCase()}
+            <span className="font-display text-[40px] font-bold text-ink/85">
+              {(product.brand ?? product.name).charAt(0).toUpperCase()}
             </span>
           </div>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col border-t-2 border-ink/10 bg-paper p-5">
         {product.brand ? (
-          <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">
+          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand">
             {product.brand}
           </div>
         ) : null}
-        <div className="mt-1 text-[15px] font-bold leading-tight text-ink">
+        <div className="mt-1.5 line-clamp-2 font-display text-[16px] font-bold leading-tight text-ink">
           {product.name}
         </div>
         {highlight ? (
-          <div className="mt-0.5 text-[11px] text-ink-muted">{highlight}</div>
+          <div className="mt-1 text-[11px] font-medium text-ink-muted">{highlight}</div>
         ) : null}
 
-        <div className="mt-4 flex items-center justify-between">
-          <Money pence={product.price_pence} className="text-[16px] font-extrabold text-ink" />
-          <span className="inline-flex h-9 items-center gap-1.5 rounded-full bg-navy px-4 text-[12px] font-semibold text-paper transition-colors group-hover:bg-brand">
+        <div className="mt-5 flex items-center justify-between">
+          <Money pence={product.price_pence} className="font-display text-[20px] font-bold text-ink" />
+          <span className="inline-flex h-9 items-center gap-1.5 rounded-full bg-ink px-4 text-[11px] font-bold text-paper transition-colors group-hover:bg-brand">
             Add <span aria-hidden>+</span>
           </span>
         </div>
