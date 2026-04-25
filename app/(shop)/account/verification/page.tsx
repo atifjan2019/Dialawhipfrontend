@@ -30,7 +30,10 @@ export default function VerificationPage() {
 
   async function load() {
     try {
-      const res = await fetch("/api/v1/me/verifications", { credentials: "same-origin" });
+      const res = await fetch("/api/v1/me/verifications", {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
       if (res.status === 401) {
         window.location.href = "/login?next=/account/verification";
         return;
@@ -41,7 +44,14 @@ export default function VerificationPage() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    // Refresh when the tab regains focus — covers the common case where
+    // the customer was waiting for admin approval in another tab.
+    function onFocus() { load(); }
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
