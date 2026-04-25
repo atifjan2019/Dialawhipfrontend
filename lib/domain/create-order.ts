@@ -2,6 +2,8 @@ import type { DeliveryTier } from "../types";
 import { supabaseAdmin } from "../supabase/admin";
 import { priceCart, type CartItem } from "./pricing";
 import { recordInitialEvent } from "./order-status";
+import { getSetting } from "./settings";
+import { sendEmail } from "../email";
 
 export interface CreateOrderInput {
   customerId: string;
@@ -83,5 +85,43 @@ export async function createOrderFromCart(input: CreateOrderInput) {
 
   await recordInitialEvent(order.id, input.customerId);
 
+  // Best-effort admin notification. Failure must not break order creation —
+  // the order is already committed.
+  notifyAdminOfOrder(order.id, reference, priced.total_pence, input.customerEmail).catch((e) => {
+    console.error("[create-order] admin notify failed", e);
+  });
+
   return order;
+}
+
+async function notifyAdminOfOrder(
+  orderId: string,
+  reference: string,
+  totalPence: number,
+  customerEmail: string,
+) {
+  const adminEmail = await getSetting<string | null>("notifications.admin_email", null);
+  if (!adminEmail) return;
+  const total = (totalPence / 100).toLocaleString("en-GB", { style: "currency", currency: "GBP" });
+  const base = process.env.FRONTEND_URL?.replace(/\/$/, "") || "";
+  const link = base ? `${base}/admin/orders/${orderId}` : `Order ID: ${orderId}`;
+  await sendEmail({
+    to: adminEmail,
+    subject: `New order ${reference} · ${total}`,
+    text: `A new order has been placed.
+
+Reference: ${reference}
+Total:     ${total}
+Customer:  ${customerEmail}
+
+View: ${link}
+`,
+    html: `<p>A new order has been placed.</p>
+<table cellpadding="6" style="border-collapse:collapse">
+  <tr><td><strong>Reference</strong></td><td>${reference}</td></tr>
+  <tr><td><strong>Total</strong></td><td>${total}</td></tr>
+  <tr><td><strong>Customer</strong></td><td>${customerEmail}</td></tr>
+</table>
+${base ? `<p><a href="${link}">View in admin →</a></p>` : ""}`,
+  });
 }
