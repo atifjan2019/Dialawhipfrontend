@@ -1,4 +1,4 @@
-import { handle, ok } from "@/lib/api/responses";
+import { handle, okList } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeOrder } from "@/lib/api/resources";
@@ -14,5 +14,5 @@ export const GET = handle(async () => {
     .not("status", "in", "(delivered,cancelled,refunded)")
     .order("scheduled_for", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: true });
-  return ok((data ?? []).map(serializeOrder));
+  return okList((data ?? []).map(serializeOrder));
 });

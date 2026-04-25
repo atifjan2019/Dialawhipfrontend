@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { handle, ok } from "@/lib/api/responses";
+import { handle, okList } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeOrder } from "@/lib/api/resources";
@@ -14,5 +14,5 @@ export const GET = handle(async (req: NextRequest) => {
     .eq("customer_id", user.id)
     .order("created_at", { ascending: false })
     .limit(limit);
-  return ok((data ?? []).map(serializeOrder));
+  return okList((data ?? []).map(serializeOrder));
 });

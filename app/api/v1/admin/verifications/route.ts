@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { handle, ok } from "@/lib/api/responses";
+import { handle, okList } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeIdVerification } from "@/lib/api/resources";
@@ -26,5 +26,5 @@ export const GET = handle(async (req: NextRequest) => {
       return u && ((u.name?.toLowerCase().includes(s)) || (u.email?.toLowerCase().includes(s)));
     });
   }
-  return ok(rows.map(serializeIdVerification));
+  return okList(rows.map(serializeIdVerification));
 });

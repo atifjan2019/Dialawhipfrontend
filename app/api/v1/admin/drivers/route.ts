@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { handle, ok, created } from "@/lib/api/responses";
+import { handle, okList, created } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { parseJson } from "@/lib/api/validation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -16,11 +16,11 @@ export const GET = handle(async () => {
   await requireRole("admin", "staff");
   const admin = supabaseAdmin();
   const { data } = await admin.from("profiles").select("*").eq("role", "driver").order("name");
-  return ok((data ?? []).map(serializeUser));
+  return okList((data ?? []).map(serializeUser));
 });
 
 export const POST = handle(async (req: NextRequest) => {
-  await requireRole("admin");
+  await requireRole("admin", "staff");
   const body = await parseJson(req, Body);
   const admin = supabaseAdmin();
   const tempPassword = Array.from(crypto.getRandomValues(new Uint8Array(9)))

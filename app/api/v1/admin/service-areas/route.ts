@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { handle, ok, created } from "@/lib/api/responses";
+import { handle, okList, created } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { parseJson } from "@/lib/api/validation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -26,7 +26,7 @@ export const GET = handle(async (req: NextRequest) => {
   if (active === "true" || active === "false") q = q.eq("is_active", active === "true");
   if (search) q = q.ilike("postcode_prefix", `%${search.toUpperCase().replace(/\s+/g, "")}%`);
   const { data } = await q;
-  return ok((data ?? []).map(serializeServiceArea));
+  return okList((data ?? []).map(serializeServiceArea));
 });
 
 export const POST = handle(async (req: NextRequest) => {

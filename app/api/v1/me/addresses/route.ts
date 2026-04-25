@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { handle, ok, created } from "@/lib/api/responses";
+import { handle, okList, created } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { parseJson } from "@/lib/api/validation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -27,7 +27,7 @@ export const GET = handle(async () => {
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });
-  return ok((data ?? []).map(serializeAddress));
+  return okList((data ?? []).map(serializeAddress));
 });
 
 export const POST = handle(async (req: NextRequest) => {

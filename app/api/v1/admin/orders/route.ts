@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { handle, ok } from "@/lib/api/responses";
+import { handle, okList } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeOrder } from "@/lib/api/resources";
@@ -30,5 +30,5 @@ export const GET = handle(async (req: NextRequest) => {
   if (search) q = q.or(`reference.ilike.%${search}%`);
   const { data, error } = await q;
   if (error) throw error;
-  return ok((data ?? []).map(serializeOrder));
+  return okList((data ?? []).map(serializeOrder));
 });

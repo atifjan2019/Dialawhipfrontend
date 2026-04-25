@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { handle, ok, created, validationError } from "@/lib/api/responses";
+import { handle, ok, okList, created, validationError } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { parseJson } from "@/lib/api/validation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -51,11 +51,11 @@ export const GET = handle(async (req: NextRequest) => {
   if (categorySlug) {
     const { data: cat } = await admin.from("categories").select("id").eq("slug", categorySlug).single();
     if (cat) q = q.eq("category_id", cat.id);
-    else return ok([]);
+    else return okList([]);
   }
   const { data, error } = await q;
   if (error) throw error;
-  return ok((data ?? []).map((p) => serializeProduct(p)));
+  return okList((data ?? []).map((p) => serializeProduct(p)));
 });
 
 export const POST = handle(async (req: NextRequest) => {

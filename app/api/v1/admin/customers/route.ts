@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { handle, ok } from "@/lib/api/responses";
+import { handle, okList } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeUser } from "@/lib/api/resources";
@@ -13,7 +13,7 @@ export const GET = handle(async (req: NextRequest) => {
   let q = admin.from("profiles").select("*").eq("role", "customer").order("created_at", { ascending: false }).limit(limit);
   if (search) q = q.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
   const { data: customers } = await q;
-  if (!customers) return ok([]);
+  if (!customers) return okList([]);
 
   const ids = customers.map((c) => c.id);
   const { data: agg } = await admin.from("orders").select("customer_id,total_pence").in("customer_id", ids);
@@ -29,5 +29,5 @@ export const GET = handle(async (req: NextRequest) => {
     orders_count: counts.get(c.id)?.count ?? 0,
     lifetime_pence: counts.get(c.id)?.total ?? 0,
   }));
-  return ok(out);
+  return okList(out);
 });
