@@ -66,15 +66,15 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   return (
     <div className="mx-auto max-w-[1280px] px-6 py-10">
-      <nav className="mb-8 flex items-center gap-2 text-[12px] text-ink-muted">
+      <nav className="mb-8 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">
         <Link href="/shop" className="transition-colors hover:text-brand">Shop</Link>
-        <span className="opacity-50">/</span>
+        <span aria-hidden>·</span>
         {product.category ? (
           <>
             <Link href={`/shop/${product.category.slug}`} className="transition-colors hover:text-brand">
               {product.category.name}
             </Link>
-            <span className="opacity-50">/</span>
+            <span aria-hidden>·</span>
           </>
         ) : null}
         <span className="text-ink">{product.name}</span>
@@ -82,32 +82,36 @@ export default async function ProductPage({ params }: { params: Params }) {
 
       <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
         <div>
-          <ProductGallery
-            featured={product.image_url}
-            gallery={product.gallery_urls ?? []}
-            alt={product.name}
-            fallbackLetter={(product.brand ?? product.name).charAt(0).toUpperCase()}
-            fallbackBg="#f5f1e6"
-            fallbackInk="#04122e"
-            topLeftBadges={
-              <>
-                {product.is_age_restricted ? (
-                  <span className="inline-flex h-6 items-center rounded bg-danger px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-paper">
-                    18+ ID
-                  </span>
-                ) : null}
-                {product.brand ? (
-                  <span className="inline-flex h-6 items-center rounded bg-paper px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-brand">
-                    {product.brand}
-                  </span>
-                ) : null}
-              </>
-            }
-          />
-          <div className="mt-4 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
-            <span>{inStock ? "In stock" : "Out of stock"}</span>
-            <span>Newcastle · 20-min</span>
-            <span>Live tracking</span>
+          <div className="overflow-hidden rounded-3xl bg-yellow p-2 ring-2 ring-ink">
+            <ProductGallery
+              featured={product.image_url}
+              gallery={product.gallery_urls ?? []}
+              alt={product.name}
+              fallbackLetter={(product.brand ?? product.name).charAt(0).toUpperCase()}
+              fallbackBg="#f5eb12"
+              fallbackInk="#000000"
+              topLeftBadges={
+                <>
+                  {product.is_age_restricted ? (
+                    <span className="inline-flex h-7 items-center rounded-full bg-ink px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-yellow">
+                      18+ ID
+                    </span>
+                  ) : null}
+                  {product.brand ? (
+                    <span className="inline-flex h-7 items-center rounded-full bg-paper px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ink ring-2 ring-ink">
+                      {product.brand}
+                    </span>
+                  ) : null}
+                </>
+              }
+            />
+          </div>
+          <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold uppercase tracking-[0.14em]">
+            <span className={inStock ? "rounded-full bg-ink px-3 py-2 text-yellow" : "rounded-full bg-paper px-3 py-2 text-ink ring-2 ring-ink"}>
+              {inStock ? "● In stock" : "Out of stock"}
+            </span>
+            <span className="rounded-full bg-paper px-3 py-2 text-ink ring-2 ring-ink">Newcastle · 20-min</span>
+            <span className="rounded-full bg-paper px-3 py-2 text-ink ring-2 ring-ink">Live tracking</span>
           </div>
         </div>
 
@@ -115,24 +119,24 @@ export default async function ProductPage({ params }: { params: Params }) {
           {product.category ? (
             <Eyebrow>{product.category.name}</Eyebrow>
           ) : null}
-          <h1 className="mt-3 text-[40px] font-extrabold leading-[1.05] tracking-tight text-ink md:text-[52px]">
+          <h1 className="mt-4 font-display text-[40px] font-bold leading-[1] tracking-tight text-ink md:text-[56px]">
             {product.name}
           </h1>
 
-          <div className="mt-5 flex items-baseline gap-3">
+          <div className="mt-6 flex items-baseline gap-3">
             {product.variants && product.variants.length > 0 ? (
               <>
-                <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-ink-muted">from</span>
+                <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">from</span>
                 <Money
                   pence={Math.min(...product.variants.filter((v) => v.is_active).map((v) => v.price_pence))}
-                  className="text-[36px] font-extrabold text-ink"
+                  className="font-display text-[40px] font-bold text-ink"
                 />
               </>
             ) : (
-              <Money pence={product.price_pence} className="text-[36px] font-extrabold text-ink" />
+              <Money pence={product.price_pence} className="font-display text-[44px] font-bold text-ink" />
             )}
             {lowStock ? (
-              <span className="inline-flex h-7 items-center rounded bg-yellow px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-navy">
+              <span className="inline-flex h-7 items-center rounded-full bg-yellow px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ink ring-2 ring-ink">
                 Only {product.stock_count} left
               </span>
             ) : null}
