@@ -95,7 +95,7 @@ export function ServiceAreasManager({ initial }: { initial: ServiceArea[] }) {
           <div className="font-display text-[13px] italic text-clay">Delivery</div>
           <h2 className="mt-1 font-display text-[30px] text-ink">Delivery charges</h2>
           <p className="mt-1 max-w-xl text-[13px] text-ink-muted">
-            One row per postcode prefix. Fees are in pence. ETAs in minutes. Leave a row disabled to stop serving that postcode without deleting it.
+            One row per postcode prefix. Fees in £, ETAs in minutes. Leave a row disabled to stop serving that postcode without deleting it.
           </p>
         </div>
         <button
@@ -120,9 +120,9 @@ export function ServiceAreasManager({ initial }: { initial: ServiceArea[] }) {
               />
               <FieldError>{errors.postcode_prefix?.[0]}</FieldError>
             </div>
-            <NumField label="Standard fee (pence)" value={draft.delivery_fee_pence} onChange={(v) => setDraft({ ...draft, delivery_fee_pence: v ?? 0 })} error={errors.delivery_fee_pence?.[0]} required />
-            <NumField label="Priority surcharge (pence)" value={draft.priority_fee_pence} onChange={(v) => setDraft({ ...draft, priority_fee_pence: v })} error={errors.priority_fee_pence?.[0]} />
-            <NumField label="Super surcharge (pence)" value={draft.super_fee_pence} onChange={(v) => setDraft({ ...draft, super_fee_pence: v })} error={errors.super_fee_pence?.[0]} />
+            <MoneyField label="Standard fee" value={draft.delivery_fee_pence} onChange={(v) => setDraft({ ...draft, delivery_fee_pence: v ?? 0 })} error={errors.delivery_fee_pence?.[0]} required />
+            <MoneyField label="Priority surcharge" value={draft.priority_fee_pence} onChange={(v) => setDraft({ ...draft, priority_fee_pence: v })} error={errors.priority_fee_pence?.[0]} />
+            <MoneyField label="Super surcharge" value={draft.super_fee_pence} onChange={(v) => setDraft({ ...draft, super_fee_pence: v })} error={errors.super_fee_pence?.[0]} />
             <NumField label="Standard ETA (min)" value={draft.eta_standard_minutes} onChange={(v) => setDraft({ ...draft, eta_standard_minutes: v })} error={errors.eta_standard_minutes?.[0]} />
             <NumField label="Priority ETA (min)" value={draft.eta_priority_minutes} onChange={(v) => setDraft({ ...draft, eta_priority_minutes: v })} error={errors.eta_priority_minutes?.[0]} />
             <label className="col-span-full flex items-center gap-2 text-[13px] text-ink-soft">
@@ -159,9 +159,9 @@ export function ServiceAreasManager({ initial }: { initial: ServiceArea[] }) {
           <thead className="border-b hairline bg-cream-deep/50 text-left text-[10px] font-medium uppercase tracking-[0.14em] text-ink-muted">
             <tr>
               <th className="px-5 py-3">Prefix</th>
-              <th className="px-5 py-3">Std fee (p)</th>
-              <th className="px-5 py-3">Priority (p)</th>
-              <th className="px-5 py-3">Super (p)</th>
+              <th className="px-5 py-3">Std fee (£)</th>
+              <th className="px-5 py-3">Priority (£)</th>
+              <th className="px-5 py-3">Super (£)</th>
               <th className="px-5 py-3">Std ETA (m)</th>
               <th className="px-5 py-3">Priority ETA (m)</th>
               <th className="px-5 py-3">Active</th>
@@ -202,9 +202,9 @@ function Row({
           className="h-9 w-24"
         />
       </td>
-      <td className="px-5 py-2.5"><NumCell value={draft.delivery_fee_pence} onChange={(v) => setDraft({ ...draft, delivery_fee_pence: v ?? 0 })} /></td>
-      <td className="px-5 py-2.5"><NumCell value={draft.priority_fee_pence} onChange={(v) => setDraft({ ...draft, priority_fee_pence: v })} /></td>
-      <td className="px-5 py-2.5"><NumCell value={draft.super_fee_pence} onChange={(v) => setDraft({ ...draft, super_fee_pence: v })} /></td>
+      <td className="px-5 py-2.5"><MoneyCell value={draft.delivery_fee_pence} onChange={(v) => setDraft({ ...draft, delivery_fee_pence: v ?? 0 })} /></td>
+      <td className="px-5 py-2.5"><MoneyCell value={draft.priority_fee_pence} onChange={(v) => setDraft({ ...draft, priority_fee_pence: v })} /></td>
+      <td className="px-5 py-2.5"><MoneyCell value={draft.super_fee_pence} onChange={(v) => setDraft({ ...draft, super_fee_pence: v })} /></td>
       <td className="px-5 py-2.5"><NumCell value={draft.eta_standard_minutes} onChange={(v) => setDraft({ ...draft, eta_standard_minutes: v })} /></td>
       <td className="px-5 py-2.5"><NumCell value={draft.eta_priority_minutes} onChange={(v) => setDraft({ ...draft, eta_priority_minutes: v })} /></td>
       <td className="px-5 py-2.5">
@@ -256,6 +256,67 @@ function NumCell({ value, onChange }: { value: number | null; onChange: (v: numb
       value={value === null || value === undefined ? "" : String(value)}
       onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
     />
+  );
+}
+
+function MoneyCell({ value, onChange }: { value: number | null; onChange: (v: number | null) => void }) {
+  const display = value === null || value === undefined ? "" : (value / 100).toFixed(2);
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[13px] text-ink-muted">£</span>
+      <Input
+        type="number"
+        step="0.01"
+        min="0"
+        inputMode="decimal"
+        className="h-9 w-28 pl-6"
+        value={display}
+        onChange={(e) => {
+          const raw = e.target.value;
+          if (raw === "") return onChange(null);
+          const n = Number(raw);
+          if (Number.isNaN(n)) return;
+          onChange(Math.round(n * 100));
+        }}
+      />
+    </div>
+  );
+}
+
+function MoneyField({
+  label, value, onChange, error, required = false,
+}: {
+  label: string;
+  value: number | null;
+  onChange: (v: number | null) => void;
+  error?: string;
+  required?: boolean;
+}) {
+  const display = value === null || value === undefined ? "" : (value / 100).toFixed(2);
+  return (
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      <div className="relative">
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[14px] text-ink-muted">£</span>
+        <Input
+          type="number"
+          step="0.01"
+          min="0"
+          inputMode="decimal"
+          className="pl-7"
+          required={required}
+          value={display}
+          onChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") return onChange(null);
+            const n = Number(raw);
+            if (Number.isNaN(n)) return;
+            onChange(Math.round(n * 100));
+          }}
+        />
+      </div>
+      <FieldError>{error}</FieldError>
+    </div>
   );
 }
 

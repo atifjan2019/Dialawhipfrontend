@@ -37,8 +37,9 @@ export interface Category {
   id: string;
   slug: string;
   name: string;
-  description: string | null;
+  description?: string | null;
   sort_order: number;
+  is_active: boolean;
 }
 
 export interface ProductVariant {

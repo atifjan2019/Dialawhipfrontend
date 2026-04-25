@@ -19,6 +19,7 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
   const router = useRouter();
   const [items, setItems] = useState<Category[]>(initial);
   const [draft, setDraft] = useState({ name: "", slug: "" });
+  const [slugTouched, setSlugTouched] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [pending, setPending] = useState(false);
 
@@ -38,6 +39,7 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
       });
       setItems((cur) => [...cur, res.data]);
       setDraft({ name: "", slug: "" });
+      setSlugTouched(false);
       router.refresh();
     } catch (e) {
       if (e instanceof ApiRequestError) {
@@ -84,7 +86,13 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
             <Input
               required
               value={draft.name}
-              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+              onChange={(e) => {
+                const name = e.target.value;
+                setDraft((d) => ({
+                  name,
+                  slug: slugTouched ? d.slug : slugify(name),
+                }));
+              }}
               placeholder="Cream chargers"
             />
             <FieldError>{errors.name?.[0]}</FieldError>
@@ -93,9 +101,13 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
             <Label>Slug</Label>
             <Input
               value={draft.slug}
-              onChange={(e) => setDraft({ ...draft, slug: e.target.value })}
+              onChange={(e) => {
+                setSlugTouched(true);
+                setDraft({ ...draft, slug: e.target.value });
+              }}
               placeholder={draft.name ? slugify(draft.name) : "cream-chargers"}
             />
+            <p className="text-[11px] text-ink-muted">Auto-generated from name. Edit if you want a custom URL.</p>
             <FieldError>{errors.slug?.[0]}</FieldError>
           </div>
           <div className="flex items-end">

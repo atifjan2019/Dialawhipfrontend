@@ -39,6 +39,14 @@ const EMPTY_VARIANT: VariantDraft = {
   is_active: true,
 };
 
+function slugifyName(name: string) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export function ProductForm({ product, categories }: { product?: Product; categories: Category[] }) {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -49,6 +57,8 @@ export function ProductForm({ product, categories }: { product?: Product; catego
     price_pence: product ? String(product.price_pence) : "",
     is_active: product?.is_active ?? true,
   });
+  // Once the user manually edits the slug, stop auto-syncing it from the name.
+  const [slugTouched, setSlugTouched] = useState(!!product?.slug);
   const [variants, setVariants] = useState<VariantDraft[]>(
     product?.variants?.length ? product.variants.map(toDraft) : [],
   );
@@ -127,12 +137,31 @@ export function ProductForm({ product, categories }: { product?: Product; catego
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label>Name</Label>
-          <Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <Input
+            required
+            value={form.name}
+            onChange={(e) => {
+              const name = e.target.value;
+              setForm((f) => ({
+                ...f,
+                name,
+                slug: slugTouched ? f.slug : slugifyName(name),
+              }));
+            }}
+          />
           <FieldError>{errors.name?.[0]}</FieldError>
         </div>
         <div className="space-y-1.5">
           <Label>Slug</Label>
-          <Input required value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
+          <Input
+            required
+            value={form.slug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setForm({ ...form, slug: e.target.value });
+            }}
+          />
+          <p className="text-[11px] text-ink-muted">Auto-generated from name. Edit if you want a custom URL.</p>
           <FieldError>{errors.slug?.[0]}</FieldError>
         </div>
       </div>
@@ -149,8 +178,26 @@ export function ProductForm({ product, categories }: { product?: Product; catego
           </select>
         </div>
         <div className="space-y-1.5">
-          <Label>Base price (pence)</Label>
-          <Input type="number" min="0" step="1" required value={form.price_pence} onChange={(e) => setForm({ ...form, price_pence: e.target.value })} />
+          <Label>Base price</Label>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[14px] text-ink-muted">£</span>
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              inputMode="decimal"
+              className="pl-7"
+              required
+              value={form.price_pence === "" ? "" : (Number(form.price_pence) / 100).toFixed(2)}
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (raw === "") return setForm({ ...form, price_pence: "" });
+                const n = Number(raw);
+                if (Number.isNaN(n)) return;
+                setForm({ ...form, price_pence: String(Math.round(n * 100)) });
+              }}
+            />
+          </div>
           <div className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">Used when no variant is selected.</div>
           <FieldError>{errors.price_pence?.[0]}</FieldError>
         </div>
