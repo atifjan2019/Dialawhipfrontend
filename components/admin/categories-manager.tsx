@@ -134,20 +134,21 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
             </tr>
           </thead>
           <tbody>
-            {items.map((c) => (
-              <tr key={c.id}>
-                <td className="px-5 py-3.5 font-display text-[14px] text-ink">{c.name}</td>
-                <td className="px-5 py-3.5 font-mono text-ink-muted">{c.slug}</td>
+            {items.map((c, idx) => (
+              <tr key={c.id} className={idx > 0 ? "border-t-2 border-ink/10" : ""}>
+                <td className="px-5 py-3.5 font-display text-[15px] font-bold text-ink">{c.name}</td>
+                <td className="px-5 py-3.5 font-mono text-[12px] font-medium text-ink-muted">{c.slug}</td>
                 <td className="px-5 py-3.5">
                   <button
                     type="button"
                     onClick={() => onToggleActive(c)}
                     className={
                       c.is_active
-                        ? "rounded-full bg-forest/10 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-forest"
-                        : "rounded-full bg-stone-soft px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-ink-muted"
+                        ? "inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-yellow"
+                        : "inline-flex items-center gap-1.5 rounded-full bg-stone-soft px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted"
                     }
                   >
+                    <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" />
                     {c.is_active ? "Active" : "Hidden"}
                   </button>
                 </td>
@@ -155,7 +156,7 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
                   <button
                     type="button"
                     onClick={() => onDelete(c)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-cream-deep hover:text-clay"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-yellow hover:text-danger"
                     aria-label={`Delete ${c.name}`}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -165,7 +166,7 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
             ))}
             {items.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-5 py-10 text-center italic text-ink-muted">
+                <td colSpan={4} className="px-5 py-12 text-center font-medium italic text-ink-muted">
                   No categories yet — add your first one above.
                 </td>
               </tr>
