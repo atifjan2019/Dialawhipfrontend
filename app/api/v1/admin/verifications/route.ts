@@ -11,6 +11,12 @@ export const GET = handle(async (req: NextRequest) => {
   const search = sp.get("filter[search]") || sp.get("search");
   const limit = Math.min(100, Math.max(1, Number(sp.get("limit") ?? 25) || 25));
   const admin = supabaseAdmin();
+
+  // Sweep any approved verifications whose expires_at has passed and flip
+  // them to 'expired' (and bump the matching profile back to unverified).
+  // Cheap to call — the function only writes when there's stale data.
+  try { await admin.rpc("expire_old_id_verifications"); } catch { /* swallow — non-critical */ }
+
   let q = admin
     .from("id_verifications")
     .select("*, user:profiles!id_verifications_user_id_fkey(*), reviewer:profiles!id_verifications_reviewed_by_fkey(*)")

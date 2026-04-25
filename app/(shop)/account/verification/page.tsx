@@ -111,9 +111,24 @@ export default function VerificationPage() {
           <p className="mt-5 max-w-md mx-auto text-[15px] font-medium leading-relaxed text-ink/80">
             Your ID has been approved. You can order any age-restricted product without further checks.
           </p>
-          <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow">
-            ✓ Approved {data?.verified_at ? new Date(data.verified_at).toLocaleDateString("en-GB") : ""} · valid for 2 years
-          </div>
+          {(() => {
+            const approved = data?.data.find((v) => v.status === "approved");
+            const expiresAt = approved?.expires_at ?? null;
+            const verifiedAt = data?.verified_at ?? null;
+            return (
+              <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-ink px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow">
+                <span>
+                  ✓ Approved {verifiedAt ? new Date(verifiedAt).toLocaleDateString("en-GB") : ""}
+                </span>
+                {expiresAt ? (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span>Valid until {new Date(expiresAt).toLocaleDateString("en-GB")}</span>
+                  </>
+                ) : null}
+              </div>
+            );
+          })()}
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href="/shop"
@@ -392,11 +407,12 @@ function StatusBanner({
   );
 }
 
-function StatusPill({ status }: { status: "pending" | "approved" | "rejected" }) {
+function StatusPill({ status }: { status: "pending" | "approved" | "rejected" | "expired" }) {
   const map = {
     pending: "bg-yellow text-ink ring-2 ring-ink",
     approved: "bg-ink text-yellow",
     rejected: "bg-danger-soft text-danger ring-1 ring-danger/30",
+    expired: "bg-stone-soft text-ink-muted ring-1 ring-ink/15",
   } as const;
   return (
     <span className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${map[status]}`}>

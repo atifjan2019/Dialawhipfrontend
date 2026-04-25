@@ -27,7 +27,10 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 
 do $$ begin
-  create type id_verification_status as enum ('pending','approved','rejected');
+  create type id_verification_status as enum ('pending','approved','rejected','expired');
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter type id_verification_status add value if not exists 'expired';
 exception when duplicate_object then null; end $$;
 
 do $$ begin

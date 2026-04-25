@@ -11,7 +11,7 @@ export type DocType =
   | "citizen_card"
   | "military_id";
 
-export type VerificationDocStatus = "pending" | "approved" | "rejected";
+export type VerificationDocStatus = "pending" | "approved" | "rejected" | "expired";
 
 export type OrderStatus =
   | "pending"

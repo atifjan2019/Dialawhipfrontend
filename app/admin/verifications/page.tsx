@@ -1,9 +1,31 @@
 import Link from "next/link";
 import { apiServer } from "@/lib/api-server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { IdVerification } from "@/lib/types";
 import { Eyebrow } from "@/components/shop/eyebrow";
 
 type Search = { status?: string; search?: string };
+
+const TABS = ["pending", "approved", "rejected", "expired"] as const;
+type TabStatus = typeof TABS[number];
+
+async function loadCounts(): Promise<Record<TabStatus, number>> {
+  const admin = supabaseAdmin();
+  // First, sweep so the counts reflect current reality.
+  try { await admin.rpc("expire_old_id_verifications"); } catch { /* swallow — non-critical */ }
+
+  const counts: Record<TabStatus, number> = { pending: 0, approved: 0, rejected: 0, expired: 0 };
+  await Promise.all(
+    TABS.map(async (s) => {
+      const { count } = await admin
+        .from("id_verifications")
+        .select("id", { count: "exact", head: true })
+        .eq("status", s);
+      counts[s] = count ?? 0;
+    }),
+  );
+  return counts;
+}
 
 export default async function AdminVerificationsPage({
   searchParams,
@@ -14,16 +36,18 @@ export default async function AdminVerificationsPage({
   const status = params.status ?? "pending";
   const search = params.search ?? "";
 
-  const res = await apiServer<{ data: IdVerification[] }>("/api/v1/admin/verifications", {
-    query: {
-      // The route handler accepts either `filter[xxx]` (Laravel-style) or
-      // the direct `xxx` key. We send the direct key — `filter.xxx` with a
-      // dot is what neither side recognises and was hiding records.
-      status,
-      search: search || undefined,
-      limit: 50,
-    },
-  }).catch(() => ({ data: [] }));
+  const [res, counts] = await Promise.all([
+    apiServer<{ data: IdVerification[] }>("/api/v1/admin/verifications", {
+      query: {
+        // Route handler accepts the direct key (`status`) — `filter.xxx`
+        // with a dot would slip through both server-side branches.
+        status,
+        search: search || undefined,
+        limit: 50,
+      },
+    }).catch(() => ({ data: [] })),
+    loadCounts(),
+  ]);
 
   return (
     <>
@@ -60,20 +84,35 @@ export default async function AdminVerificationsPage({
       </section>
 
       <div className="mx-auto max-w-[1280px] px-6 py-10 md:px-10">
-        <nav className="flex gap-2 border-b-2 border-ink/10 pb-1">
-          {(["pending", "approved", "rejected"] as const).map((s) => (
-            <Link
-              key={s}
-              href={`/admin/verifications?status=${s}`}
-              className={
-                s === status
-                  ? "rounded-t-lg bg-ink px-5 py-3 text-[12px] font-bold uppercase tracking-[0.16em] text-yellow"
-                  : "rounded-t-lg px-5 py-3 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted transition-colors hover:bg-yellow hover:text-ink"
-              }
-            >
-              {s[0].toUpperCase() + s.slice(1)}
-            </Link>
-          ))}
+        <nav className="flex flex-wrap gap-2 border-b-2 border-ink/10 pb-1">
+          {TABS.map((s) => {
+            const active = s === status;
+            const n = counts[s];
+            return (
+              <Link
+                key={s}
+                href={`/admin/verifications?status=${s}`}
+                className={
+                  active
+                    ? "inline-flex items-center gap-2 rounded-t-lg bg-ink px-5 py-3 text-[12px] font-bold uppercase tracking-[0.16em] text-yellow"
+                    : "inline-flex items-center gap-2 rounded-t-lg px-5 py-3 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted transition-colors hover:bg-yellow hover:text-ink"
+                }
+              >
+                <span>{s[0].toUpperCase() + s.slice(1)}</span>
+                <span
+                  className={
+                    active
+                      ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-yellow px-1.5 text-[10px] font-bold tabular-nums text-ink"
+                      : n > 0
+                      ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1.5 text-[10px] font-bold tabular-nums text-yellow"
+                      : "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-stone-soft px-1.5 text-[10px] font-bold tabular-nums text-ink-muted"
+                  }
+                >
+                  {n}
+                </span>
+              </Link>
+            );
+          })}
         </nav>
 
         {res.data.length === 0 ? (
