@@ -8,6 +8,12 @@ const DOC_TYPES = ["passport", "driving_licence", "residency_card", "citizen_car
 const ALLOWED_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
 const MAX_BYTES = 8 * 1024 * 1024;
 
+// Disable Next.js fetch caching for this user-specific route — verification
+// status changes the moment an admin approves/rejects, and a cached
+// response would show stale "not yet verified" copy.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const GET = handle(async () => {
   const user = await requireRole("customer", "staff", "admin");
   const admin = supabaseAdmin();
@@ -16,11 +22,23 @@ export const GET = handle(async () => {
     .select("*, reviewer:profiles!id_verifications_reviewed_by_fkey(id,name)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
-  return ok({
-    data: (data ?? []).map(serializeIdVerification),
-    user_status: user.verification_status,
-    verified_at: user.verified_at,
-  });
+  return new Response(
+    JSON.stringify({
+      data: (data ?? []).map(serializeIdVerification),
+      user_status: user.verification_status,
+      verified_at: user.verified_at,
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        // Tell every cache between server and browser this is per-user
+        // and must never be stored.
+        "Cache-Control": "private, no-store, no-cache, must-revalidate, max-age=0",
+        Pragma: "no-cache",
+      },
+    },
+  );
 });
 
 export const POST = handle(async (req: NextRequest) => {
