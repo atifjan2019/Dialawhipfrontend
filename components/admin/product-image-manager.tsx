@@ -33,7 +33,7 @@ export function ProductImageManager({
     setError(null);
     const fd = new FormData();
     fd.append("file", file);
-    const res = await fetch("/api/proxy/v1/admin/products/upload", {
+    const res = await fetch("/api/v1/admin/products/upload", {
       method: "POST",
       body: fd,
     });

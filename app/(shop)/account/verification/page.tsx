@@ -30,7 +30,7 @@ export default function VerificationPage() {
 
   async function load() {
     try {
-      const res = await fetch("/api/proxy/v1/me/verifications", { credentials: "same-origin" });
+      const res = await fetch("/api/v1/me/verifications", { credentials: "same-origin" });
       if (res.status === 401) {
         window.location.href = "/login?next=/account/verification";
         return;
@@ -52,7 +52,7 @@ export default function VerificationPage() {
       const fd = new FormData();
       fd.append("doc_type", docType);
       fd.append("file", file);
-      const res = await fetch("/api/proxy/v1/me/verifications", {
+      const res = await fetch("/api/v1/me/verifications", {
         method: "POST",
         body: fd,
         credentials: "same-origin",

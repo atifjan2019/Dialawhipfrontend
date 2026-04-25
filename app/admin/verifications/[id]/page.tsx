@@ -18,7 +18,7 @@ export default async function AdminVerificationDetail({ params }: { params: Para
     throw e;
   }
 
-  const downloadUrl = `/api/proxy/v1/admin/verifications/${data.id}/download`;
+  const downloadUrl = `/api/v1/admin/verifications/${data.id}/download`;
   const isPending = data.status === "pending";
 
   return (

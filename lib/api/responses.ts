@@ -5,6 +5,17 @@ export function ok<T>(data: T, init?: ResponseInit) {
   return NextResponse.json({ data }, init);
 }
 
+export function okList<T>(
+  data: T[],
+  meta: { next_cursor?: string | null; prev_cursor?: string | null } = {},
+  init?: ResponseInit,
+) {
+  return NextResponse.json(
+    { data, meta: { next_cursor: meta.next_cursor ?? null, prev_cursor: meta.prev_cursor ?? null } },
+    init,
+  );
+}
+
 export function created<T>(data: T) {
   return NextResponse.json({ data }, { status: 201 });
 }

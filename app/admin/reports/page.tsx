@@ -34,7 +34,7 @@ export default async function ReportsPage() {
           <h1 className="mt-5 font-display text-[44px] leading-[1] text-ink">Reports</h1>
         </div>
         <Link
-          href="/api/proxy/v1/admin/exports/orders.csv"
+          href="/api/v1/admin/exports/orders.csv"
           className="inline-flex h-11 items-center rounded-full border hairline bg-paper px-5 text-[13px] font-medium text-ink transition-colors hover:border-ink/30"
         >
           Export CSV →

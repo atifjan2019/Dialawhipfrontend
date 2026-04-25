@@ -14,7 +14,7 @@ export function VerificationDecision({ id }: { id: string }) {
     setPending(true);
     setError(null);
     try {
-      const res = await fetch(`/api/proxy/v1/admin/verifications/${id}/${path}`, {
+      const res = await fetch(`/api/v1/admin/verifications/${id}/${path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

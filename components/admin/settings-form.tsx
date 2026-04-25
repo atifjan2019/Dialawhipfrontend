@@ -329,7 +329,7 @@ function ImageField({
       const fd = new FormData();
       fd.append("file", file);
       fd.append("key", item.key);
-      const res = await fetch("/api/proxy/v1/admin/settings/upload", {
+      const res = await fetch("/api/v1/admin/settings/upload", {
         method: "POST",
         body: fd,
       });
