@@ -21,8 +21,8 @@ export const SETTINGS: SettingDef[] = [
   D("branding.logo_dark_url", "Logo (dark)", "image", "branding", true),
   D("branding.favicon_url", "Favicon", "image", "branding", true),
   D("branding.og_image_url", "Open Graph image", "image", "branding", true),
-  D("branding.primary_color", "Primary color", "string", "branding", true, "#1f2937"),
-  D("branding.accent_color", "Accent color", "string", "branding", true, "#f59e0b"),
+  D("branding.primary_color", "Primary color", "string", "branding", true, "#004fb0"),
+  D("branding.accent_color", "Accent color", "string", "branding", true, "#f5eb12"),
 
   // business (public)
   D("business.name", "Business name", "string", "business", true, "Dialawhip"),

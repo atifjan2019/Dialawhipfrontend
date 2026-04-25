@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
+/*
+ * Brand palette — yellow, blue, white, black.
+ *   Yellow #f5eb12  · accent / highlight
+ *   Blue   #004fb0  · primary / links / CTAs
+ *   White  #ffffff  · surfaces
+ *   Black  #000000  · ink / text
+ *
+ * The legacy token names (forest, butter, cream, etc.) are kept as
+ * aliases so existing components don't need to be re-classNamed.
+ */
 @theme {
-  --color-cream: #FBF8EC;
-  --color-cream-deep: #F3E9C8;
-  --color-paper: #FFFEF7;
-  --color-ink: #0A1628;
-  --color-ink-soft: #253247;
-  --color-ink-muted: #5A6478;
-  --color-forest: #0B1D3A;
-  --color-forest-deep: #061229;
-  --color-moss: #3D5A80;
-  --color-clay: #F59E0B;
-  --color-clay-soft: #FCD34D;
-  --color-butter: #FFDA1A;
-  --color-stone: #D5DAE0;
-  --color-stone-soft: #E8ECEF;
-  --color-line: #C9D0D8;
+  /* Surfaces — white & near-white */
+  --color-paper: #FFFFFF;
+  --color-cream: #FFFFFF;
+  --color-cream-deep: #F4F5F7;
+  --color-surface: #FAFAFB;
+  --color-stone: #E5E7EB;
+  --color-stone-soft: #F1F2F4;
+  --color-line: #E2E4E8;
 
-  /* Brand colour tokens. Default to forest/butter; the root layout overrides
-     them inline with admin-set values from branding.primary_color / accent_color. */
-  --color-brand: #0B1D3A;
-  --color-accent: #FFDA1A;
+  /* Ink — black-on-white text */
+  --color-ink: #000000;
+  --color-ink-soft: #1A1A1A;
+  --color-ink-muted: #5C5F66;
+  --color-ink-faint: #9AA0A6;
+
+  /* Cream-text — for content rendered on top of blue surfaces */
+  /* (kept named "cream" because that's what the JSX still says) */
+
+  /* Primary — Dialawhip blue */
+  --color-forest: #004fb0;
+  --color-forest-deep: #003A85;
+  --color-navy: #003A85;
+  --color-moss: #4A7BC9;
+  --color-brand: #004fb0;
+  --color-brand-deep: #003A85;
+
+  /* Accent — Dialawhip yellow */
+  --color-butter: #f5eb12;
+  --color-yellow: #f5eb12;
+  --color-yellow-soft: #FFF58A;
+  --color-clay: #f5eb12;
+  --color-clay-soft: #FFF58A;
+  --color-accent: #f5eb12;
+
+  /* Status */
+  --color-danger: #DC2626;
+  --color-danger-soft: #FEE2E2;
+  --color-success: #059669;
+  --color-success-soft: #D1FAE5;
 
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display), ui-serif, Georgia, serif;
@@ -36,18 +65,20 @@
   html { font-feature-settings: "ss01", "cv11"; }
 
   body {
-    background-color: var(--color-cream);
+    background-color: #FFFFFF;
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    /* Subtle yellow + blue corner washes — keeps the page from feeling
+       sterile without overpowering the white background. */
     background-image:
-      radial-gradient(1200px 600px at 85% -10%, rgba(255, 218, 26, 0.10), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgba(11, 29, 58, 0.06), transparent 60%);
+      radial-gradient(1100px 500px at 88% -8%, rgba(245, 235, 18, 0.10), transparent 60%),
+      radial-gradient(900px 460px at -8% 108%, rgba(0, 79, 176, 0.05), transparent 60%);
   }
 
   ::selection {
-    background: var(--color-forest);
-    color: var(--color-cream);
+    background: var(--color-brand);
+    color: #FFFFFF;
   }
 
   h1, h2, h3, h4, .font-display {
@@ -56,13 +87,13 @@
     letter-spacing: -0.02em;
   }
 
-  h1 { font-weight: 500; }
-  h2, h3 { font-weight: 450; }
+  h1 { font-weight: 600; color: var(--color-ink); }
+  h2, h3 { font-weight: 500; color: var(--color-ink); }
 
   a { text-underline-offset: 3px; }
 
   :focus-visible {
-    outline: 2px solid var(--color-forest);
+    outline: 2px solid var(--color-brand);
     outline-offset: 2px;
   }
 }
@@ -70,7 +101,7 @@
 @layer utilities {
   .paper-grain {
     background-image:
-      radial-gradient(circle at 1px 1px, rgba(10, 22, 40, 0.05) 1px, transparent 0);
+      radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 0);
     background-size: 14px 14px;
   }
 

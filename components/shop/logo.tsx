@@ -13,7 +13,7 @@ export function Logo({
   tone?: "dark" | "light";
   className?: string;
 }) {
-  const ink = tone === "light" ? "#ffffff" : "#04122e";
+  const ink = tone === "light" ? "#ffffff" : "#000000";
   const accent = tone === "light" ? "#f5eb12" : "#004fb0";
 
   return (
@@ -29,16 +29,16 @@ export function Logo({
         <rect x="2" y="8" width="28" height="13" rx="2" fill={accent} />
         {/* nose / cab */}
         <path d="M30 11 L40 14 L40 21 L30 21 Z" fill={accent} />
-        <rect x="32" y="13" width="6" height="4" rx="1" fill={tone === "light" ? "#04122e" : "#ffffff"} />
+        <rect x="32" y="13" width="6" height="4" rx="1" fill={tone === "light" ? "#000000" : "#ffffff"} />
         {/* wheels */}
         <circle cx="11" cy="22" r="3" fill={ink} />
-        <circle cx="11" cy="22" r="1" fill={tone === "light" ? "#04122e" : "#ffffff"} />
+        <circle cx="11" cy="22" r="1" fill={tone === "light" ? "#000000" : "#ffffff"} />
         <circle cx="33" cy="22" r="3" fill={ink} />
-        <circle cx="33" cy="22" r="1" fill={tone === "light" ? "#04122e" : "#ffffff"} />
+        <circle cx="33" cy="22" r="1" fill={tone === "light" ? "#000000" : "#ffffff"} />
         {/* tank silhouette on van */}
-        <rect x="6" y="11" width="2" height="6" rx="1" fill={tone === "light" ? "#04122e" : "#ffffff"} opacity="0.85" />
-        <rect x="10" y="10" width="2" height="7" rx="1" fill={tone === "light" ? "#04122e" : "#ffffff"} opacity="0.85" />
-        <rect x="14" y="11" width="2" height="6" rx="1" fill={tone === "light" ? "#04122e" : "#ffffff"} opacity="0.85" />
+        <rect x="6" y="11" width="2" height="6" rx="1" fill={tone === "light" ? "#000000" : "#ffffff"} opacity="0.85" />
+        <rect x="10" y="10" width="2" height="7" rx="1" fill={tone === "light" ? "#000000" : "#ffffff"} opacity="0.85" />
+        <rect x="14" y="11" width="2" height="6" rx="1" fill={tone === "light" ? "#000000" : "#ffffff"} opacity="0.85" />
       </svg>
       <span
         className="font-extrabold tracking-tight"
