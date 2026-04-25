@@ -17,7 +17,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
     apiServer<{ data: Product[] }>("/api/v1/products", {
       auth: false,
       cache: "no-store",
-      query: { limit: 100, "filter.search": search || undefined },
+      query: { limit: 100, search: search || undefined },
     }).catch(() => ({ data: [] })),
   ]);
 

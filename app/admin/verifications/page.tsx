@@ -16,8 +16,11 @@ export default async function AdminVerificationsPage({
 
   const res = await apiServer<{ data: IdVerification[] }>("/api/v1/admin/verifications", {
     query: {
-      "filter.status": status,
-      "filter.search": search || undefined,
+      // The route handler accepts either `filter[xxx]` (Laravel-style) or
+      // the direct `xxx` key. We send the direct key — `filter.xxx` with a
+      // dot is what neither side recognises and was hiding records.
+      status,
+      search: search || undefined,
       limit: 50,
     },
   }).catch(() => ({ data: [] }));

@@ -133,9 +133,10 @@ export function DeliveryActions({ orderId, status }: { orderId: string; status: 
 
   if (next.length === 0) {
     return (
-      <p className="rounded-lg border hairline bg-paper px-4 py-3 text-[13px] italic text-ink-muted">
-        This delivery is finished — no further actions.
-      </p>
+      <div className="rounded-2xl bg-yellow p-5 text-center ring-2 ring-ink">
+        <p className="font-display text-[16px] font-bold text-ink">Run finished.</p>
+        <p className="mt-1 text-[12px] font-medium text-ink/75">No further actions on this delivery.</p>
+      </div>
     );
   }
 
@@ -144,28 +145,28 @@ export function DeliveryActions({ orderId, status }: { orderId: string; status: 
     const danger = reasonFor === "cancelled" || reasonFor === "failed";
     const quick = QUICK_REASONS[reasonFor] ?? [];
     return (
-      <form onSubmit={submitReason} className="space-y-3">
-        <div className="rounded-lg border border-clay/40 bg-cream-deep/60 p-4">
-          <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-clay">
+      <form onSubmit={submitReason} className="space-y-4">
+        <div className="rounded-2xl bg-yellow p-5 ring-2 ring-ink">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
             {reasonFor === "cancelled" ? "Cancellation reason" : "Failed-delivery reason"}
           </div>
-          <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">
+          <p className="mt-2 text-[13px] font-medium leading-relaxed text-ink/85">
             {REASON_PROMPTS[reasonFor]}
           </p>
         </div>
 
         {quick.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {quick.map((q) => (
               <button
                 key={q}
                 type="button"
                 onClick={() => setReason(q)}
                 className={cn(
-                  "rounded-full border px-3 py-1.5 text-[12px] font-medium transition-colors",
+                  "rounded-full px-3.5 py-1.5 text-[12px] font-bold transition-all",
                   reason === q
-                    ? "border-forest bg-forest text-cream"
-                    : "hairline bg-paper text-ink-soft hover:border-ink/30 hover:text-ink",
+                    ? "bg-ink text-yellow"
+                    : "border-2 border-ink/15 bg-paper text-ink hover:border-ink hover:bg-yellow",
                 )}
               >
                 {q}
@@ -185,7 +186,7 @@ export function DeliveryActions({ orderId, status }: { orderId: string; status: 
         />
 
         {reasonError ? (
-          <p className="rounded-md bg-[#F3D4CC] px-3 py-2 text-[12px] font-medium text-[#8B2A1D]">
+          <p className="rounded-lg bg-danger-soft px-3 py-2 text-[12px] font-bold text-danger ring-1 ring-danger/30">
             {reasonError}
           </p>
         ) : null}
@@ -195,8 +196,8 @@ export function DeliveryActions({ orderId, status }: { orderId: string; status: 
             type="submit"
             disabled={pending === reasonFor || reason.trim() === ""}
             className={cn(
-              "inline-flex h-12 w-full items-center justify-center rounded-full px-6 text-[14px] font-medium text-cream transition-colors disabled:opacity-50",
-              danger ? "bg-[#8B2A1D] hover:bg-[#731F13]" : "bg-forest hover:bg-forest-deep",
+              "inline-flex h-13 w-full items-center justify-center rounded-full px-6 text-[14px] font-bold transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50",
+              danger ? "bg-danger text-paper" : "bg-ink text-yellow",
             )}
           >
             {pending === reasonFor ? "Saving…" : `Confirm ${LABELS[reasonFor]?.toLowerCase() ?? reasonFor}`}
@@ -204,7 +205,7 @@ export function DeliveryActions({ orderId, status }: { orderId: string; status: 
           <button
             type="button"
             onClick={() => { setReasonFor(null); setReasonError(null); }}
-            className="inline-flex h-10 w-full items-center justify-center rounded-full border hairline bg-paper px-6 text-[12px] font-medium text-ink-soft transition-colors hover:border-ink/30 hover:text-ink"
+            className="inline-flex h-11 w-full items-center justify-center rounded-full border-2 border-ink bg-paper px-6 text-[12px] font-bold text-ink transition-colors hover:bg-yellow"
           >
             Go back
           </button>
@@ -228,30 +229,34 @@ export function DeliveryActions({ orderId, status }: { orderId: string; status: 
         const isPrimary = to === primary;
         const isDanger = to === "failed" || to === "cancelled";
         return (
-          <div key={to} className="space-y-1">
+          <div key={to} className="space-y-1.5">
             <button
               disabled={!!pending}
               onClick={() => handleClick(to)}
               className={cn(
-                "inline-flex h-12 w-full items-center justify-center rounded-full px-6 text-[14px] font-medium transition-colors disabled:opacity-50",
+                "inline-flex h-13 w-full items-center justify-center rounded-full px-6 text-[14px] font-bold transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50",
                 isDanger
-                  ? "bg-[#8B2A1D] text-cream hover:bg-[#731F13]"
+                  ? "bg-danger text-paper"
                   : isPrimary
-                  ? "bg-forest text-cream hover:bg-forest-deep"
-                  : "border hairline bg-paper text-ink-soft hover:border-ink/30 hover:text-ink",
+                  ? "bg-ink text-yellow"
+                  : "border-2 border-ink bg-paper text-ink hover:bg-yellow",
               )}
             >
               {pending === to ? "Saving…" : LABELS[to] ?? to}
             </button>
             {HINTS[to] ? (
-              <p className="px-1 text-center text-[11px] text-ink-muted">{HINTS[to]}</p>
+              <p className="px-1 text-center text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+                {HINTS[to]}
+              </p>
             ) : null}
           </div>
         );
       })}
 
       {error ? (
-        <p className="rounded-md bg-[#F3D4CC] px-3 py-2 text-[12px] font-medium text-[#8B2A1D]">{error}</p>
+        <p className="rounded-lg bg-danger-soft px-3 py-2 text-[12px] font-bold text-danger ring-1 ring-danger/30">
+          {error}
+        </p>
       ) : null}
     </div>
   );
