@@ -77,6 +77,76 @@ export default function VerificationPage() {
 
   const status = data?.user_status ?? "unverified";
 
+  // Verified users get a focused "all done" view — no upload form, no
+  // "how it works" steps, no instructional copy. Just the confirmation,
+  // the approval date, and a shortcut back to the shop.
+  if (status === "verified") {
+    return (
+      <div className="mx-auto max-w-[900px] px-6 py-14">
+        <nav className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+          <Link href="/account" className="transition-colors hover:text-brand">Account</Link>
+          <span aria-hidden>·</span>
+          <span className="text-ink">ID &amp; verification</span>
+        </nav>
+
+        <div className="mt-10 rounded-3xl bg-yellow p-10 text-center ring-2 ring-ink md:p-14">
+          <div className="mx-auto inline-flex h-20 w-20 items-center justify-center rounded-full bg-ink text-yellow">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h1 className="mt-7 font-display text-[44px] font-bold leading-[1] tracking-tight text-ink md:text-[64px]">
+            You&rsquo;re <span className="text-brand">verified.</span>
+          </h1>
+          <p className="mt-5 max-w-md mx-auto text-[15px] font-medium leading-relaxed text-ink/80">
+            Your ID has been approved. You can order any age-restricted product without further checks.
+          </p>
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow">
+            ✓ Approved {data?.verified_at ? new Date(data.verified_at).toLocaleDateString("en-GB") : ""} · valid for 2 years
+          </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/shop"
+              className="inline-flex h-13 items-center rounded-full bg-ink px-8 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5"
+            >
+              Continue shopping →
+            </Link>
+            <Link
+              href="/account"
+              className="inline-flex h-13 items-center rounded-full border-2 border-ink bg-paper px-8 text-[14px] font-bold text-ink transition-colors hover:bg-ink hover:text-yellow"
+            >
+              Back to account
+            </Link>
+          </div>
+        </div>
+
+        {data && data.data.length > 0 ? (
+          <div className="mt-8 rounded-2xl bg-paper p-7 ring-2 ring-ink/10">
+            <h3 className="font-display text-[18px] font-bold text-ink">Your history</h3>
+            <ul className="mt-4 space-y-3 text-[13px]">
+              {data.data.map((v) => (
+                <li
+                  key={v.id}
+                  className="flex items-baseline justify-between gap-4 border-b-2 border-ink/10 pb-3 last:border-0 last:pb-0"
+                >
+                  <div>
+                    <div className="font-display text-[14px] font-bold text-ink capitalize">
+                      {v.doc_type.replace(/_/g, " ")}
+                    </div>
+                    <div className="text-[11px] font-medium text-ink-muted">
+                      {new Date(v.created_at).toLocaleString("en-GB")}
+                    </div>
+                  </div>
+                  <StatusPill status={v.status} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-14">
       <nav className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">
@@ -96,7 +166,7 @@ export default function VerificationPage() {
       <StatusBanner status={status} verifiedAt={data?.verified_at ?? null} />
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
-        {status !== "verified" && status !== "pending" ? (
+        {status !== "pending" ? (
           <form onSubmit={onSubmit} className="space-y-6 rounded-2xl bg-paper p-8 ring-2 ring-ink">
             <div>
               <h2 className="font-display text-[26px] font-bold text-ink">Upload your ID</h2>
@@ -175,13 +245,9 @@ export default function VerificationPage() {
           </form>
         ) : (
           <div className="space-y-5 rounded-2xl bg-yellow p-8 ring-2 ring-ink">
-            <h2 className="font-display text-[28px] font-bold text-ink">
-              {status === "verified" ? "All set." : "Under review."}
-            </h2>
+            <h2 className="font-display text-[28px] font-bold text-ink">Under review.</h2>
             <p className="text-[14px] font-medium leading-relaxed text-ink/80">
-              {status === "verified"
-                ? "Your ID has been verified. You can order age-restricted items without further checks."
-                : "Thanks — a compliance reviewer is looking at your document. Usually inside ten minutes during operating hours."}
+              Thanks — a compliance reviewer is looking at your document. Usually inside ten minutes during operating hours.
             </p>
             <Link
               href="/shop"

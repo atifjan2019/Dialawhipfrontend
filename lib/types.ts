@@ -137,6 +137,10 @@ export interface Order {
   allowed_transitions?: OrderStatus[];
   driver?: User | null;
   events?: OrderEvent[];
+  /** Short-lived signed URL to the customer's most-recent approved ID
+   *  document. Only populated by the driver-delivery endpoint and only
+   *  for age-restricted orders. */
+  customer_id_card?: { url: string; doc_type: string } | null;
   created_at: string;
   updated_at?: string;
 }
