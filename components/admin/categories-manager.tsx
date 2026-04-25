@@ -77,9 +77,9 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
   }
 
   return (
-    <div className="mt-10 space-y-8">
-      <form onSubmit={onCreate} className="rounded-lg border hairline bg-paper p-6">
-        <h2 className="font-display text-[20px] text-ink">Add a category</h2>
+    <div className="space-y-8">
+      <form onSubmit={onCreate} className="rounded-2xl bg-paper p-6 ring-2 ring-ink">
+        <h2 className="font-display text-[22px] font-bold text-ink">Add a category</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_1fr_auto]">
           <div className="space-y-1.5">
             <Label>Name</Label>
@@ -123,17 +123,17 @@ export function CategoriesManager({ initial }: { initial: Category[] }) {
         </div>
       </form>
 
-      <div className="overflow-hidden rounded-lg border hairline bg-paper">
+      <div className="overflow-hidden rounded-2xl bg-paper ring-2 ring-ink/10">
         <table className="w-full text-[13px]">
-          <thead className="border-b hairline bg-cream-deep/50 text-left text-[10px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+          <thead className="border-b-2 border-ink/10 bg-yellow text-left text-[10px] font-bold uppercase tracking-[0.18em] text-ink">
             <tr>
-              <th className="px-5 py-3">Name</th>
-              <th className="px-5 py-3">Slug</th>
-              <th className="px-5 py-3">Active</th>
-              <th className="px-5 py-3" />
+              <th className="px-5 py-3.5">Name</th>
+              <th className="px-5 py-3.5">Slug</th>
+              <th className="px-5 py-3.5">Active</th>
+              <th className="px-5 py-3.5" />
             </tr>
           </thead>
-          <tbody className="divide-y hairline">
+          <tbody>
             {items.map((c) => (
               <tr key={c.id}>
                 <td className="px-5 py-3.5 font-display text-[14px] text-ink">{c.name}</td>

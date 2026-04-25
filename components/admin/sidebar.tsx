@@ -135,10 +135,6 @@ function SidebarContents({
             </span>
           )}
         </Link>
-        <div className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-yellow px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.22em] text-ink">
-          Admin
-        </div>
-        <div className="mt-2 font-display text-[15px] font-bold text-paper">{name}</div>
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {NAV.map((n) => {
