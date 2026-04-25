@@ -30,7 +30,6 @@ export function ShopHeader({
 }) {
   // Brand info pulled from admin settings (with sensible fallbacks).
   const brandName = (settings?.["business.name"] as string) || "Dialawhip";
-  const brandTagline = (settings?.["business.city"] as string) || "Newcastle";
   const logoUrl = (settings?.["branding.logo_url"] as string) || "";
   const phone = (settings?.["business.phone"] as string) || "";
 
@@ -83,11 +82,6 @@ export function ShopHeader({
               {brandName}
             </span>
           )}
-          {brandTagline ? (
-            <span className="hidden font-display text-[14px] italic font-light leading-none text-clay sm:inline">
-              {brandTagline}
-            </span>
-          ) : null}
         </Link>
 
         <nav className="hidden items-center gap-7 text-[13px] font-medium text-ink-soft md:flex">
@@ -213,19 +207,18 @@ export function ShopHeader({
     </header>
 
     {mobileOpen ? (
-      <MobileDrawer user={user} onClose={() => setMobileOpen(false)} brandName={brandName} brandTagline={brandTagline} logoUrl={logoUrl} phone={phone} />
+      <MobileDrawer user={user} onClose={() => setMobileOpen(false)} brandName={brandName} logoUrl={logoUrl} phone={phone} />
     ) : null}
     </>
   );
 }
 
 function MobileDrawer({
-  user, onClose, brandName, brandTagline, logoUrl, phone,
+  user, onClose, brandName, logoUrl, phone,
 }: {
   user: User | null;
   onClose: () => void;
   brandName: string;
-  brandTagline: string;
   logoUrl: string;
   phone: string;
 }) {
@@ -245,9 +238,6 @@ function MobileDrawer({
             ) : (
               <div className="font-display leading-tight">
                 <span className="block text-[20px] text-forest">{brandName}</span>
-                {brandTagline ? (
-                  <span className="block text-[12px] italic font-light text-clay">{brandTagline}</span>
-                ) : null}
               </div>
             )}
           </div>
