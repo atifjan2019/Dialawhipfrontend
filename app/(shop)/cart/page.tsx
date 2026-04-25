@@ -69,20 +69,22 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-28 text-center">
-        <Eyebrow className="justify-center">Your bag</Eyebrow>
-        <h1 className="mt-5 text-[44px] font-extrabold tracking-tight text-ink sm:text-[56px]">
-          Nothing here yet.
-        </h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">
-          Your bag is empty. Why not peek at the menu?
-        </p>
-        <Link
-          href="/shop"
-          className="mt-8 inline-flex h-12 items-center rounded-full bg-yellow px-8 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5"
-        >
-          Browse the menu →
-        </Link>
+      <div className="mx-auto max-w-2xl px-6 py-24 text-center">
+        <div className="rounded-3xl bg-yellow p-12 ring-2 ring-ink">
+          <Eyebrow className="justify-center">Your bag</Eyebrow>
+          <h1 className="mt-5 font-display text-[44px] font-bold tracking-tight text-ink sm:text-[60px]">
+            Nothing here yet.
+          </h1>
+          <p className="mt-4 text-[15px] font-medium leading-relaxed text-ink/80">
+            Your bag is empty. Pick something from the catalogue.
+          </p>
+          <Link
+            href="/shop"
+            className="mt-8 inline-flex h-13 items-center rounded-full bg-ink px-8 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5"
+          >
+            Browse the catalogue →
+          </Link>
+        </div>
       </div>
     );
   }
@@ -90,62 +92,68 @@ export default function CartPage() {
   return (
     <div className="mx-auto max-w-[1280px] px-6 py-14">
       <Eyebrow>Your bag</Eyebrow>
-      <h1 className="mt-3 text-[36px] font-extrabold tracking-tight text-ink sm:text-[48px]">
-        Let&apos;s go over your order.
+      <h1 className="mt-4 font-display text-[44px] font-bold leading-[1] tracking-tight text-ink sm:text-[60px]">
+        Let&rsquo;s go over your order.
       </h1>
 
       {shopClosed ? (
-        <div className="mt-8 rounded-2xl border border-danger/25 bg-danger-soft p-4 text-[13px] leading-relaxed text-ink" role="alert">
+        <div className="mt-8 rounded-2xl bg-yellow p-5 ring-2 ring-ink" role="alert">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-danger text-[12px] font-bold text-paper">!</span>
+            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-bold text-yellow">!</span>
             <div>
-              <strong className="block text-[14px] font-semibold text-ink">Shop is currently closed</strong>
-              <span className="mt-1 block text-ink-soft">{shopClosed.message}</span>
+              <strong className="block font-display text-[16px] font-bold text-ink">Shop is currently closed</strong>
+              <span className="mt-1 block text-[13px] font-medium text-ink/80">{shopClosed.message}</span>
             </div>
           </div>
         </div>
       ) : null}
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_380px]">
-        <ul className="divide-y hairline overflow-hidden rounded-2xl border hairline bg-paper">
-          {items.map((i) => (
-            <li key={`${i.product_id}::${i.variant_id ?? ""}`} className="flex items-center gap-5 p-5">
-              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl product-stripe bg-cream">
-                <span className="font-mono text-[10px] tracking-[0.1em] text-ink-faint">
-                  {i.name.slice(0, 8).toUpperCase()}
+        <ul className="overflow-hidden rounded-2xl bg-paper ring-2 ring-ink/15">
+          {items.map((i, idx) => (
+            <li
+              key={`${i.product_id}::${i.variant_id ?? ""}`}
+              className={
+                "flex items-center gap-5 p-5 " +
+                (idx > 0 ? "border-t-2 border-ink/10" : "")
+              }
+            >
+              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-yellow ring-2 ring-ink">
+                <span className="font-display text-[18px] font-bold text-ink">
+                  {i.name.charAt(0).toUpperCase()}
                 </span>
               </div>
               <div className="flex-1">
-                <Link href={`/products/${i.slug}`} className="text-[16px] font-bold leading-tight text-ink hover:text-brand">
+                <Link href={`/products/${i.slug}`} className="font-display text-[17px] font-bold leading-tight text-ink hover:text-brand">
                   {i.name}
                 </Link>
                 {i.variant_label ? (
-                  <div className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                  <div className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-brand">
                     {i.variant_label}
                   </div>
                 ) : null}
-                <div className="mt-1 text-[13px] text-ink-muted">
-                  <Money pence={i.unit_price_pence} /> {i.variant_id ? "each" : "per serving"}
+                <div className="mt-1 text-[13px] font-medium text-ink-muted">
+                  <Money pence={i.unit_price_pence} /> {i.variant_id ? "each" : "per item"}
                 </div>
               </div>
-              <div className="flex h-10 items-center rounded-full border hairline bg-paper">
+              <div className="flex h-10 items-center rounded-full border-2 border-ink bg-paper">
                 <button
-                  className="flex h-10 w-10 items-center justify-center text-ink-soft transition-colors hover:text-brand"
+                  className="flex h-10 w-10 items-center justify-center text-ink transition-colors hover:bg-yellow"
                   onClick={() => setQuantity(i.product_id, i.quantity - 1, i.variant_id ?? null)}
                   aria-label="Decrease"
                 >
                   <Minus className="h-3.5 w-3.5" />
                 </button>
-                <span className="w-7 text-center text-[14px] font-bold tabular-nums">{i.quantity}</span>
+                <span className="w-7 text-center font-display text-[15px] font-bold tabular-nums">{i.quantity}</span>
                 <button
-                  className="flex h-10 w-10 items-center justify-center text-ink-soft transition-colors hover:text-brand"
+                  className="flex h-10 w-10 items-center justify-center text-ink transition-colors hover:bg-yellow"
                   onClick={() => setQuantity(i.product_id, i.quantity + 1, i.variant_id ?? null)}
                   aria-label="Increase"
                 >
                   <Plus className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <Money pence={i.unit_price_pence * i.quantity} className="w-20 text-right text-[15px] font-extrabold text-ink" />
+              <Money pence={i.unit_price_pence * i.quantity} className="w-20 text-right font-display text-[17px] font-bold text-ink" />
               <button
                 onClick={() => remove(i.product_id, i.variant_id ?? null)}
                 className="text-ink-muted transition-colors hover:text-danger"
@@ -158,8 +166,8 @@ export default function CartPage() {
         </ul>
 
         <aside className="h-fit space-y-4">
-          <div className="rounded-2xl border hairline bg-paper p-6">
-            <h2 className="text-[18px] font-bold text-ink">Order summary</h2>
+          <div className="rounded-2xl bg-paper p-6 ring-2 ring-ink">
+            <h2 className="font-display text-[20px] font-bold text-ink">Order summary</h2>
 
             <div className="mt-5 space-y-2">
               <Label htmlFor="postcode">Delivery postcode</Label>
@@ -169,7 +177,7 @@ export default function CartPage() {
                 onChange={(e) => setPostcode(e.target.value.toUpperCase())}
                 placeholder="NE1 4AB"
               />
-              <p className="text-[12px] text-ink-muted">We&apos;ll check this postcode is in our delivery area.</p>
+              <p className="text-[12px] font-medium text-ink-muted">We&rsquo;ll check this postcode is in our delivery area.</p>
             </div>
 
             <div className="mt-6 space-y-2.5 text-[14px]">
@@ -186,31 +194,31 @@ export default function CartPage() {
               ) : null}
             </div>
 
-            <div className="mt-5 flex items-baseline justify-between border-t hairline pt-5">
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">Total</span>
+            <div className="mt-5 flex items-baseline justify-between border-t-2 border-ink/15 pt-5">
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand">Total</span>
               <Money
                 pence={pricing?.total_pence ?? items.reduce((s, i) => s + i.unit_price_pence * i.quantity, 0)}
-                className="text-[28px] font-extrabold text-ink"
+                className="font-display text-[32px] font-bold text-ink"
               />
             </div>
 
             {error ? (
-              <p className="mt-4 rounded-lg bg-danger-soft px-3 py-2 text-[13px] text-danger">{error}</p>
+              <p className="mt-4 rounded-lg bg-danger-soft px-3 py-2.5 text-[13px] font-medium text-danger ring-1 ring-danger/30">{error}</p>
             ) : null}
-            {loading ? <p className="mt-4 text-[12px] text-ink-muted">Pricing…</p> : null}
+            {loading ? <p className="mt-4 text-[12px] font-medium text-ink-muted">Pricing…</p> : null}
 
             {shopClosed ? (
               <button
                 type="button"
                 disabled
-                className="mt-6 inline-flex h-12 w-full cursor-not-allowed items-center justify-center rounded-full bg-surface px-6 text-[13px] font-semibold text-ink-muted"
+                className="mt-6 inline-flex h-13 w-full cursor-not-allowed items-center justify-center rounded-full bg-stone-soft px-6 text-[13px] font-bold text-ink-muted"
               >
                 Shop closed — try again later
               </button>
             ) : (
               <Link
                 href="/checkout"
-                className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-yellow px-6 text-[14px] font-bold text-navy transition-transform hover:-translate-y-0.5 aria-disabled:opacity-50"
+                className="mt-6 inline-flex h-13 w-full items-center justify-center rounded-full bg-ink px-6 text-[14px] font-bold text-yellow transition-transform hover:-translate-y-0.5 aria-disabled:opacity-50"
                 aria-disabled={!pricing || !!error}
               >
                 Continue to checkout →
@@ -218,8 +226,9 @@ export default function CartPage() {
             )}
           </div>
 
-          <div className="rounded-2xl border hairline bg-surface p-5 text-[12px] leading-relaxed text-ink-muted">
-            <strong className="font-semibold text-ink">A note —</strong> orders require 24 hours&apos; notice. You&apos;ll pick your delivery window at checkout.
+          <div className="rounded-2xl bg-yellow p-5 text-[12px] font-medium leading-relaxed text-ink ring-2 ring-ink">
+            <strong className="block text-[11px] font-bold uppercase tracking-[0.16em] text-brand">A note</strong>
+            <span className="mt-1 block">Orders require 24 hours&rsquo; notice. You&rsquo;ll pick your delivery window at checkout.</span>
           </div>
         </aside>
       </div>
@@ -229,9 +238,9 @@ export default function CartPage() {
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between font-medium">
       <span className="text-ink-muted">{label}</span>
-      <span className="text-ink">{children}</span>
+      <span className="font-bold text-ink">{children}</span>
     </div>
   );
 }
