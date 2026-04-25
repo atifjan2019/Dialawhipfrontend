@@ -423,27 +423,27 @@ function TierCard({
     <button
       type="button"
       onClick={() => onSelect(tier)}
-      className={`relative rounded-xl border p-5 text-left transition-all ${
+      className={`relative rounded-2xl p-5 text-left transition-all ${
         active
-          ? "border-forest bg-paper shadow-[0_8px_20px_-10px_rgba(10,22,40,0.25)]"
-          : "hairline bg-paper hover:border-ink/25"
+          ? "bg-yellow ring-2 ring-ink"
+          : "bg-paper ring-2 ring-ink/15 hover:ring-ink/40"
       }`}
     >
       {highlighted && !active ? (
-        <span className="absolute -top-2 left-5 rounded-full bg-butter px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-forest">
+        <span className="absolute -top-3 left-5 rounded-full bg-ink px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-yellow">
           Popular
         </span>
       ) : null}
       <div className="flex items-baseline justify-between">
-        <span className="font-display text-[17px] text-ink">{name}</span>
-        <span className="text-[12px] font-medium text-clay">
+        <span className="font-display text-[18px] font-bold text-ink">{name}</span>
+        <span className="text-[13px] font-bold text-brand">
           {price === 0 ? "Free" : <>+<Money pence={price} /></>}
         </span>
       </div>
-      <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+      <div className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-ink/60">
         {eta}
       </div>
-      <p className="mt-3 text-[12px] leading-relaxed text-ink-muted">{blurb}</p>
+      <p className="mt-3 text-[12px] font-medium leading-relaxed text-ink-muted">{blurb}</p>
     </button>
   );
 }
@@ -452,8 +452,10 @@ function Section({ step, title, children }: { step: string; title: string; child
   return (
     <section>
       <div className="mb-5 flex items-baseline gap-4">
-        <span className="font-display text-[13px] italic text-clay">№ {step}</span>
-        <h2 className="font-display text-[26px] leading-tight text-ink">{title}</h2>
+        <span className="inline-flex items-center rounded-full bg-ink px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow">
+          № {step}
+        </span>
+        <h2 className="font-display text-[28px] font-bold leading-tight tracking-tight text-ink">{title}</h2>
       </div>
       {children}
     </section>
