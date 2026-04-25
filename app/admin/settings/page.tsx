@@ -14,20 +14,26 @@ export default async function SettingsPage() {
     .catch(() => ({ data: [] as ServiceArea[] }));
 
   return (
-    <div className="mx-auto max-w-[1280px] px-6 py-10 md:px-10">
-      <Eyebrow>Configuration</Eyebrow>
-      <h1 className="mt-5 font-display text-[44px] leading-[1] text-ink">Settings</h1>
-      <p className="mt-3 max-w-2xl text-[14px] text-ink-muted">
-        Manage branding, contact details, social links, SEO, legal pages, delivery charges and every other website setting from one place.
-      </p>
+    <>
+      <section className="border-b-2 border-ink bg-yellow">
+        <div className="mx-auto max-w-[1280px] px-6 py-12 md:px-10 md:py-16">
+          <Eyebrow>Configuration</Eyebrow>
+          <h1 className="mt-5 font-display text-[44px] font-bold leading-[1] tracking-tight text-ink md:text-[64px]">
+            <span className="text-brand">Settings.</span>
+          </h1>
+          <p className="mt-4 max-w-2xl text-[14px] font-medium text-ink/75 md:text-[15px]">
+            Manage branding, contact details, social links, SEO, legal pages, delivery charges and every other website setting from one place.
+          </p>
+        </div>
+      </section>
 
-      <div className="mt-10">
+      <div className="mx-auto max-w-[1280px] px-6 py-10 md:px-10">
         <SettingsForm initial={settingsRes.data} />
-      </div>
 
-      <div className="mt-14">
-        <ServiceAreasManager initial={areasRes.data} />
+        <div className="mt-16">
+          <ServiceAreasManager initial={areasRes.data} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -4,7 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
-import { LayoutDashboard, ClipboardList, Users, Package, FolderTree, Truck, BarChart3, LogOut, ShieldCheck, Settings as SettingsIcon, Menu, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  ClipboardList,
+  Users,
+  Package,
+  FolderTree,
+  Truck,
+  BarChart3,
+  LogOut,
+  ShieldCheck,
+  Settings as SettingsIcon,
+  Menu,
+  X,
+} from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -47,39 +60,42 @@ export function AdminSidebar({
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-cream/10 bg-forest px-4 py-3 text-cream md:hidden">
-        <Link href="/admin" className="flex items-baseline gap-1.5">
+      {/* Mobile top bar */}
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b-2 border-ink bg-yellow px-4 py-3 text-ink md:hidden">
+        <Link href="/admin" className="flex items-baseline gap-2">
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt={brandName} className="h-7 w-auto" />
           ) : (
-            <span className="font-display text-[20px] leading-none text-cream">{brandName}</span>
+            <span className="font-display text-[20px] font-bold leading-none text-ink">
+              {brandName}<span className="text-brand">.</span>
+            </span>
           )}
-          <span className="font-display text-[12px] italic text-butter">{active}</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand">{active}</span>
         </Link>
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-cream/15 bg-forest-deep/40 text-cream"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-paper text-ink"
           aria-label="Open admin menu"
         >
           <Menu className="h-4 w-4" />
         </button>
       </header>
 
-      <aside className="hidden h-screen w-64 shrink-0 flex-col bg-forest text-cream md:sticky md:top-0 md:flex">
+      <aside className="hidden h-screen w-64 shrink-0 flex-col border-r-2 border-ink bg-ink text-paper md:sticky md:top-0 md:flex">
         <SidebarContents name={name} brandName={brandName} logoUrl={logoUrl} pathname={pathname} onLogout={logout} />
       </aside>
 
       {mobileOpen ? (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-ink/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-hidden />
-          <aside className="absolute inset-y-0 left-0 flex w-[82%] max-w-xs flex-col bg-forest text-cream shadow-[20px_0_60px_-20px_rgba(10,22,40,0.45)]">
-            <div className="flex justify-end px-3 py-3">
+          <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-hidden />
+          <aside className="absolute inset-y-0 left-0 flex w-[82%] max-w-xs flex-col border-r-2 border-ink bg-ink text-paper shadow-[20px_0_60px_-20px_rgba(0,0,0,0.45)]">
+            <div className="flex justify-end border-b-2 border-paper/10 px-3 py-3">
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cream/15 bg-forest-deep/40 text-cream"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-paper/20 text-paper"
                 aria-label="Close menu"
               >
                 <X className="h-4 w-4" />
@@ -108,19 +124,23 @@ function SidebarContents({
 }) {
   return (
     <>
-      <div className="px-6 py-7 md:pt-7 pt-0">
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={logoUrl} alt={brandName} className="h-10 w-auto" />
-        ) : (
-          <div className="font-display leading-tight">
-            <span className="block text-[24px] text-cream">{brandName}</span>
-          </div>
-        )}
-        <div className="mt-5 text-[10px] font-medium uppercase tracking-[0.22em] text-butter/80">Admin</div>
-        <div className="mt-1 font-display text-[15px] text-cream">{name}</div>
+      <div className="border-b-2 border-paper/10 px-6 py-7">
+        <Link href="/admin" className="block">
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt={brandName} className="h-10 w-auto" />
+          ) : (
+            <span className="font-display text-[24px] font-bold leading-none text-paper">
+              {brandName}<span className="text-yellow">.</span>
+            </span>
+          )}
+        </Link>
+        <div className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-yellow px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.22em] text-ink">
+          Admin
+        </div>
+        <div className="mt-2 font-display text-[15px] font-bold text-paper">{name}</div>
       </div>
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {NAV.map((n) => {
           const active = n.exact ? pathname === n.href : pathname.startsWith(n.href);
           return (
@@ -128,10 +148,10 @@ function SidebarContents({
               key={n.href}
               href={n.href}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3.5 py-2.5 text-[13px] font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-[13px] font-bold transition-colors",
                 active
-                  ? "bg-cream text-forest-deep"
-                  : "text-cream/70 hover:bg-cream/10 hover:text-cream",
+                  ? "bg-yellow text-ink"
+                  : "text-paper/70 hover:bg-paper/10 hover:text-paper",
               )}
             >
               <n.icon className="h-4 w-4" />
@@ -140,16 +160,16 @@ function SidebarContents({
           );
         })}
       </nav>
-      <div className="m-3 border-t border-cream/10 pt-3">
+      <div className="border-t-2 border-paper/10 p-3">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-md px-3.5 py-2 text-[12px] font-medium text-cream/60 transition-colors hover:text-cream"
+          className="flex items-center gap-2 rounded-lg px-3.5 py-2 text-[12px] font-bold text-paper/60 transition-colors hover:bg-paper/10 hover:text-yellow"
         >
           ← Back to site
         </Link>
         <button
           onClick={onLogout}
-          className="mt-1 flex w-full items-center gap-2 rounded-md px-3.5 py-2 text-[12px] font-medium text-cream/60 transition-colors hover:text-clay"
+          className="mt-1 flex w-full items-center gap-2 rounded-lg px-3.5 py-2 text-[12px] font-bold text-paper/60 transition-colors hover:bg-paper/10 hover:text-danger"
         >
           <LogOut className="h-4 w-4" />
           Sign out
