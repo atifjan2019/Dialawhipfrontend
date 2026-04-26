@@ -66,7 +66,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   return (
     <div className="mx-auto max-w-[1280px] px-6 py-10">
-      <nav className="mb-8 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+      <nav className="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-muted sm:text-[12px] sm:tracking-[0.16em]">
         <Link href="/shop" className="transition-colors hover:text-brand">Shop</Link>
         <span aria-hidden>·</span>
         {product.category ? (
@@ -77,7 +77,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             <span aria-hidden>·</span>
           </>
         ) : null}
-        <span className="text-ink">{product.name}</span>
+        <span className="break-words text-ink">{product.name}</span>
       </nav>
 
       <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">

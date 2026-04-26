@@ -7,7 +7,10 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
 
   const brandName = settingString(s, "business.name", "Dialawhip");
   const tagline = settingString(s, "business.tagline", "Newcastle · 20-min delivery");
-  const logoUrl = settingString(s, "branding.logo_url");
+  // Footer sits on a dark (ink) background — prefer the dark-mode logo.
+  const logoUrl =
+    settingString(s, "branding.logo_dark_url") ||
+    settingString(s, "branding.logo_url");
   const phone = settingString(s, "business.phone");
   const whatsapp = settingString(s, "business.whatsapp");
   const email = settingString(s, "business.email");
