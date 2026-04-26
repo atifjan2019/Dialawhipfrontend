@@ -96,20 +96,20 @@ function Hero({
                 alt={featured.name}
                 className="mx-auto h-64 w-auto object-contain md:h-80"
               />
-              <div className="mt-4 flex items-center justify-between">
-                <div>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="min-w-0">
                   <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-ink-muted">
                     Featured
                   </div>
-                  <div className="mt-1 font-display text-[18px] font-bold text-ink">
+                  <div className="mt-1 break-words font-display text-[18px] font-bold text-ink">
                     {featured.name}
                   </div>
                 </div>
                 <Link
                   href={`/products/${featured.slug}`}
-                  className="inline-flex h-10 items-center rounded-full bg-brand px-4 text-[12px] font-bold text-paper transition-colors hover:bg-brand-deep"
+                  className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-brand px-4 text-[12px] font-bold text-paper transition-colors hover:bg-brand-deep"
                 >
-                  View →
+                  View <span aria-hidden>→</span>
                 </Link>
               </div>
             </div>
