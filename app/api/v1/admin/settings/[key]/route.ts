@@ -14,6 +14,6 @@ export const PATCH = handle(async (req: NextRequest, { params }: Ctx) => {
   const body = await req.json().catch(() => ({}));
   const value = "value" in body ? body.value : body;
   const v = await updateOne(key, value);
-  revalidateTag("public-settings");
+  revalidateTag("public-settings", { expire: 0 });
   return ok({ key, value: v });
 });
