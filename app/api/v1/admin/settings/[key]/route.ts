@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { revalidateTag } from "next/cache";
 import { handle, ok, validationError } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { updateOne } from "@/lib/domain/settings";
@@ -13,5 +14,6 @@ export const PATCH = handle(async (req: NextRequest, { params }: Ctx) => {
   const body = await req.json().catch(() => ({}));
   const value = "value" in body ? body.value : body;
   const v = await updateOne(key, value);
+  revalidateTag("public-settings");
   return ok({ key, value: v });
 });
