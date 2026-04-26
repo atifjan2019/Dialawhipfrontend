@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   } as React.CSSProperties;
 
   return (
-    <html lang="en-GB" className={`${sans.variable} ${display.variable} h-full antialiased`} style={brandStyle}>
+    <html lang="en-GB" className={`${sans.variable} ${display.variable} h-full overflow-x-clip antialiased`} style={brandStyle}>
       <head>
         {gtm ? (
           <script
@@ -110,7 +110,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           />
         ) : null}
       </head>
-      <body className="min-h-full flex flex-col bg-cream text-ink" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col overflow-x-clip bg-cream text-ink" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

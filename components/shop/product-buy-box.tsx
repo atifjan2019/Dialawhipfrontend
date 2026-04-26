@@ -85,21 +85,21 @@ export function ProductBuyBox({ product, base }: { product: Product; base: BaseI
         </div>
       ) : null}
 
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 items-center rounded-full border hairline bg-paper">
+      <div className="flex items-stretch gap-2 sm:gap-3">
+        <div className="flex h-12 shrink-0 items-center rounded-full border hairline bg-paper">
           <button
             type="button"
             onClick={() => setQty((q) => Math.max(1, q - 1))}
-            className="flex h-12 w-12 items-center justify-center text-ink-soft transition-colors hover:text-brand"
+            className="flex h-12 w-10 items-center justify-center text-ink-soft transition-colors hover:text-brand sm:w-12"
             aria-label="Decrease"
           >
             <Minus className="h-4 w-4" />
           </button>
-          <span className="w-8 text-center text-[15px] font-bold tabular-nums">{qty}</span>
+          <span className="w-7 text-center text-[15px] font-bold tabular-nums sm:w-8">{qty}</span>
           <button
             type="button"
             onClick={() => setQty((q) => q + 1)}
-            className="flex h-12 w-12 items-center justify-center text-ink-soft transition-colors hover:text-brand"
+            className="flex h-12 w-10 items-center justify-center text-ink-soft transition-colors hover:text-brand sm:w-12"
             aria-label="Increase"
           >
             <Plus className="h-4 w-4" />
@@ -108,13 +108,13 @@ export function ProductBuyBox({ product, base }: { product: Product; base: BaseI
         <button
           type="button"
           onClick={onAdd}
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-navy px-7 text-[14px] font-semibold text-paper transition-colors hover:bg-brand"
+          className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-navy px-3 text-[13px] font-semibold text-paper transition-colors hover:bg-brand sm:gap-2 sm:px-7 sm:text-[14px]"
         >
           {added ? (
             <span>Added to bag ✓</span>
           ) : (
             <>
-              <span>Add {qty} to bag</span>
+              <span className="truncate">Add {qty} to bag</span>
               <span className="opacity-70">·</span>
               <span className="font-extrabold">£{(lineTotal / 100).toFixed(2)}</span>
             </>

@@ -65,8 +65,8 @@ export default async function ProductPage({ params }: { params: Params }) {
   const lowStock = typeof product.stock_count === "number" && product.stock_count > 0 && product.stock_count < 10;
 
   return (
-    <div className="mx-auto max-w-[1280px] px-6 py-10">
-      <nav className="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-muted sm:text-[12px] sm:tracking-[0.16em]">
+    <div className="mx-auto w-full max-w-[1280px] px-4 pb-12 pt-4 sm:px-6 sm:py-10">
+      <nav className="mb-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted sm:mb-8 sm:text-[12px] sm:tracking-[0.16em]">
         <Link href="/shop" className="transition-colors hover:text-brand">Shop</Link>
         <span aria-hidden>·</span>
         {product.category ? (
@@ -77,12 +77,12 @@ export default async function ProductPage({ params }: { params: Params }) {
             <span aria-hidden>·</span>
           </>
         ) : null}
-        <span className="break-words text-ink">{product.name}</span>
+        <span className="min-w-0 break-words text-ink">{product.name}</span>
       </nav>
 
-      <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
-        <div>
-          <div className="overflow-hidden rounded-3xl bg-yellow p-2 ring-2 ring-ink">
+      <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:gap-16">
+        <div className="min-w-0">
+          <div className="overflow-hidden rounded-2xl bg-yellow p-1.5 ring-2 ring-ink sm:rounded-3xl sm:p-2">
             <ProductGallery
               featured={product.image_url}
               gallery={product.gallery_urls ?? []}
@@ -106,7 +106,8 @@ export default async function ProductPage({ params }: { params: Params }) {
               }
             />
           </div>
-          <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold uppercase tracking-[0.14em]">
+
+          <div className="mt-4 flex flex-wrap gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] sm:mt-5 sm:gap-2 sm:tracking-[0.14em]">
             <span className={inStock ? "rounded-full bg-ink px-3 py-2 text-yellow" : "rounded-full bg-paper px-3 py-2 text-ink ring-2 ring-ink"}>
               {inStock ? "● In stock" : "Out of stock"}
             </span>
@@ -115,25 +116,25 @@ export default async function ProductPage({ params }: { params: Params }) {
           </div>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           {product.category ? (
             <Eyebrow>{product.category.name}</Eyebrow>
           ) : null}
-          <h1 className="mt-4 font-display text-[40px] font-bold leading-[1] tracking-tight text-ink md:text-[56px]">
+          <h1 className="mt-3 break-words font-display text-[30px] font-bold leading-[1.05] tracking-tight text-ink sm:mt-4 sm:text-[40px] md:text-[56px]">
             {product.name}
           </h1>
 
-          <div className="mt-6 flex items-baseline gap-3">
+          <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-2 sm:mt-6">
             {product.variants && product.variants.length > 0 ? (
               <>
-                <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted">from</span>
+                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted sm:text-[12px]">from</span>
                 <Money
                   pence={Math.min(...product.variants.filter((v) => v.is_active).map((v) => v.price_pence))}
-                  className="font-display text-[40px] font-bold text-ink"
+                  className="font-display text-[34px] font-bold leading-none text-ink sm:text-[40px]"
                 />
               </>
             ) : (
-              <Money pence={product.price_pence} className="font-display text-[44px] font-bold text-ink" />
+              <Money pence={product.price_pence} className="font-display text-[36px] font-bold leading-none text-ink sm:text-[44px]" />
             )}
             {lowStock ? (
               <span className="inline-flex h-7 items-center rounded-full bg-yellow px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ink ring-2 ring-ink">
@@ -143,10 +144,10 @@ export default async function ProductPage({ params }: { params: Params }) {
           </div>
 
           {product.is_age_restricted ? (
-            <div className="mt-7 rounded-2xl border border-danger/25 bg-danger-soft p-5">
+            <div className="mt-6 rounded-2xl border border-danger/25 bg-danger-soft p-4 sm:mt-7 sm:p-5">
               <div className="flex items-start gap-3">
                 <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-danger text-[12px] font-bold text-paper">18+</span>
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-[14px] font-bold text-ink">ID verification required</h3>
                   {isVerified ? (
                     <p className="mt-1 text-[13px] text-success">✓ Your account is verified. You can order this product.</p>
@@ -174,7 +175,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             </div>
           ) : null}
 
-          <div className="mt-7">
+          <div className="mt-6 sm:mt-7">
             {inStock ? (
               <ProductBuyBox
                 product={product}
@@ -193,30 +194,30 @@ export default async function ProductPage({ params }: { params: Params }) {
             )}
           </div>
 
-          <p className="mt-5 text-[12px] text-ink-muted">
+          <p className="mt-4 text-[12px] text-ink-muted sm:mt-5">
             Order before 03:00 for immediate Newcastle delivery. Free delivery NE1–NE4.
           </p>
 
-          <div className="mt-9 h-px bg-line" />
+          <div className="mt-7 h-px bg-line sm:mt-9" />
 
           {product.description ? (
-            <p className="mt-7 text-[15px] leading-[1.7] text-ink-soft whitespace-pre-line">
+            <p className="mt-6 whitespace-pre-line break-words text-[14px] leading-[1.7] text-ink-soft sm:mt-7 sm:text-[15px]">
               {product.description}
             </p>
           ) : null}
 
           {product.short_spec && Object.keys(product.short_spec).length > 0 ? (
-            <div className="mt-7 overflow-hidden rounded-2xl border hairline bg-paper">
-              <div className="bg-surface px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+            <div className="mt-6 overflow-hidden rounded-2xl border hairline bg-paper sm:mt-7">
+              <div className="bg-surface px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted sm:px-5">
                 Specs
               </div>
               <dl className="grid grid-cols-2 gap-px bg-line">
                 {Object.entries(product.short_spec).map(([k, v]) => (
-                  <div key={k} className="bg-paper px-5 py-4">
-                    <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">
+                  <div key={k} className="min-w-0 bg-paper px-4 py-3 sm:px-5 sm:py-4">
+                    <dt className="break-words text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">
                       {SPEC_LABEL[k] ?? k.replace(/_/g, " ")}
                     </dt>
-                    <dd className="mt-1 text-[15px] font-bold text-ink">{formatSpecValue(k, v)}</dd>
+                    <dd className="mt-1 break-words text-[14px] font-bold text-ink sm:text-[15px]">{formatSpecValue(k, v)}</dd>
                   </div>
                 ))}
               </dl>
