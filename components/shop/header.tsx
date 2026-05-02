@@ -2,36 +2,49 @@
 
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
-import type { User } from "@/lib/types";
+import type { Category, User } from "@/lib/types";
 import type { PublicSettings } from "@/lib/settings";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 
-const SHOP_LINKS: { name: string; href: string; hot?: boolean }[] = [
+interface ShopLink {
+  name: string;
+  href: string;
+  hot?: boolean;
+}
+
+const FALLBACK_SHOP_LINKS: ShopLink[] = [
   { name: "Cream chargers", href: "/shop/cream-chargers", hot: true },
   { name: "Smartwhip tanks", href: "/shop/smartwhip-tanks", hot: true },
   { name: "MAXXI tanks", href: "/shop/maxxi-tanks" },
   { name: "Whippers", href: "/shop/whippers" },
-  { name: "CO₂ cartridges", href: "/shop/co2-cartridges" },
-  { name: "Soda siphons", href: "/shop/soda-siphons" },
-  { name: "Monin syrups", href: "/shop/monin-syrups" },
-  { name: "Coffee", href: "/shop/coffee" },
-  { name: "Baking", href: "/shop/baking" },
-  { name: "Disposables", href: "/shop/disposables" },
 ];
+
+const HOT_SLUGS = new Set(["cream-chargers", "smartwhip-tanks"]);
 
 export function ShopHeader({
   user,
   settings,
+  categories,
 }: {
   user: User | null;
   settings?: PublicSettings;
+  categories?: Category[];
 }) {
   const brandName = (settings?.["business.name"] as string) || "Dialawhip";
   const logoUrl = (settings?.["branding.logo_url"] as string) || "";
   const phone = (settings?.["business.phone"] as string) || "";
   const whatsapp = (settings?.["business.whatsapp"] as string) || "";
+
+  const shopLinks = useMemo<ShopLink[]>(() => {
+    if (!categories || categories.length === 0) return FALLBACK_SHOP_LINKS;
+    return categories.map((c) => ({
+      name: c.name,
+      href: `/shop/${c.slug}`,
+      hot: HOT_SLUGS.has(c.slug),
+    }));
+  }, [categories]);
 
   const count = useCart((s) => s.count());
   const [open, setOpen] = useState(false);
@@ -119,7 +132,7 @@ export function ShopHeader({
               {shopOpen ? (
                 <div className="absolute left-1/2 top-[calc(100%+12px)] w-[520px] -translate-x-1/2 overflow-hidden rounded-2xl bg-paper ring-2 ring-ink shadow-[0_30px_60px_-20px_rgba(0,0,0,0.4)]">
                   <div className="grid grid-cols-2 gap-px bg-ink/10">
-                    {SHOP_LINKS.map((l) => (
+                    {shopLinks.map((l) => (
                       <Link
                         key={l.href}
                         href={l.href}
@@ -236,6 +249,7 @@ export function ShopHeader({
           logoUrl={logoUrl}
           phone={phone}
           whatsapp={whatsapp}
+          shopLinks={shopLinks}
         />
       ) : null}
     </>
@@ -243,7 +257,7 @@ export function ShopHeader({
 }
 
 function MobileDrawer({
-  user, onClose, brandName, logoUrl, phone, whatsapp,
+  user, onClose, brandName, logoUrl, phone, whatsapp, shopLinks,
 }: {
   user: User | null;
   onClose: () => void;
@@ -251,6 +265,7 @@ function MobileDrawer({
   logoUrl: string;
   phone: string;
   whatsapp: string;
+  shopLinks: ShopLink[];
 }) {
   return (
     <div className="fixed inset-0 z-50 md:hidden">
@@ -314,7 +329,7 @@ function MobileDrawer({
           <nav className="px-5 py-4">
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">Shop by category</div>
             <div className="mt-3 space-y-1">
-              {SHOP_LINKS.map((l) => (
+              {shopLinks.map((l) => (
                 <DrawerLink key={l.href} href={l.href}>
                   <span>{l.name}</span>
                   {l.hot ? (

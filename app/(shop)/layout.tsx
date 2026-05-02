@@ -1,14 +1,21 @@
 import { ShopHeader } from "@/components/shop/header";
 import { ShopFooter } from "@/components/shop/footer";
 import { ShopClosedBanner } from "@/components/shop/shop-closed-banner";
-import { getCurrentUser } from "@/lib/api-server";
+import { apiServer, getCurrentUser } from "@/lib/api-server";
 import { getPublicSettings, settingBool, settingString } from "@/lib/settings";
+import type { Category } from "@/lib/types";
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const [user, settings] = await Promise.all([
+  const [user, settings, catsRes] = await Promise.all([
     getCurrentUser().catch(() => null),
     getPublicSettings(),
+    apiServer<{ data: Category[] }>("/api/v1/categories", { auth: false }).catch(() => ({
+      data: [] as Category[],
+    })),
   ]);
+  const categories = (catsRes.data ?? [])
+    .filter((c) => c.is_active !== false)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 
   if (settingBool(settings, "maintenance.enabled", false)) {
     const brandName = settingString(settings, "business.name", "Dialawhip");
@@ -28,7 +35,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
 
   return (
     <>
-      <ShopHeader user={user} settings={settings} />
+      <ShopHeader user={user} settings={settings} categories={categories} />
       {/* Visible on every customer-facing page when admin has set order.is_open = false. */}
       <div className="mx-auto w-full max-w-[1280px] px-6">
         <ShopClosedBanner settings={settings} className="mt-4" />
