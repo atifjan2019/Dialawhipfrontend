@@ -1,0 +1,162 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { X } from "lucide-react";
+
+const HIDE_UNTIL_KEY = "dw_spin_popup_hide_until";
+const HIDE_FOR_MS = 24 * 60 * 60 * 1000;
+
+const PRIZES = [
+  "10% Off",
+  "15% Off",
+  "Free Shipping",
+  "10% Off",
+  "15% Off",
+  "Free Shipping",
+] as const;
+
+function getHideUntil() {
+  if (typeof window === "undefined") return 0;
+  const raw = window.localStorage.getItem(HIDE_UNTIL_KEY);
+  const value = raw ? Number(raw) : 0;
+  return Number.isFinite(value) ? value : 0;
+}
+
+function setHideUntil(timestamp: number) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(HIDE_UNTIL_KEY, String(timestamp));
+}
+
+export function SpinToWinPopup() {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [angle, setAngle] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const segment = useMemo(() => 360 / PRIZES.length, []);
+
+  useEffect(() => {
+    const hideUntil = getHideUntil();
+    if (hideUntil > Date.now()) return;
+
+    const timer = window.setTimeout(() => setOpen(true), 1200);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function closePopup() {
+    setOpen(false);
+    setHideUntil(Date.now() + HIDE_FOR_MS);
+  }
+
+  function onSpin() {
+    setError(null);
+    setResult(null);
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError("Please enter a valid email.");
+      return;
+    }
+    if (spinning) return;
+
+    const winnerIndex = Math.floor(Math.random() * PRIZES.length);
+    const target = 360 - (winnerIndex * segment + segment / 2);
+    const travel = 360 * 6 + target;
+
+    setSpinning(true);
+    setAngle((prev) => prev + travel);
+
+    window.setTimeout(() => {
+      setSpinning(false);
+      setResult(PRIZES[winnerIndex]);
+      setHideUntil(Date.now() + HIDE_FOR_MS);
+    }, 4200);
+  }
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[90] grid place-items-center bg-ink/55 p-4 backdrop-blur-[2px]">
+      <div className="relative w-full max-w-[760px] rounded-[10px] border border-[#e9a7af] bg-[#f7c8cf] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:p-6">
+        <button
+          type="button"
+          onClick={closePopup}
+          className="absolute right-3 top-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#c5161c] text-white shadow-md transition-colors hover:bg-[#a61116]"
+          aria-label="Close spin to win popup"
+        >
+          <X className="h-7 w-7" />
+        </button>
+
+        <div className="mx-auto mt-2 w-full max-w-[620px]">
+          <div className="relative mx-auto aspect-square w-full max-w-[620px]">
+            <div className="absolute left-1/2 top-0 z-20 -translate-x-1/2">
+              <div className="h-0 w-0 border-l-[14px] border-r-[14px] border-t-[24px] border-l-transparent border-r-transparent border-t-[#c5161c] sm:border-l-[18px] sm:border-r-[18px] sm:border-t-[30px]" />
+            </div>
+
+            <div
+              className="relative h-full w-full rounded-full border-[14px] border-[#c5161c] bg-[#eeb9c1] shadow-inner transition-transform duration-[4200ms] ease-[cubic-bezier(0.15,0.9,0.2,1)]"
+              style={{
+                transform: `rotate(${angle}deg)`,
+                backgroundImage:
+                  "conic-gradient(#e07075 0deg 60deg, #f0c3ca 60deg 120deg, #e07075 120deg 180deg, #f0c3ca 180deg 240deg, #e07075 240deg 300deg, #f0c3ca 300deg 360deg)",
+              }}
+            >
+              {PRIZES.map((prize, i) => {
+                const a = i * segment + segment / 2;
+                return (
+                  <div
+                    key={`${prize}-${i}`}
+                    className="pointer-events-none absolute left-1/2 top-1/2"
+                    style={{ transform: `translate(-50%, -50%) rotate(${a}deg) translateY(clamp(-190px, -30vw, -112px))` }}
+                  >
+                    <span
+                      className="block whitespace-nowrap text-[16px] font-extrabold text-[#b31418] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)] sm:text-[24px]"
+                      style={{ transform: `rotate(${-a}deg)` }}
+                    >
+                      {prize}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="absolute left-1/2 top-1/2 z-20 h-[66px] w-[66px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#efefef] shadow-[0_8px_20px_rgba(0,0,0,0.25)] sm:h-[96px] sm:w-[96px]" />
+          </div>
+
+          <div className="mx-auto mt-6 max-w-[600px] text-center">
+            <h2 className="text-[42px] font-extrabold leading-none text-[#be181e] sm:text-[56px]">Spin to win!</h2>
+            <p className="mx-auto mt-4 max-w-[560px] text-[20px] font-medium leading-[1.35] text-ink-soft sm:text-[22px]">
+              Enter your email for a chance to win discounts, freebies, and more!
+            </p>
+
+            <div className="mx-auto mt-6 grid max-w-[600px] gap-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="h-14 rounded-[10px] border-2 border-[#8a5b90] bg-white px-5 text-[32px] font-medium text-ink-soft outline-none placeholder:text-ink-muted/70 focus:border-[#6e3f73] sm:h-20 sm:px-7 sm:text-[42px]"
+              />
+              <button
+                type="button"
+                onClick={onSpin}
+                disabled={spinning}
+                className="h-14 rounded-[10px] bg-[#c5161c] text-[34px] font-bold text-white transition-colors hover:bg-[#aa1117] disabled:opacity-60 sm:h-20 sm:text-[50px]"
+              >
+                {spinning ? "Spinning..." : "Spin the wheel!"}
+              </button>
+            </div>
+
+            {error ? <p className="mt-3 text-[16px] font-semibold text-[#8b1a1f]">{error}</p> : null}
+            {result ? (
+              <p className="mt-3 text-[20px] font-bold text-[#8b1a1f]">
+                You won: {result}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

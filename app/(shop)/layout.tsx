@@ -1,6 +1,7 @@
 import { ShopHeader } from "@/components/shop/header";
 import { ShopFooter } from "@/components/shop/footer";
 import { ShopClosedBanner } from "@/components/shop/shop-closed-banner";
+import { SpinToWinPopup } from "@/components/shop/spin-to-win-popup";
 import { getCurrentUser } from "@/lib/api-server";
 import { getPublicSettings, settingBool, settingString } from "@/lib/settings";
 
@@ -33,6 +34,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       <div className="mx-auto w-full max-w-[1280px] px-6">
         <ShopClosedBanner settings={settings} className="mt-4" />
       </div>
+      <SpinToWinPopup />
       <main className="flex-1">{children}</main>
       <ShopFooter settings={settings} />
     </>
