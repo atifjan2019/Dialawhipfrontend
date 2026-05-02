@@ -320,7 +320,7 @@ function HowItWorks() {
             <div className="inline-flex items-center gap-2 rounded-full bg-yellow px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-ink">
               How it works
             </div>
-            <h2 className="mt-6 max-w-2xl font-display text-[44px] font-bold leading-[1] tracking-tight md:text-[64px]">
+            <h2 className="mt-6 max-w-2xl font-display text-[44px] font-bold leading-[1] tracking-tight text-paper md:text-[64px]">
               Faster than your usual supplier.
             </h2>
           </div>
