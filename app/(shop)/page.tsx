@@ -5,6 +5,19 @@ import { apiServer } from "@/lib/api-server";
 import { getPublicSettings, settingString } from "@/lib/settings";
 import type { Product, Paginated } from "@/lib/types";
 
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export default async function HomePage() {
   const [settings, productsRes] = await Promise.all([
     getPublicSettings(),
@@ -212,8 +225,8 @@ function FeatureProduct({ product }: { product: Product | null }) {
             {product.name}
           </h2>
           {product.description ? (
-            <p className="mt-6 max-w-lg text-[15px] leading-[1.7] text-paper/75">
-              {product.description}
+            <p className="mt-6 line-clamp-4 max-w-lg text-[15px] leading-[1.7] text-paper/75">
+              {stripHtml(product.description)}
             </p>
           ) : null}
           <div className="mt-8 flex items-baseline gap-3">

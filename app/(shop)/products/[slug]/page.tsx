@@ -220,6 +220,8 @@ export default async function ProductPage({ params }: { params: Params }) {
           ) : null}
         </div>
       </div>
+
+      <ProductTabs description={product.description} />
     </div>
   );
 }
