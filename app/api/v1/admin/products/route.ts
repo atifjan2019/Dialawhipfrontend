@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { handle, ok, okList, created, validationError } from "@/lib/api/responses";
+import { handle, okList, created, validationError } from "@/lib/api/responses";
 import { requireRole } from "@/lib/api/auth";
 import { parseJson } from "@/lib/api/validation";
 import { supabaseAdmin } from "@/lib/supabase/admin";

@@ -249,7 +249,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
             <div className="font-display text-[13px] italic text-clay">Pricing options</div>
             <h3 className="mt-1 font-display text-[22px] text-ink">Variants</h3>
             <p className="mt-1 max-w-xl text-[12px] text-ink-muted">
-              Offer pack-size or bundle pricing (e.g. "2 tanks for £80"). Leave empty for a single-price product.
+              Offer pack-size or bundle pricing (e.g. &quot;2 tanks for £80&quot;). Leave empty for a single-price product.
             </p>
           </div>
           <button
