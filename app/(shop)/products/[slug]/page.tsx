@@ -6,6 +6,7 @@ import { Money } from "@/components/ui/money";
 import { ProductBuyBox } from "@/components/shop/product-buy-box";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { Eyebrow } from "@/components/shop/eyebrow";
+import { ProductTabs } from "@/components/shop/product-tabs";
 
 type Params = Promise<{ slug: string }>;
 
@@ -199,12 +200,6 @@ export default async function ProductPage({ params }: { params: Params }) {
           </p>
 
           <div className="mt-7 h-px bg-line sm:mt-9" />
-
-          {product.description ? (
-            <p className="mt-6 whitespace-pre-line break-words text-[14px] leading-[1.7] text-ink-soft sm:mt-7 sm:text-[15px]">
-              {product.description}
-            </p>
-          ) : null}
 
           {product.short_spec && Object.keys(product.short_spec).length > 0 ? (
             <div className="mt-6 overflow-hidden rounded-2xl border hairline bg-paper sm:mt-7">
