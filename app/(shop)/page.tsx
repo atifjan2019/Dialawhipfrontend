@@ -62,6 +62,9 @@ function Hero({
             Premium cream chargers, tanks, syrups & coffee — at your kitchen
             door across Tyneside in <strong>under 20 minutes</strong>.
           </p>
+          <div className="mt-5 max-w-2xl rounded-2xl border-2 border-ink bg-paper/90 px-4 py-3 text-[13px] leading-relaxed text-ink sm:px-5 sm:py-4 sm:text-[14px]">
+            Whether you are a professional chef, a barista, or a home enthusiast looking to elevate your culinary creations, our Cream Deluxe range offers the reliability and performance you need. We specialize in providing top-tier nitrous oxide (N2O) solutions delivered straight to your door.
+          </div>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               href="/shop"
