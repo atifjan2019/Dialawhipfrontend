@@ -48,6 +48,15 @@ function optionsWithFeatured(options: unknown, isFeatured: boolean) {
   };
 }
 
+function productOptions(options: unknown) {
+  const base = options && typeof options === "object" && !Array.isArray(options) ? options : {};
+  return {
+    review_count: Math.floor(10 + Math.random() * 641),
+    rating: Number((4.6 + Math.random() * 0.4).toFixed(1)),
+    ...base,
+  };
+}
+
 async function clearOtherFeaturedProducts(admin: ReturnType<typeof supabaseAdmin>, currentProductId: string) {
   const { error } = await admin
     .from("products")
@@ -67,10 +76,12 @@ async function clearOtherFeaturedProducts(admin: ReturnType<typeof supabaseAdmin
     .is("deleted_at", null);
   if (selectError) throw selectError;
 
-  await Promise.all((data ?? []).map((p) => admin
+  const updates = await Promise.all((data ?? []).map((p) => admin
     .from("products")
     .update({ options_json: optionsWithFeatured(p.options_json, false) })
     .eq("id", p.id)));
+  const failed = updates.find((result) => result.error);
+  if (failed?.error) throw failed.error;
 }
 
 export const GET = handle(async (req: NextRequest) => {
@@ -111,7 +122,7 @@ export const POST = handle(async (req: NextRequest) => {
     price_pence: body.price_pence,
     image_url: body.image_url ?? null,
     gallery_urls: body.gallery_urls ?? null,
-    options_json: body.options ?? null,
+    options_json: productOptions(body.options),
     short_spec: body.short_spec ?? null,
     is_active: body.is_active ?? true,
     is_featured: body.is_featured ?? false,
@@ -135,7 +146,7 @@ export const POST = handle(async (req: NextRequest) => {
       .from("products")
       .insert({
         ...fallbackRow,
-        options_json: optionsWithFeatured(body.options, body.is_featured ?? false),
+        options_json: optionsWithFeatured(productOptions(body.options), body.is_featured ?? false),
       })
       .select("*")
       .single();

@@ -64,6 +64,9 @@ export interface Product {
   image_url: string | null;
   /** Additional gallery images (public URLs). The product page shows these as thumbnails. */
   gallery_urls?: string[];
+  options?: Record<string, unknown> | null;
+  review_count?: number | null;
+  rating?: number | null;
   is_active: boolean;
   is_featured?: boolean;
   is_age_restricted?: boolean;

@@ -221,7 +221,12 @@ export default async function ProductPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      <ProductTabs description={product.description} />
+      <ProductTabs
+        productName={product.name}
+        description={product.description}
+        rating={product.rating}
+        reviewCount={product.review_count}
+      />
     </div>
   );
 }

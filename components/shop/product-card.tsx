@@ -66,6 +66,13 @@ export function ProductCard({ product }: { product: Product; index?: number }) {
         {highlight ? (
           <div className="mt-1 text-[11px] font-medium text-ink-muted">{highlight}</div>
         ) : null}
+        {typeof product.review_count === "number" && product.review_count > 0 ? (
+          <div className="mt-3 flex items-center gap-1.5 text-[11px] font-bold text-ink-muted">
+            <span className="text-yellow" aria-hidden>★</span>
+            <span>{(product.rating ?? 4.8).toFixed(1)}</span>
+            <span className="font-medium">({product.review_count.toLocaleString("en-GB")} reviews)</span>
+          </div>
+        ) : null}
 
         <div className="mt-5 flex items-center justify-between">
           <Money pence={product.price_pence} className="font-display text-[20px] font-bold text-ink" />

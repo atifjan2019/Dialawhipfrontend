@@ -92,6 +92,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
         price_pence: Number(form.price_pence || 0),
         image_url: featuredImage || null,
         gallery_urls: galleryImages,
+        options: product?.options ?? null,
       };
       if (variants.length > 0) {
         body.variants = variants.map((v, i) => ({

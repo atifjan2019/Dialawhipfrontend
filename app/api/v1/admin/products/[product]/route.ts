@@ -67,10 +67,12 @@ async function clearOtherFeaturedProducts(admin: ReturnType<typeof supabaseAdmin
     .is("deleted_at", null);
   if (selectError) throw selectError;
 
-  await Promise.all((data ?? []).map((p) => admin
+  const updates = await Promise.all((data ?? []).map((p) => admin
     .from("products")
     .update({ options_json: optionsWithFeatured(p.options_json, false) })
     .eq("id", p.id)));
+  const failed = updates.find((result) => result.error);
+  if (failed?.error) throw failed.error;
 }
 
 type Ctx = { params: Promise<{ product: string }> };

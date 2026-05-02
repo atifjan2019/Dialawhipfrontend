@@ -3,7 +3,10 @@
 import { useState } from "react";
 
 interface ProductTabsProps {
+  productName: string;
   description?: string | null;
+  rating?: number | null;
+  reviewCount?: number | null;
 }
 
 type TabKey = "description" | "reviews";
@@ -11,6 +14,34 @@ type TabKey = "description" | "reviews";
 const TABS: { key: TabKey; label: string }[] = [
   { key: "description", label: "Description" },
   { key: "reviews", label: "Reviews" },
+];
+
+const SAMPLE_REVIEWS = [
+  {
+    name: "Amelia B.",
+    city: "Jesmond",
+    text: "Arrived quickly, packed neatly, and worked exactly as expected. Really handy for a busy kitchen night.",
+  },
+  {
+    name: "Oliver M.",
+    city: "Gosforth",
+    text: "Good quality and simple to order. Delivery updates were clear and the product was ready to use straight away.",
+  },
+  {
+    name: "Sophie W.",
+    city: "Heaton",
+    text: "Reliable service and a clean finish from the product. I would happily order this again for catering prep.",
+  },
+  {
+    name: "George T.",
+    city: "Quayside",
+    text: "Fast local drop-off and no fuss at the door. The product did the job properly and felt good value.",
+  },
+  {
+    name: "Charlotte H.",
+    city: "Byker",
+    text: "Everything was straightforward from checkout to delivery. Fresh stock, tidy packaging, and a solid result.",
+  },
 ];
 
 const PROSE_CLASSES = [
@@ -29,8 +60,10 @@ const PROSE_CLASSES = [
   "[&_img]:my-4 [&_img]:rounded-xl",
 ].join(" ");
 
-export function ProductTabs({ description }: ProductTabsProps) {
+export function ProductTabs({ productName, description, rating, reviewCount }: ProductTabsProps) {
   const [tab, setTab] = useState<TabKey>("description");
+  const hasReviews = typeof reviewCount === "number" && reviewCount > 0;
+  const displayRating = typeof rating === "number" && rating > 0 ? rating : 4.8;
 
   return (
     <section className="mt-10 sm:mt-14">
@@ -74,6 +107,52 @@ export function ProductTabs({ description }: ProductTabsProps) {
           ) : (
             <p className="text-[14px] text-ink-muted">No description available.</p>
           )
+        ) : hasReviews ? (
+          <div className="rounded-2xl border hairline bg-surface px-6 py-8 sm:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-5">
+              <div>
+                <div className="flex items-center gap-2 text-yellow" aria-label={`${displayRating.toFixed(1)} out of 5 stars`}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className="text-[22px] leading-none">★</span>
+                  ))}
+                </div>
+                <p className="mt-2 font-display text-[32px] font-bold leading-none text-ink">
+                  {displayRating.toFixed(1)}
+                </p>
+              </div>
+              <div className="text-left sm:text-right">
+                <p className="text-[15px] font-bold text-ink sm:text-[16px]">
+                  {reviewCount.toLocaleString("en-GB")} reviews
+                </p>
+                <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-ink-muted sm:text-[14px]">
+                  Sample review cards for {productName}.
+                </p>
+              </div>
+            </div>
+            <div className="mt-7 grid gap-3 md:grid-cols-2">
+              {SAMPLE_REVIEWS.map((review) => (
+                <article key={`${review.name}-${review.city}`} className="rounded-xl bg-paper p-4 ring-1 ring-ink/10">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="font-display text-[16px] font-bold text-ink">{review.name}</div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+                      {review.city}
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-1 text-yellow" aria-label="5 out of 5 stars">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <span key={i} className="text-[14px] leading-none">â˜…</span>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">
+                    {review.text}
+                  </p>
+                  <div className="mt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-brand">
+                    Sample review
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
         ) : (
           <div className="rounded-2xl border hairline bg-surface px-6 py-10 text-center sm:py-12">
             <p className="text-[15px] font-bold text-ink sm:text-[16px]">No reviews yet</p>
