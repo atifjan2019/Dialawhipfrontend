@@ -3,6 +3,7 @@ import { apiServer } from "@/lib/api-server";
 import type { Product, Paginated } from "@/lib/types";
 import { Money } from "@/components/ui/money";
 import { Eyebrow } from "@/components/shop/eyebrow";
+import { ProductFeaturedToggle } from "@/components/admin/product-featured-toggle";
 
 export default async function ProductsList() {
   const res = await apiServer<Paginated<Product>>("/api/v1/admin/products", { query: { limit: 200 } })
@@ -40,6 +41,7 @@ export default async function ProductsList() {
                 <th className="px-5 py-3.5">Name</th>
                 <th className="px-5 py-3.5">Category</th>
                 <th className="px-5 py-3.5">Status</th>
+                <th className="px-5 py-3.5">Featured</th>
                 <th className="px-5 py-3.5 text-right">Price</th>
               </tr>
             </thead>
@@ -62,11 +64,14 @@ export default async function ProductsList() {
                       {p.is_active ? "Active" : "Hidden"}
                     </span>
                   </td>
+                  <td className="px-5 py-3.5">
+                    <ProductFeaturedToggle productId={p.id} isFeatured={!!p.is_featured} />
+                  </td>
                   <td className="px-5 py-3.5 text-right font-display text-[16px] font-bold text-ink"><Money pence={p.price_pence} /></td>
                 </tr>
               ))}
               {res.data.length === 0 ? (
-                <tr><td colSpan={4} className="px-5 py-12 text-center font-medium italic text-ink-muted">No products yet.</td></tr>
+                <tr><td colSpan={5} className="px-5 py-12 text-center font-medium italic text-ink-muted">No products yet.</td></tr>
               ) : null}
             </tbody>
           </table>
