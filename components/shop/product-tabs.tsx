@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 
 interface ProductTabsProps {
+  productSlug: string;
   description?: string | null;
   rating?: number | null;
   reviewCount?: number | null;
@@ -16,32 +17,50 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "reviews", label: "Reviews" },
 ];
 
-const SAMPLE_REVIEWS = [
-  {
-    name: "Amelia B.",
-    city: "Jesmond",
-    text: "Arrived quickly, packed neatly, and worked exactly as expected. Really handy for a busy kitchen night.",
-  },
-  {
-    name: "Oliver M.",
-    city: "Gosforth",
-    text: "Good quality and simple to order. Delivery updates were clear and the product was ready to use straight away.",
-  },
-  {
-    name: "Sophie W.",
-    city: "Heaton",
-    text: "Reliable service and a clean finish from the product. I would happily order this again for catering prep.",
-  },
-  {
-    name: "George T.",
-    city: "Quayside",
-    text: "Fast local drop-off and no fuss at the door. The product did the job properly and felt good value.",
-  },
-  {
-    name: "Charlotte H.",
-    city: "Byker",
-    text: "Everything was straightforward from checkout to delivery. Fresh stock, tidy packaging, and a solid result.",
-  },
+const REVIEW_NAMES = [
+  "Amelia B.",
+  "Oliver M.",
+  "Sophie W.",
+  "George T.",
+  "Charlotte H.",
+  "Harry C.",
+  "Emily R.",
+  "Jack P.",
+  "Isla M.",
+  "Thomas W.",
+  "Grace L.",
+  "James H.",
+  "Ruby S.",
+  "Noah K.",
+  "Ella D.",
+  "Alfie B.",
+  "Freya T.",
+  "Charlie R.",
+  "Mia J.",
+  "Leo S.",
+];
+
+const REVIEW_CITIES = [
+  "Jesmond",
+  "Gosforth",
+  "Heaton",
+  "Quayside",
+  "Byker",
+  "Sandyford",
+  "Ouseburn",
+  "Fenham",
+  "Walker",
+  "Benwell",
+  "Shieldfield",
+  "Kenton",
+];
+
+const REVIEW_TEXTS = [
+  "Arrived quickly, packed neatly, and worked exactly as expected. Really handy for a busy kitchen night.",
+  "Good quality and simple to order. Delivery updates were clear and the product was ready to use straight away.",
+  "Reliable service and a clean finish from the product. I would happily order this again for catering prep.",
+  "Fast local drop-off and no fuss at the door. The product did the job properly and felt good value.",
+  "Everything was straightforward from checkout to delivery. Fresh stock, tidy packaging, and a solid result.",
 ];
 
 const PROSE_CLASSES = [
@@ -60,10 +79,24 @@ const PROSE_CLASSES = [
   "[&_img]:my-4 [&_img]:rounded-xl",
 ].join(" ");
 
-export function ProductTabs({ description, rating, reviewCount }: ProductTabsProps) {
+function hashString(value: string) {
+  return value.split("").reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) >>> 0, 7);
+}
+
+function makeReviews(productSlug: string) {
+  const seed = hashString(productSlug);
+  return Array.from({ length: 5 }).map((_, i) => ({
+    name: REVIEW_NAMES[(seed + i * 3) % REVIEW_NAMES.length],
+    city: REVIEW_CITIES[(seed + i * 5) % REVIEW_CITIES.length],
+    text: REVIEW_TEXTS[(seed + i * 2) % REVIEW_TEXTS.length],
+  }));
+}
+
+export function ProductTabs({ productSlug, description, rating, reviewCount }: ProductTabsProps) {
   const [tab, setTab] = useState<TabKey>("description");
   const hasReviews = typeof reviewCount === "number" && reviewCount > 0;
   const displayRating = typeof rating === "number" && rating > 0 ? rating : 4.8;
+  const reviews = makeReviews(productSlug);
 
   return (
     <section className="mt-10 sm:mt-14">
@@ -127,7 +160,7 @@ export function ProductTabs({ description, rating, reviewCount }: ProductTabsPro
               </div>
             </div>
             <div className="mt-7 grid gap-3 md:grid-cols-2">
-              {SAMPLE_REVIEWS.map((review) => (
+              {reviews.map((review) => (
                 <article key={`${review.name}-${review.city}`} className="rounded-xl bg-paper p-4 ring-1 ring-ink/10">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="font-display text-[16px] font-bold text-ink">{review.name}</div>
