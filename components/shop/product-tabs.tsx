@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Star } from "lucide-react";
 
 interface ProductTabsProps {
   productName: string;
@@ -111,9 +112,9 @@ export function ProductTabs({ productName, description, rating, reviewCount }: P
           <div className="rounded-2xl border hairline bg-surface px-6 py-8 sm:px-8">
             <div className="flex flex-wrap items-center justify-between gap-5">
               <div>
-                <div className="flex items-center gap-2 text-yellow" aria-label={`${displayRating.toFixed(1)} out of 5 stars`}>
+                <div className="flex items-center gap-2 text-brand" aria-label={`${displayRating.toFixed(1)} out of 5 stars`}>
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} className="text-[22px] leading-none">★</span>
+                    <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
                 <p className="mt-2 font-display text-[32px] font-bold leading-none text-ink">
@@ -138,17 +139,14 @@ export function ProductTabs({ productName, description, rating, reviewCount }: P
                       {review.city}
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center gap-1 text-yellow" aria-label="5 out of 5 stars">
+                  <div className="mt-2 flex items-center gap-1 text-brand" aria-label="5 out of 5 stars">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} className="text-[14px] leading-none">â˜…</span>
+                      <Star key={i} className="h-3.5 w-3.5 fill-current" />
                     ))}
                   </div>
                   <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">
                     {review.text}
                   </p>
-                  <div className="mt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-brand">
-                    Sample review
-                  </div>
                 </article>
               ))}
             </div>
