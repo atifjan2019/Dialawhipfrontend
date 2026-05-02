@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { SpinToWinPopup } from "@/components/shop/spin-to-win-popup";
 import { getPublicSettings, settingString } from "@/lib/settings";
 
 const sans = Inter({
@@ -111,7 +112,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : null}
       </head>
       <body className="min-h-full flex flex-col overflow-x-clip bg-cream text-ink" suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <SpinToWinPopup />
+        </Providers>
       </body>
     </html>
   );
