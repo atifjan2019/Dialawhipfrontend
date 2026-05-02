@@ -60,6 +60,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
     description: product?.description ?? "",
     price_pence: product ? String(product.price_pence) : "",
     is_active: product?.is_active ?? true,
+    is_featured: product?.is_featured ?? false,
   });
   // Once the user manually edits the slug, stop auto-syncing it from the name.
   const [slugTouched, setSlugTouched] = useState(!!product?.slug);
@@ -214,15 +215,26 @@ export function ProductForm({ product, categories }: { product?: Product; catego
         </div>
       </div>
 
-      <label className="flex items-center gap-2.5 text-[13px] text-ink-soft">
-        <input
-          type="checkbox"
-          checked={form.is_active}
-          onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-          className="h-4 w-4 accent-forest"
-        />
-        Visible to customers
-      </label>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <label className="flex items-center gap-2.5 text-[13px] text-ink-soft">
+          <input
+            type="checkbox"
+            checked={form.is_active}
+            onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+            className="h-4 w-4 accent-forest"
+          />
+          Visible to customers
+        </label>
+        <label className="flex items-center gap-2.5 text-[13px] text-ink-soft">
+          <input
+            type="checkbox"
+            checked={form.is_featured}
+            onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
+            className="h-4 w-4 accent-forest"
+          />
+          Featured on home page
+        </label>
+      </div>
 
       <ProductImageManager
         featured={featuredImage}

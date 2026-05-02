@@ -131,6 +131,7 @@ create table if not exists public.products (
   options_json jsonb,
   short_spec jsonb,
   is_active boolean not null default true,
+  is_featured boolean not null default false,
   is_age_restricted boolean not null default false,
   available_from time,
   available_until time,
@@ -142,6 +143,7 @@ create table if not exists public.products (
 create index if not exists products_category_active_idx on public.products(category_id, is_active);
 create index if not exists products_brand_active_idx on public.products(brand, is_active);
 create index if not exists products_age_active_idx on public.products(is_age_restricted, is_active);
+create index if not exists products_featured_active_idx on public.products(is_featured, is_active) where deleted_at is null;
 
 -- ============================================================================
 -- product_variants

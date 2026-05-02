@@ -69,6 +69,7 @@ export function serializeProduct(p: Row & { category?: Row; variants?: Row[]; pr
     options: p.options_json ?? null,
     short_spec: p.short_spec ?? null,
     is_active: !!p.is_active,
+    is_featured: !!p.is_featured,
     is_age_restricted: !!p.is_age_restricted,
     available_from: p.available_from ?? null,
     available_until: p.available_until ?? null,

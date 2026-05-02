@@ -9,14 +9,20 @@ export const GET = handle(async (req: NextRequest) => {
   const limit = Math.min(100, Math.max(1, Number(params.get("limit") ?? 25) || 25));
   const categorySlug = params.get("filter[category]") || params.get("category");
   const search = params.get("filter[search]") || params.get("search");
+  const featured = params.get("filter[featured]") || params.get("featured");
 
   let query = admin
     .from("products")
     .select("*, category:categories!products_category_id_fkey(*), variants:product_variants(*)")
     .eq("is_active", true)
     .is("deleted_at", null)
-    .order("name", { ascending: true })
     .limit(limit);
+
+  if (featured === "true" || featured === "1") {
+    query = query.eq("is_featured", true).order("updated_at", { ascending: false });
+  } else {
+    query = query.order("name", { ascending: true });
+  }
 
   if (categorySlug) {
     const { data: cat } = await admin.from("categories").select("id").eq("slug", categorySlug).single();

@@ -21,7 +21,10 @@ function stripHtml(html: string): string {
 export default async function HomePage() {
   const [settings, productsRes, catsRes] = await Promise.all([
     getPublicSettings(),
-    apiServer<Paginated<Product>>("/api/v1/products", { auth: false }).catch(() => ({
+    apiServer<Paginated<Product>>("/api/v1/products", {
+      auth: false,
+      query: { featured: true, limit: 1 },
+    }).catch(() => ({
       data: [] as Product[],
       meta: { next_cursor: null, prev_cursor: null },
     })),
@@ -31,7 +34,10 @@ export default async function HomePage() {
   ]);
   const tagline = settingString(settings, "business.tagline", "Newcastle · 20-minute delivery");
   const phone = settingString(settings, "business.phone");
-  const featured = productsRes.data?.[0] ?? null;
+  const featured = productsRes.data?.[0] ?? await apiServer<Paginated<Product>>("/api/v1/products", {
+    auth: false,
+    query: { limit: 1 },
+  }).then((res) => res.data?.[0] ?? null).catch(() => null);
   const categories = (catsRes.data ?? [])
     .filter((c) => c.is_active !== false)
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
