@@ -144,6 +144,7 @@ create index if not exists products_category_active_idx on public.products(categ
 create index if not exists products_brand_active_idx on public.products(brand, is_active);
 create index if not exists products_age_active_idx on public.products(is_age_restricted, is_active);
 create index if not exists products_featured_active_idx on public.products(is_featured, is_active) where deleted_at is null;
+create unique index if not exists products_one_featured_idx on public.products((is_featured)) where is_featured = true and deleted_at is null;
 
 -- ============================================================================
 -- product_variants

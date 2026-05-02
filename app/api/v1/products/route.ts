@@ -3,6 +3,10 @@ import { handle, ok } from "@/lib/api/responses";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { serializeProduct } from "@/lib/api/resources";
 
+function isMissingFeaturedColumn(error: { message?: string; code?: string } | null) {
+  return error?.code === "PGRST204" && /is_featured/i.test(error.message ?? "");
+}
+
 export const GET = handle(async (req: NextRequest) => {
   const admin = supabaseAdmin();
   const params = req.nextUrl.searchParams;
@@ -31,7 +35,30 @@ export const GET = handle(async (req: NextRequest) => {
   }
   if (search) query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
 
-  const { data, error } = await query;
+  let { data, error } = await query;
+  if (isMissingFeaturedColumn(error) && (featured === "true" || featured === "1")) {
+    let fallbackQuery = admin
+      .from("products")
+      .select("*, category:categories!products_category_id_fkey(*), variants:product_variants(*)")
+      .eq("is_active", true)
+      .is("deleted_at", null)
+      .order("name", { ascending: true })
+      .limit(100);
+
+    if (categorySlug) {
+      const { data: cat } = await admin.from("categories").select("id").eq("slug", categorySlug).single();
+      if (cat) fallbackQuery = fallbackQuery.eq("category_id", cat.id);
+      else return ok([]);
+    }
+    if (search) fallbackQuery = fallbackQuery.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+
+    const fallback = await fallbackQuery;
+    data = (fallback.data ?? []).filter((p) => {
+      const options = p.options_json;
+      return !!(options && typeof options === "object" && !Array.isArray(options) && options.is_featured);
+    }).slice(0, limit);
+    error = fallback.error;
+  }
   if (error) throw error;
   const products = (data ?? []).map((p) => {
     const activeVariants = (p.variants ?? []).filter((v: { is_active: boolean }) => v.is_active);

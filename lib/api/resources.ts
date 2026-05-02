@@ -6,6 +6,12 @@ import { allowedFrom } from "../domain/state-machine";
 
 type Row = Record<string, unknown>;
 
+function optionBool(row: Row, key: string) {
+  const options = row.options_json;
+  if (!options || typeof options !== "object" || Array.isArray(options)) return false;
+  return !!(options as Row)[key];
+}
+
 export function serializeUser(u: Row | null | undefined) {
   if (!u) return null;
   return {
@@ -69,7 +75,7 @@ export function serializeProduct(p: Row & { category?: Row; variants?: Row[]; pr
     options: p.options_json ?? null,
     short_spec: p.short_spec ?? null,
     is_active: !!p.is_active,
-    is_featured: !!p.is_featured,
+    is_featured: !!p.is_featured || optionBool(p, "is_featured"),
     is_age_restricted: !!p.is_age_restricted,
     available_from: p.available_from ?? null,
     available_until: p.available_until ?? null,

@@ -37,6 +37,42 @@ const ProductBody = z.object({
   variants: z.array(VariantSchema).max(50).optional().nullable(),
 });
 
+function isMissingFeaturedColumn(error: { message?: string; code?: string } | null) {
+  return error?.code === "PGRST204" && /is_featured/i.test(error.message ?? "");
+}
+
+function optionsWithFeatured(options: unknown, isFeatured: boolean) {
+  return {
+    ...(options && typeof options === "object" && !Array.isArray(options) ? options : {}),
+    is_featured: isFeatured,
+  };
+}
+
+async function clearOtherFeaturedProducts(admin: ReturnType<typeof supabaseAdmin>, currentProductId: string) {
+  const { error } = await admin
+    .from("products")
+    .update({ is_featured: false })
+    .neq("id", currentProductId)
+    .is("deleted_at", null);
+
+  if (!isMissingFeaturedColumn(error)) {
+    if (error) throw error;
+    return;
+  }
+
+  const { data, error: selectError } = await admin
+    .from("products")
+    .select("id, options_json")
+    .neq("id", currentProductId)
+    .is("deleted_at", null);
+  if (selectError) throw selectError;
+
+  await Promise.all((data ?? []).map((p) => admin
+    .from("products")
+    .update({ options_json: optionsWithFeatured(p.options_json, false) })
+    .eq("id", p.id)));
+}
+
 type Ctx = { params: Promise<{ product: string }> };
 
 export const GET = handle(async (_req: NextRequest, { params }: Ctx) => {
@@ -57,7 +93,7 @@ export const PATCH = handle(async (req: NextRequest, { params }: Ctx) => {
   const { product: id } = await params;
   const body = await parseJson(req, ProductBody);
   const admin = supabaseAdmin();
-  const { error } = await admin.from("products").update({
+  const productRow = {
     category_id: body.category_id,
     name: body.name,
     slug: body.slug,
@@ -74,7 +110,23 @@ export const PATCH = handle(async (req: NextRequest, { params }: Ctx) => {
     available_from: body.available_from ?? null,
     available_until: body.available_until ?? null,
     stock_count: body.stock_count ?? null,
-  }).eq("id", id);
+  };
+
+  if (body.is_featured) await clearOtherFeaturedProducts(admin, id);
+
+  let { error } = await admin.from("products").update(productRow).eq("id", id);
+  if (isMissingFeaturedColumn(error)) {
+    const { is_featured: _isFeatured, ...fallbackRow } = productRow;
+    void _isFeatured;
+    const fallback = await admin
+      .from("products")
+      .update({
+        ...fallbackRow,
+        options_json: optionsWithFeatured(body.options, body.is_featured ?? false),
+      })
+      .eq("id", id);
+    error = fallback.error;
+  }
   if (error) throw error;
 
   if (body.variants !== undefined) {

@@ -37,6 +37,42 @@ const ProductBody = z.object({
   variants: z.array(VariantSchema).max(50).optional().nullable(),
 });
 
+function isMissingFeaturedColumn(error: { message?: string; code?: string } | null) {
+  return error?.code === "PGRST204" && /is_featured/i.test(error.message ?? "");
+}
+
+function optionsWithFeatured(options: unknown, isFeatured: boolean) {
+  return {
+    ...(options && typeof options === "object" && !Array.isArray(options) ? options : {}),
+    is_featured: isFeatured,
+  };
+}
+
+async function clearOtherFeaturedProducts(admin: ReturnType<typeof supabaseAdmin>, currentProductId: string) {
+  const { error } = await admin
+    .from("products")
+    .update({ is_featured: false })
+    .neq("id", currentProductId)
+    .is("deleted_at", null);
+
+  if (!isMissingFeaturedColumn(error)) {
+    if (error) throw error;
+    return;
+  }
+
+  const { data, error: selectError } = await admin
+    .from("products")
+    .select("id, options_json")
+    .neq("id", currentProductId)
+    .is("deleted_at", null);
+  if (selectError) throw selectError;
+
+  await Promise.all((data ?? []).map((p) => admin
+    .from("products")
+    .update({ options_json: optionsWithFeatured(p.options_json, false) })
+    .eq("id", p.id)));
+}
+
 export const GET = handle(async (req: NextRequest) => {
   await requireRole("admin", "staff");
   const sp = req.nextUrl.searchParams;
@@ -66,28 +102,46 @@ export const POST = handle(async (req: NextRequest) => {
   const { count } = await admin.from("products").select("id", { count: "exact", head: true }).eq("slug", body.slug);
   if ((count ?? 0) > 0) return validationError({ slug: ["The slug has already been taken."] });
 
-  const { data: product, error } = await admin
+  const productRow = {
+    category_id: body.category_id,
+    name: body.name,
+    slug: body.slug,
+    brand: body.brand ?? null,
+    description: body.description ?? null,
+    price_pence: body.price_pence,
+    image_url: body.image_url ?? null,
+    gallery_urls: body.gallery_urls ?? null,
+    options_json: body.options ?? null,
+    short_spec: body.short_spec ?? null,
+    is_active: body.is_active ?? true,
+    is_featured: body.is_featured ?? false,
+    is_age_restricted: body.is_age_restricted ?? false,
+    available_from: body.available_from ?? null,
+    available_until: body.available_until ?? null,
+    stock_count: body.stock_count ?? null,
+  };
+
+  if (body.is_featured) await clearOtherFeaturedProducts(admin, "");
+
+  let { data: product, error } = await admin
     .from("products")
-    .insert({
-      category_id: body.category_id,
-      name: body.name,
-      slug: body.slug,
-      brand: body.brand ?? null,
-      description: body.description ?? null,
-      price_pence: body.price_pence,
-      image_url: body.image_url ?? null,
-      gallery_urls: body.gallery_urls ?? null,
-      options_json: body.options ?? null,
-      short_spec: body.short_spec ?? null,
-      is_active: body.is_active ?? true,
-      is_featured: body.is_featured ?? false,
-      is_age_restricted: body.is_age_restricted ?? false,
-      available_from: body.available_from ?? null,
-      available_until: body.available_until ?? null,
-      stock_count: body.stock_count ?? null,
-    })
+    .insert(productRow)
     .select("*")
     .single();
+  if (isMissingFeaturedColumn(error)) {
+    const { is_featured: _isFeatured, ...fallbackRow } = productRow;
+    void _isFeatured;
+    const fallback = await admin
+      .from("products")
+      .insert({
+        ...fallbackRow,
+        options_json: optionsWithFeatured(body.options, body.is_featured ?? false),
+      })
+      .select("*")
+      .single();
+    product = fallback.data;
+    error = fallback.error;
+  }
   if (error) throw error;
 
   if (body.variants?.length) {
