@@ -1,9 +1,28 @@
 import Link from "next/link";
+import type { Category } from "@/lib/types";
 import type { PublicSettings } from "@/lib/settings";
 import { settingString, socialLinks, formatBusinessHours } from "@/lib/settings";
 
-export function ShopFooter({ settings }: { settings?: PublicSettings }) {
+const FOOTER_FALLBACK_LINKS: { name: string; slug: string }[] = [
+  { name: "Cream chargers", slug: "cream-chargers" },
+  { name: "Smartwhip tanks", slug: "smartwhip-tanks" },
+  { name: "MAXXI tanks", slug: "maxxi-tanks" },
+  { name: "Whippers", slug: "whippers" },
+  { name: "Monin syrups", slug: "monin-syrups" },
+];
+
+export function ShopFooter({
+  settings,
+  categories,
+}: {
+  settings?: PublicSettings;
+  categories?: Category[];
+}) {
   const s = settings ?? {};
+  const shopLinks = (categories && categories.length > 0
+    ? categories.map((c) => ({ name: c.name, slug: c.slug }))
+    : FOOTER_FALLBACK_LINKS
+  ).slice(0, 5);
 
   const brandName = settingString(s, "business.name", "Dialawhip");
   const tagline = settingString(s, "business.tagline", "Newcastle · 20-min delivery");
@@ -28,7 +47,7 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
   const hours = formatBusinessHours(s);
 
   return (
-    <footer className="mt-24 border-t-2 border-ink bg-ink text-paper">
+    <footer className="border-t-2 border-ink bg-ink text-paper">
       {/* Top yellow band */}
       <div className="border-b-2 border-ink bg-yellow text-ink">
         <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-4 px-6 py-6">
@@ -124,11 +143,11 @@ export function ShopFooter({ settings }: { settings?: PublicSettings }) {
           </div>
 
           <FooterCol title="Shop">
-            <FooterLink href="/shop/cream-chargers">Cream chargers</FooterLink>
-            <FooterLink href="/shop/smartwhip-tanks">Smartwhip tanks</FooterLink>
-            <FooterLink href="/shop/maxxi-tanks">MAXXI tanks</FooterLink>
-            <FooterLink href="/shop/whippers">Whippers</FooterLink>
-            <FooterLink href="/shop/monin-syrups">Monin syrups</FooterLink>
+            {shopLinks.map((l) => (
+              <FooterLink key={l.slug} href={`/shop/${l.slug}`}>
+                {l.name}
+              </FooterLink>
+            ))}
             <FooterLink href="/shop">Full catalogue →</FooterLink>
           </FooterCol>
 

@@ -41,7 +41,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         <ShopClosedBanner settings={settings} className="mt-4" />
       </div>
       <main className="flex-1">{children}</main>
-      <ShopFooter settings={settings} />
+      <ShopFooter settings={settings} categories={categories} />
     </>
   );
 }

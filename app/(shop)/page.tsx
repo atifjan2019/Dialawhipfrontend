@@ -3,7 +3,7 @@ import { Eyebrow } from "@/components/shop/eyebrow";
 import { PostcodeChecker } from "@/components/shop/postcode-checker";
 import { apiServer } from "@/lib/api-server";
 import { getPublicSettings, settingString } from "@/lib/settings";
-import type { Product, Paginated } from "@/lib/types";
+import type { Category, Product, Paginated } from "@/lib/types";
 
 function stripHtml(html: string): string {
   return html
@@ -19,16 +19,22 @@ function stripHtml(html: string): string {
 }
 
 export default async function HomePage() {
-  const [settings, productsRes] = await Promise.all([
+  const [settings, productsRes, catsRes] = await Promise.all([
     getPublicSettings(),
     apiServer<Paginated<Product>>("/api/v1/products", { auth: false }).catch(() => ({
       data: [] as Product[],
       meta: { next_cursor: null, prev_cursor: null },
     })),
+    apiServer<{ data: Category[] }>("/api/v1/categories", { auth: false }).catch(() => ({
+      data: [] as Category[],
+    })),
   ]);
   const tagline = settingString(settings, "business.tagline", "Newcastle · 20-minute delivery");
   const phone = settingString(settings, "business.phone");
   const featured = productsRes.data?.[0] ?? null;
+  const categories = (catsRes.data ?? [])
+    .filter((c) => c.is_active !== false)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 
   return (
     <>
@@ -36,7 +42,7 @@ export default async function HomePage() {
       <Marquee />
       <FeatureProduct product={featured} />
       <BrandPitch />
-      <Shelves />
+      <Shelves categories={categories} />
       <HowItWorks />
       <Compliance />
       <ClosingCta />
@@ -306,18 +312,29 @@ function BrandPitch() {
   );
 }
 
-const SHELVES: { name: string; slug: string; blurb: string }[] = [
-  { name: "Cream chargers", slug: "cream-chargers", blurb: "Premium 8g, 8.2g & 666g cylinders. Food-grade, ID required." },
-  { name: "Smartwhip tanks", slug: "smartwhip-tanks", blurb: "580g–666g — equivalent to 70+ chargers per tank." },
-  { name: "MAXXI tanks", slug: "maxxi-tanks", blurb: "2KG & 4KG disposables — 250 chargers per tank." },
-  { name: "Whippers", slug: "whippers", blurb: "Quarter and half-litre dispensers — pro-grade." },
-  { name: "CO₂ cartridges", slug: "co2-cartridges", blurb: "Pro Fizz, Liss, Mosa, ISI — for soda siphons." },
-  { name: "Soda siphons", slug: "soda-siphons", blurb: "ISI 1L — the bar-standard sparkling water maker." },
-  { name: "Monin syrups", slug: "monin-syrups", blurb: "Full flavour range — strawberry, gomme, curaçao." },
-  { name: "Coffee", slug: "coffee", blurb: "Lavazza, Starbucks, Costa, Nescafé — beans & instant." },
-];
+const SHELF_BLURB_FALLBACK: Record<string, string> = {
+  "cream-chargers": "Premium 8g, 8.2g & 666g cylinders. Food-grade, ID required.",
+  "smartwhip-tanks": "580g–666g — equivalent to 70+ chargers per tank.",
+  "maxxi-tanks": "2KG & 4KG disposables — 250 chargers per tank.",
+  "whippers": "Quarter and half-litre dispensers — pro-grade.",
+  "co2-cartridges": "Pro Fizz, Liss, Mosa, ISI — for soda siphons.",
+  "soda-siphons": "ISI 1L — the bar-standard sparkling water maker.",
+  "monin-syrups": "Full flavour range — strawberry, gomme, curaçao.",
+  "coffee": "Lavazza, Starbucks, Costa, Nescafé — beans & instant.",
+};
 
-function Shelves() {
+function Shelves({ categories }: { categories: Category[] }) {
+  const items = (categories.length > 0
+    ? categories
+    : Object.entries(SHELF_BLURB_FALLBACK).map(([slug, description], i) => ({
+        id: slug,
+        slug,
+        name: slug.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()),
+        description,
+        sort_order: i,
+        is_active: true,
+      }))
+  ).slice(0, 8);
   return (
     <section className="mx-auto max-w-[1280px] px-6 py-24">
       <div className="flex flex-wrap items-end justify-between gap-6">
@@ -340,28 +357,31 @@ function Shelves() {
       </div>
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {SHELVES.map((c, i) => (
-          <Link
-            key={c.slug}
-            href={`/shop/${c.slug}`}
-            className="group relative overflow-hidden rounded-2xl bg-paper p-7 ring-2 ring-ink/10 transition-all hover:ring-brand"
-          >
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
-              № {String(i + 1).padStart(2, "0")}
-            </div>
-            <h3 className="mt-6 font-display text-[22px] font-bold leading-tight text-ink transition-colors group-hover:text-brand">
-              {c.name}
-            </h3>
-            <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-ink-muted">
-              {c.blurb}
-            </p>
-            <div className="mt-7 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/60 transition-colors group-hover:text-brand">
-              <span>Browse shelf</span>
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-yellow opacity-0 transition-opacity group-hover:opacity-100" />
-          </Link>
-        ))}
+        {items.map((c, i) => {
+          const blurb = c.description || SHELF_BLURB_FALLBACK[c.slug] || "Browse the full range.";
+          return (
+            <Link
+              key={c.slug}
+              href={`/shop/${c.slug}`}
+              className="group relative overflow-hidden rounded-2xl bg-paper p-7 ring-2 ring-ink/10 transition-all hover:ring-brand"
+            >
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
+                № {String(i + 1).padStart(2, "0")}
+              </div>
+              <h3 className="mt-6 font-display text-[22px] font-bold leading-tight text-ink transition-colors group-hover:text-brand">
+                {c.name}
+              </h3>
+              <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-ink-muted">
+                {blurb}
+              </p>
+              <div className="mt-7 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/60 transition-colors group-hover:text-brand">
+                <span>Browse shelf</span>
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-yellow opacity-0 transition-opacity group-hover:opacity-100" />
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

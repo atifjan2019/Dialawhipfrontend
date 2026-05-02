@@ -1,7 +1,25 @@
 import Link from "next/link";
 import { Eyebrow } from "@/components/shop/eyebrow";
+import { apiServer } from "@/lib/api-server";
+import type { Category } from "@/lib/types";
 
-export default function NotFound() {
+const POPULAR_FALLBACK = [
+  { name: "Cream chargers", slug: "cream-chargers" },
+  { name: "Smartwhip tanks", slug: "smartwhip-tanks" },
+  { name: "Monin syrups", slug: "monin-syrups" },
+];
+
+export default async function NotFound() {
+  const catsRes = await apiServer<{ data: Category[] }>("/api/v1/categories", { auth: false }).catch(
+    () => ({ data: [] as Category[] }),
+  );
+  const popular = (catsRes.data ?? [])
+    .filter((c) => c.is_active !== false)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    .slice(0, 3)
+    .map((c) => ({ name: c.name, slug: c.slug }));
+  const popularLinks = popular.length > 0 ? popular : POPULAR_FALLBACK;
+
   return (
     <main className="relative isolate min-h-[85vh] overflow-hidden bg-paper">
       <div className="mx-auto grid min-h-[85vh] max-w-[1280px] grid-cols-1 items-center gap-12 px-6 py-20 md:grid-cols-[1.2fr_1fr] md:gap-16">
@@ -38,9 +56,11 @@ export default function NotFound() {
           </div>
 
           <div className="mt-14 grid max-w-md grid-cols-2 gap-4 border-t-2 border-ink/10 pt-8 text-[13px]">
-            <PopularLink href="/shop/cream-chargers">Cream chargers</PopularLink>
-            <PopularLink href="/shop/smartwhip-tanks">Smartwhip tanks</PopularLink>
-            <PopularLink href="/shop/monin-syrups">Monin syrups</PopularLink>
+            {popularLinks.map((l) => (
+              <PopularLink key={l.slug} href={`/shop/${l.slug}`}>
+                {l.name}
+              </PopularLink>
+            ))}
             <PopularLink href="/delivery">Delivery &amp; coverage</PopularLink>
           </div>
         </div>
