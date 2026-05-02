@@ -222,7 +222,6 @@ export default async function ProductPage({ params }: { params: Params }) {
       </div>
 
       <ProductTabs
-        productName={product.name}
         description={product.description}
         rating={product.rating}
         reviewCount={product.review_count}

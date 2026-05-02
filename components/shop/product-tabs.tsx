@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 
 interface ProductTabsProps {
-  productName: string;
   description?: string | null;
   rating?: number | null;
   reviewCount?: number | null;
@@ -61,7 +60,7 @@ const PROSE_CLASSES = [
   "[&_img]:my-4 [&_img]:rounded-xl",
 ].join(" ");
 
-export function ProductTabs({ productName, description, rating, reviewCount }: ProductTabsProps) {
+export function ProductTabs({ description, rating, reviewCount }: ProductTabsProps) {
   const [tab, setTab] = useState<TabKey>("description");
   const hasReviews = typeof reviewCount === "number" && reviewCount > 0;
   const displayRating = typeof rating === "number" && rating > 0 ? rating : 4.8;
@@ -124,9 +123,6 @@ export function ProductTabs({ productName, description, rating, reviewCount }: P
               <div className="text-left sm:text-right">
                 <p className="text-[15px] font-bold text-ink sm:text-[16px]">
                   {reviewCount.toLocaleString("en-GB")} reviews
-                </p>
-                <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-ink-muted sm:text-[14px]">
-                  Sample review cards for {productName}.
                 </p>
               </div>
             </div>
