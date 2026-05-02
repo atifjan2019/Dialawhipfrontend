@@ -1,12 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiClient, ApiRequestError, randomIdempotencyKey } from "@/lib/api-client";
-import { Input, Label, Textarea, FieldError } from "@/components/ui/input";
+import { Input, Label, FieldError } from "@/components/ui/input";
 import type { Category, Product, ProductVariant } from "@/lib/types";
 import { Plus, Trash2 } from "lucide-react";
 import { ProductImageManager } from "@/components/admin/product-image-manager";
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 type VariantDraft = {
   id?: string;
@@ -205,7 +209,9 @@ export function ProductForm({ product, categories }: { product?: Product; catego
 
       <div className="space-y-1.5">
         <Label>Description</Label>
-        <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        <div className="rounded-md border border-ink/15 bg-paper [&_.ql-container]:min-h-[160px] [&_.ql-container]:rounded-b-md [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[160px] [&_.ql-toolbar]:rounded-t-md [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-ink/15">
+          <ReactQuill theme="snow" value={form.description} onChange={(value) => setForm({ ...form, description: value })} />
+        </div>
       </div>
 
       <label className="flex items-center gap-2.5 text-[13px] text-ink-soft">
