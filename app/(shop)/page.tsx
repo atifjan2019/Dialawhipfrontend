@@ -35,6 +35,7 @@ export default async function HomePage() {
       <Hero tagline={tagline} phone={phone} featured={featured} />
       <Marquee />
       <FeatureProduct product={featured} />
+      <BrandPitch />
       <Shelves />
       <HowItWorks />
       <Compliance />
@@ -75,9 +76,6 @@ function Hero({
             Premium cream chargers, tanks, syrups & coffee — at your kitchen
             door across Tyneside in <strong>under 20 minutes</strong>.
           </p>
-          <div className="mt-5 max-w-2xl rounded-2xl border-2 border-ink bg-paper/90 px-4 py-3 text-[13px] leading-relaxed text-ink sm:px-5 sm:py-4 sm:text-[14px]">
-            Whether you are a professional chef, a barista, or a home enthusiast looking to elevate your culinary creations, our Cream Deluxe range offers the reliability and performance you need. We specialize in providing top-tier nitrous oxide (N2O) solutions delivered straight to your door.
-          </div>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               href="/shop"
@@ -250,6 +248,57 @@ function FeatureProduct({ product }: { product: Product | null }) {
             >
               All products
             </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BrandPitch() {
+  return (
+    <section className="mx-auto max-w-[1280px] px-6 py-20 sm:py-24">
+      <div className="relative overflow-hidden rounded-3xl border-2 border-ink bg-yellow px-6 py-12 sm:px-12 sm:py-16">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-brand/15 blur-3xl" />
+
+        <div className="relative grid gap-10 md:grid-cols-[auto_1fr] md:gap-14">
+          <div className="md:max-w-xs">
+            <Eyebrow>Who it&rsquo;s for</Eyebrow>
+            <h2 className="mt-4 font-display text-[32px] font-bold leading-[1.05] tracking-tight text-ink sm:text-[44px]">
+              Built for{" "}
+              <span className="text-brand">serious kitchens.</span>
+            </h2>
+          </div>
+
+          <div className="md:pt-2">
+            <p className="text-[16px] leading-[1.65] text-ink sm:text-[18px]">
+              Whether you&rsquo;re a professional chef, a barista, or a home
+              enthusiast looking to elevate your culinary creations, our{" "}
+              <strong>Cream Deluxe</strong> range offers the reliability and
+              performance you need. We specialise in top-tier nitrous oxide
+              (N<sub>2</sub>O) solutions delivered straight to your door.
+            </p>
+
+            <ul className="mt-7 grid gap-3 sm:grid-cols-3">
+              {[
+                { k: "Pro chefs", v: "Whipped foams, espumas, infusions" },
+                { k: "Baristas", v: "Velvet textures, signature drinks" },
+                { k: "Home cooks", v: "Restaurant results, your kitchen" },
+              ].map((it) => (
+                <li
+                  key={it.k}
+                  className="rounded-xl border-2 border-ink bg-paper px-4 py-3"
+                >
+                  <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand">
+                    {it.k}
+                  </div>
+                  <div className="mt-1 text-[13px] font-medium leading-snug text-ink-soft sm:text-[14px]">
+                    {it.v}
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
